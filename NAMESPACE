@@ -1,0 +1,2 @@
+export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma, hyperGtable, probes2table,
+       affystart, plotDeg, plotHist, plotPCA, convert.back)

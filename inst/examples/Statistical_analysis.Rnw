@@ -1,0 +1,156 @@
+\documentclass{article}
+\title{Example of a Statistical Analysis}
+\author{James W. MacDonald}
+
+\usepackage{hyperref}
+\parindent=0.25in
+\usepackage[authoryear,round]{natbib}
+\usepackage{times}
+\usepackage{comment}
+\bibliographystyle{plainnat}
+
+\begin{document}
+
+\maketitle
+
+<<echo=FALSE, results=hide>>=
+library(affycoretools)
+library(affy)
+library(limma)
+library(xtable)
+library(annaffy)
+library(genefilter)
+## Make pdfs folder if it doesn't exist
+if(!file.exists("pdfs"))
+  dir.create("pdfs")
+pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
+dat <- read.affybatch(filenames=list.celfiles())
+eset1 <- rma(dat[,1:6])
+eset2 <- rma(dat[,7:12])
+eset <- new("exprSet", exprs = cbind(exprs(eset1), exprs(eset2)), phenoData = pd,
+            annotation = annotation(eset1))
+
+## load annotation package
+options(show.error.messages = FALSE)
+a <- try(do.call("library", list(annotation(eset))))
+options(show.error.messages = TRUE)
+if(inherits(a, "try-error")){
+source("http://www.bioconductor.org/biocLite.R")
+biocLite(annotation(eset))
+do.call("library", list(annotation(eset)))
+}
+## output all expression values
+write.table(exprs(eset), "Expression values.txt", quote = FALSE,
+            sep = "\t", col.names = NA)
+@ 
+This analysis is based on microarrays that were processed in the microarray facility. 
+Filenames and samples were as follows:
+
+\SweaveOpts{echo = false, prefix.string=pdfs/Statistical_analysis}
+
+<<results=tex>>=
+## Put a table of filenames and sample types in PDF
+type <- rep(c("Affy Sensitive","Affy Insensitive",
+              "NuGen Sensitive", "NuGen Insensitive"), each = 3)
+tmp <- data.frame(list.celfiles(), type)
+names(tmp) <- c("Filenames","Samples")
+xtable(tmp)
+@
+
+The goal of this analysis is to see if the \textit{in vitro transcription} kits
+from Affymetrix and NuGen result in the same genes being called differentially
+expressed.
+
+The first step in my analysis was to make some quality control plots that can 
+be used to check the overall quality of the raw data.
+
+\begin{figure}
+\centering
+<<fig=true, width=6, height=6>>=
+plotHist(dat, list.celfiles())
+@ 
+\caption{Plot of perfect match (PM) chip densities}
+\label{fig:digest}
+\end{figure}
+
+Figure~\ref{fig:digest} shows the distribution of the PM probes for each chip. 
+One of the underlying assumptions for the normalization procedure I use is that 
+the PM probe data all come from the same distribution, with the only differences 
+being the location and scale. Basically, this means that we want the shape of the 
+curves to be very similar, and we want the curves to be fairly 
+close to each other. Since we have used two different \textit{IVT} kits, we have
+two different sets of curves. However, there are few differences within each 
+set.
+
+\begin{figure}
+\centering
+<<fig=true, width=6, height=6>>=
+plotDeg(dat, list.celfiles())
+@ 
+\caption{RNA degradation plot}
+\label{fig:deg}
+\end{figure}
+
+Figure~\ref{fig:deg} is designed to show differences between samples due to mRNA 
+degradation or from the \emph{in vitro} translation step. Any differences between 
+samples will be indicated by a different slope. Again, the only differences are 
+between the two sample sets. These two plots indicate that we should probably
+process each set of samples separately and then combine later.
+
+\begin{figure}
+\centering
+<<fig = true, width=6, height=6>>=
+boxplot(data.frame(exprs(eset1), exprs(eset2)))
+@ 
+\caption{Boxplot of Expression values from both sets}
+\label{fig:box}
+\end{figure}
+
+I calculated expression values for each gene using a robust multi-array average (RMA)
+\citet{Irizarry2003}.
+This is a modeling strategy that converts the PM probe values into an expression
+value for each gene. Note that the expression values are $log_2$ transformed data. These
+data can be converted to the natural scale by exponentiating (e.g., convert by using
+$2^x$, where \emph{x} is the expression value). Figure~\ref{fig:box} shows a boxplot
+of the expression values for each set of data. There does not appear to be any
+need to further normalize these data, so they were combined as is.
+ 
+As a final quality control step, I fit a principal components analysis (PCA) on the 
+expression values and then plotted the first two principal components (PCs). PCA can 
+be used to visualize the overall structure of high dimensional data; in this case, we 
+are using it to see if the replicated samples are grouping together, which would 
+indicate that the replicates are relatively similar in their gene expression profiles.
+
+\begin{figure}
+\centering
+<<fig=true, width=6, height=6>>=
+plotPCA(eset, groups = rep(1:4, each = 3), 
+        groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")))
+@ 
+\caption{PCA plot}
+\label{fig:pca}
+\end{figure}
+
+Figure~\ref{fig:pca} shows the PCA plot. 
+
+
+<<echo=false>>=
+num <- 
+val <- 
+f1 <- kOverA(num, val) ## filter s.t. at least 'num' samples are < 2^val
+flt <- filterfun(f1)
+index <- genefilter(exprs(eset), flt) 
+eset1 <- eset[index,]
+
+
+
+@ 
+
+Prior to making comparisons, I filtered the genes to remove any that do not appear to be
+differentially expressed in any samples, based on at least \Sexpr{num} samples having an 
+expression value of $2^\Sexpr{val}$ or greater. This resulted in a total of \Sexpr{sum(index)} 
+genes.
+
+
+\bibliography{Statistical_analysis}
+\end{document}
