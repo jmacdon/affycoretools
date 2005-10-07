@@ -92,7 +92,7 @@ are of high enough quality to proceed with the analysis. In this case we can jus
 do some quality control plots and compute expression measures using \Rfunction{affystart}.
 
 <<>>=
-setwd(system.file("example", package = "affycoretools"))
+setwd(system.file("examples", package = "affycoretools"))
 options(width = 70)
 @ 
 
