@@ -8,8 +8,8 @@
 }
 \usage{
 affystart(..., filenames=NULL, groups = NULL, groupnames = NULL, plot =
-TRUE, pca = TRUE, plottype="pdf",  express = c("rma", "mas5", "gcrma"),
-addname = NULL, phenoData = new("phenoData"))
+TRUE, pca = TRUE, plottype="pdf",  squarepca = FALSE, express = c("rma",
+"mas5", "gcrma"), addname = NULL, phenoData = new("phenoData"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -27,6 +27,9 @@ addname = NULL, phenoData = new("phenoData"))
   \item{plot}{ Should density and degradation plots be made? Defaults to
     \code{TRUE}.}
   \item{pca}{ Should a PCA plot be made? Defaults to \code{TRUE}. }
+  \item{squarepca}{Should the y-axis of the PCA plot be made comparable
+    to the x-axis? This may aid in interpretation of the PCA
+    plot. Defaults to \code{FALSE}}
   \item{express}{ One of either rma, mas5, gcrma. Defaults to
     rma. Partial matching OK. }
   \item{addname}{ Used to append something to the name of the pca plot

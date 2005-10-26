@@ -7,6 +7,9 @@
 ##
 ##
 ##  Modified 6-9-05 to output the table
+##  Added hyperG2Affy 10-10-2005
+##   - This function takes GOIDs form hyperGtable and outputs
+##     a list giving the Affy IDs associated with each GOID
 ###########################################
 
 hyperGtable <- function(probids, lib, type="MF", pvalue=0.05,
@@ -35,3 +38,23 @@ hyperGtable <- function(probids, lib, type="MF", pvalue=0.05,
   if(save)
     out
 }
+
+hyperG2Affy <- function(probids, lib, type="MF", pvalue=0.05,
+                        min.count=10){
+  require("GOstats", quietly = TRUE) || stop("The GOstats package is required")
+  require(lib, quietly = TRUE, character.only = TRUE) || stop(paste("The ", lib, " package is required"))
+  lls <- getLL(probids, lib)
+  lls <- unique(lls)
+  lls <- lls[!is.na(lls)]
+  tmp <- GOHyperG(lls, lib, type)
+  index <- tmp$pvalues < pvalue & tmp$goCounts > min.count
+  wh <- mget(names(tmp$pvalues[index]), GOTERM)
+  tmp.terms <- sapply(wh, Term)
+  index2 <- match(names(tmp.terms), names(tmp$go2Affy))
+  out <- lapply(tmp$go2Affy[index2], function(x) x[x %in% probids])
+  names(out) <- names(tmp.terms)
+  out
+}
+ 
+  
+  

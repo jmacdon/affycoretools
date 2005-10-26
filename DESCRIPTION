@@ -8,6 +8,7 @@ Description: Various wrapper functions that have been written to
 	might see.
 Maintainer: James W. MacDonald <jmacdon@med.umich.edu>
 License: LLGPL version 2 or greater
-Depends: affy, limma, annaffy, GOstats
+Depends: affy, limma, GOstats
+Imports: annaffy
 Suggests: hgfocus, hgfocuscdf
 biocViews: ReportWriting, Microarray, OneChannel, Preprocessing

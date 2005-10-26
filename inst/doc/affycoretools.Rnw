@@ -33,6 +33,8 @@
 
 \maketitle
 
+\SweaveOpts{ prefix.string= ../examples/affycoretools}
+
 \section{Overview}
 
 This package is made up of various 'wrapper' functions that I use 
@@ -136,6 +138,7 @@ plotDeg(dat, list.celfiles())
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
+pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
 plotPCA(eset, groups = rep(1:4, each = 3), 
         groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")))
 @ 
@@ -174,7 +177,7 @@ similarity in overall expression patterns. It may be difficult however to determ
 how closely samples are grouping -- for instance, the NuGen samples appear to be quite well separated
 on the $y$-axis. To determine how meaningful this separation is, we need a \Robject{screeplot}.
 
-Figure~ref{fig:scree} shows the \Robject{screeplot} for this PCA. Each bar shows how much of the 
+Figure~\ref{fig:scree} shows the \Robject{screeplot} for this PCA. Each bar shows how much of the 
 overall variance is captured by each principal component. Here we can see that the first PC captures
 the vast majority of the variance, which indicates that the separation of the samples on the $y$-axis
 (the second PC) is actually quite small, so the samples are grouping fairly tightly.
@@ -229,6 +232,8 @@ dimnames(contrasts) <-  list(ugrps, c(paste(ugrps[1], ugrps[2], sep = " - "),
 fit <- lmFit(eset, design)
 fit2 <- contrasts.fit(fit, contrasts)
 fit2 <- eBayes(fit2)
+design
+contrasts
 @
 
 Once we have fit the model and extracted contrasts of interest, the next step is to 
@@ -251,10 +256,10 @@ vc <- vennCounts2(rslt, method = "same")
 vennDiagram(vc, cex = 0.8)
 @ 
 
-\begin{figure[!htbp]}
+\begin{figure}
 \centering
 <<fig = true, width = 6, height = 6, echo = false>>=
-vennDiagram(vc, cex = 0.8)
+vennDiagram(vc, cex = 0.6)
 @ 
 \caption{Venn Diagram}
 \label{fig:venn}

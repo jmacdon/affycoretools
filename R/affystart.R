@@ -12,7 +12,7 @@
 
 
 affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
-                      plot=TRUE, pca=TRUE,  plottype="pdf",
+                      plot=TRUE, pca=TRUE, squarepca = FALSE, plottype="pdf",
                       express=c("rma", "mas5", "gcrma"), addname=NULL,
                       phenoData = new("phenoData")){
   require(affy, quietly=TRUE)
@@ -20,38 +20,6 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
     filenames <- list.files(pattern="\\.[cC][eE][lL]$")
   dat <- read.affybatch(filenames = filenames, phenoData = phenoData)
   filenames <- sub("\\.[cC][eE][lL]$", "", filenames)
-  
-  
-  ##Plots
-  
-  if(plot){
-    plotHist(dat, filenames)
-    saved.hist <- recordPlot()
-    plotDeg(dat, filenames)
-    saved.deg <- recordPlot()
-    meth <- c("pdf", "postscript", "jpeg", "bmp", "png")
-    if(plottype %in% meth){
-      method <- get(plottype)
-      ## set height and width so plots look reasonable
-      if(plottype %in% meth[1:2]) height <- width <- 7.5
-      if(plottype %in% meth[3:5]) height <- width <- 700
-      ## Get correct extension
-      if(plottype == "postscript") plottype <- "ps"
-      if(plottype == "jpeg") plottype <- "jpg"
-      method(paste("Density plot", plottype, sep = "."),
-             height = height, width = width, ...)
-      replayPlot(saved.hist)
-      dev.off()
-      method(paste("Digestion plot", plottype, sep = "."),
-             height = height, width = width, ...)
-      replayPlot(saved.deg)
-      dev.off()
-    }else stop("Currently this function only supports outputting\n",
-               "pdf, postscript, jpeg, bmp and png files.\n", call. = FALSE)
-  }
-     
-  
-  
   
   express <- match.arg(express, c("rma","mas5","gcrma"))
   if(express=="rma"){
@@ -88,25 +56,43 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
       write.table(out.dat, paste("Expression values", paste(" ", addname), ".txt",  sep=""), sep="\t", quote=FALSE, col.names=NA)
   }
 
-  if(pca){
-    plotPCA(eset, groups, groupnames)
-    saved.pca <- recordPlot()
+   ##Plots
+  
+  if(plot){
+    plotHist(dat, filenames)
+    saved.hist <- recordPlot()
+    plotDeg(dat, filenames)
+    saved.deg <- recordPlot()
+    if(pca){
+      plotPCA(eset, groups, groupnames, squarepca = squarepca)
+      saved.pca <- recordPlot()
+    }
     meth <- c("pdf", "postscript", "jpeg", "bmp", "png")
     if(plottype %in% meth){
       method <- get(plottype)
-      ## set height and width
+      ## set height and width so plots look reasonable
       if(plottype %in% meth[1:2]) height <- width <- 7.5
       if(plottype %in% meth[3:5]) height <- width <- 700
-      ## Get correct extensions
+      ## Get correct extension
       if(plottype == "postscript") plottype <- "ps"
       if(plottype == "jpeg") plottype <- "jpg"
-      method(paste("PCA plot", plottype, sep = "."),
+      method(paste("Density plot", plottype, sep = "."),
              height = height, width = width, ...)
-      replayPlot(saved.pca)
+      replayPlot(saved.hist)
       dev.off()
+      method(paste("Digestion plot", plottype, sep = "."),
+             height = height, width = width, ...)
+      replayPlot(saved.deg)
+      dev.off()
+      if(pca){
+        method(paste("PCA plot", plottype, sep = "."),
+               height = height, width = width, ...)
+        replayPlot(saved.pca)
+        dev.off()
+      }
     }else stop("Currently this function only supports outputting\n",
                "pdf, postscript, jpeg, bmp and png files.\n", call. = FALSE)
-  } 
+  }
   return(eset)
 }
 
@@ -172,15 +158,22 @@ plotDeg <- function(dat, filenames){
 }
 
 plotPCA <- function(eset, groups, groupnames, addtext = NULL, x.coord = NULL, y.coord = NULL,
-                    screeplot = FALSE){
+                    screeplot = FALSE, squarepca = FALSE, ylim = NULL){
   pca <- prcomp(t(exprs(eset)))
   if(screeplot){
     plot(pca, main = "Screeplot")
   }else{
+    if(squarepca){
+      plot(pca$x[,1:2], type = "n")
+      ylim <- (par("usr")[2] - par("usr")[1])/2
+      ylim <- c(-ylim, ylim)
+    }
     if(!is.null(groups)){
-      plot(pca$x[,1:2], pch=groups, col=groups, ylab="PC2", xlab="PC1", main="Principal Components Plot")
+      plot(pca$x[,1:2], pch=groups, col=groups, ylab="PC2", xlab="PC1",
+           main="Principal Components Plot", ylim = ylim)
     }else{
-      plot(pca$x[,1:2], pch=1:length(filenames), col=1:length(filenames), ylab="PC2", xlab="PC1", main="Principal Components Plot")
+      plot(pca$x[,1:2], pch=1:length(filenames), col=1:length(filenames),
+           ylab="PC2", xlab="PC1", main="Principal Components Plot", ylim = ylim)
     }
     if(is.null(addtext)){
       pca.legend(pca, groupnames, groups, x.coord = x.coord, y.coord = y.coord)

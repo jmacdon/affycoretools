@@ -39,22 +39,55 @@ intNames <- function(x){
 }
 
 makeIndices <- function(x, method = "same"){
-  method <- match.arg(method, c("same", "up", "down", "both"))
+  method <- match.arg(method, c("same", "up", "down", "both", "sameup", "samedown"))
   indices <- list()
-  x <- sign(switch(method, both = abs(x), up = x > 0, down = x < 0, same = x))
+  x <- sign(switch(method, both = abs(x), up = x > 0, down = x < 0, same = x,
+                   sameup = x, samedown = x))
   if(ncol(x) == 2){
-    indices[[1]] <- x[,1] == 1 & x[,2] == 0
-    indices[[2]] <- x[,1] == 0 & x[,2] == 1
-    indices[[3]] <- rowSums(x) == 2
+    if(method != "sameup" && method != "samedown"){
+      indices[[1]] <- abs(x[,1]) == 1 & x[,2] == 0
+      indices[[2]] <- x[,1] == 0 & abs(x[,2]) == 1
+      indices[[3]] <- abs(rowSums(x)) == 2
+    }
+    if(method == "sameup"){
+      indices[[1]] <- x[,1] == 1 & x[,2] == 0
+      indices[[2]] <- x[,1] == 0 & x[,2] == 1
+      indices[[3]] <- rowSums(x) == 2
+    }
+    if(method == "samedown"){
+      indices[[1]] <- x[,1] == -1 & x[,2] == 0
+      indices[[2]] <- x[,1] == 0 & x[,2] == -1
+      indices[[3]] <- rowSums(x) == -2
+    }
   }
   if(ncol(x) == 3){
-    indices[[1]] <- x[,1] == 1 & x[,2] == 0 & x[,3] == 0
-    indices[[2]] <- x[,1] == 0 & x[,2] == 1 & x[,3] == 0
-    indices[[3]] <- x[,1] == 0 & x[,2] == 0 & x[,3] == 1
-    indices[[4]] <- abs(rowSums(x[,1:2])) == 2 & x[,3] == 0
-    indices[[5]] <- abs(rowSums(x[,c(1,3)])) == 2 & x[,2] == 0
-    indices[[6]] <- abs(rowSums(x[,2:3])) == 2 & x[,1] == 0
-    indices[[7]] <- abs(rowSums(x)) == 3
+    if(method != "sameup" && method != "samedown"){
+      indices[[1]] <- abs(x[,1]) == 1 & x[,2] == 0 & x[,3] == 0
+      indices[[2]] <- x[,1] == 0 & abs(x[,2]) == 1 & x[,3] == 0
+      indices[[3]] <- x[,1] == 0 & x[,2] == 0 & abs(x[,3]) == 1
+      indices[[4]] <- abs(rowSums(x[,1:2])) == 2 & x[,3] == 0
+      indices[[5]] <- abs(rowSums(x[,c(1,3)])) == 2 & x[,2] == 0
+      indices[[6]] <- abs(rowSums(x[,2:3])) == 2 & x[,1] == 0
+      indices[[7]] <- abs(rowSums(x)) == 3
+    }
+    if(method == "sameup"){
+      indices[[1]] <- x[,1] == 1 & x[,2] == 0 & x[,3] == 0
+      indices[[2]] <- x[,1] == 0 & x[,2] == 1 & x[,3] == 0
+      indices[[3]] <- x[,1] == 0 & x[,2] == 0 & x[,3] == 1
+      indices[[4]] <- rowSums(x[,1:2]) == 2 & x[,3] == 0
+      indices[[5]] <- rowSums(x[,c(1,3)]) == 2 & x[,2] == 0
+      indices[[6]] <- rowSums(x[,2:3]) == 2 & x[,1] == 0
+      indices[[7]] <- rowSums(x) == 3
+    }
+    if(method == "samedown"){
+      indices[[1]] <- x[,1] == -1 & x[,2] == 0 & x[,3] == 0
+      indices[[2]] <- x[,1] == 0 & x[,2] == -1 & x[,3] == 0
+      indices[[3]] <- x[,1] == 0 & x[,2] == 0 & x[,3] == -1
+      indices[[4]] <- rowSums(x[,1:2]) == -2 & x[,3] == 0
+      indices[[5]] <- rowSums(x[,c(1,3)]) == -2 & x[,2] == 0
+      indices[[6]] <- rowSums(x[,2:3]) == -2 & x[,1] == 0
+      indices[[7]] <- rowSums(x) == -3
+    }
   }
   indices
 }
