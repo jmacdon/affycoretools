@@ -15,5 +15,5 @@ getIndex(comps, groups)
 }
 
 
-\author{James W. MacDonald }
+\author{James W. MacDonald <jmacdon@med.umich.edu> }
 \keyword{ internal }% __ONLY ONE__ keyword per line

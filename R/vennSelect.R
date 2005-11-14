@@ -94,11 +94,9 @@ makeIndices <- function(x, method = "same"){
       
 
 getOrd <- function(x, design){
-  ## assumption here is that the contrasts are of the form x - y
-  tmp <- unique(unlist(strsplit(colnames(x), " - ")))
   ord <- vector()
-  for(i in seq(along = tmp))
-    ord <- c(ord, which(design[,tmp[i]] == 1))
+  for(i in seq(along = colnames(design)))
+    ord <- c(ord, which(design[,i] == 1))
   ord
 }
     

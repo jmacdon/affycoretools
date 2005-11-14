@@ -22,5 +22,5 @@ plotma(x, y = NULL, main = "", log = TRUE, out = FALSE)
 \value{
  If \code{out} is \code{TRUE}, a matrix of M and A values is returned.
 }
-\author{ James W. MacDonald}
+\author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \keyword{hplot }% at least one, from doc/KEYWORDS

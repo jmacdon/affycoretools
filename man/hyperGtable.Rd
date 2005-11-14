@@ -47,7 +47,7 @@ save = FALSE, output = TRUE, filename = NULL)
   Number on chip - The number of genes on the Affymetrix chip with that
   particular GO term.
 }
-\author{ James W. MacDonald}
+\author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \examples{
 library("hgu95av2")
 probids <- ls(hgu95av2GENENAME)[1:10]

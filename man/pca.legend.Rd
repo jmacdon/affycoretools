@@ -5,7 +5,8 @@
 \description{
  This function places a legend in a PCA plot depending on which corner
  is available. If there are no available corners, user intervention will
- be required.
+ be required. This is an internal function and not intended to be called
+ by the end user.
 }
 \usage{
 pca.legend(pca, groupnames, groups, x.coord = NULL, y.coord = NULL,
@@ -27,6 +28,6 @@ saveup = FALSE)
  This function returns nothing. It is used only for the side effect of
  placing a legend in a plot.
 }
-\author{James W. MacDonald}
+\author{James W. MacDonald <jmacdon@med.umich.edu>}
 
 \keyword{internal }% at least one, from doc/KEYWORDS

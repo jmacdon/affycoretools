@@ -56,9 +56,9 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
   are experimentals). The \code{exprSet} is called eset.
 
   foldFilt(eset, groups=1:4, comps=list(c(2, 1), c(3, 1), c(4, 1)),
-  compnames=c("Expt1_vs_Cont","Expt2_vs_Cont","Expt3_vs_Cont"))
+  compnames=c("Expt1-Cont","Expt2-Cont","Expt3-Cont"))
 
-  This will output three HTML tables called 'Expt1_vs_Cont.html', etc.,
+  This will output three HTML tables called 'Expt1-Cont.html', etc.,
   each containing sorted genes that have two-fold or greater differences
   between the two samples.
   }

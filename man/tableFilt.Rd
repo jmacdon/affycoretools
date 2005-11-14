@@ -4,7 +4,8 @@
 \title{ Filter a topTable object}
 \description{
   This function is designed to filter genes from a \code{topTable}
-  object based on p-value and/or fold change.
+  object based on p-value and/or fold change. This is an internal
+  function and is not intended to be called by thte end user.
 }
 \usage{
 tableFilt(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
@@ -33,4 +34,4 @@ adjust = "fdr")
 
 \author{James W. MacDonald <jmacdon@med.umich.edu> }
 
-\keyword{manip }% __ONLY ONE__ keyword per line
+\keyword{internal }% __ONLY ONE__ keyword per line

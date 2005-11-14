@@ -8,7 +8,7 @@
 }
 \usage{
 affystart(..., filenames=NULL, groups = NULL, groupnames = NULL, plot =
-TRUE, pca = TRUE, plottype="pdf",  squarepca = FALSE, express = c("rma",
+TRUE, pca = TRUE,  squarepca = FALSE, plottype="pdf", express = c("rma",
 "mas5", "gcrma"), addname = NULL, phenoData = new("phenoData"))
 }
 %- maybe also 'usage' for other objects documented here.

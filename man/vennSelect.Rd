@@ -22,8 +22,8 @@ save = FALSE, ...)
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
     call to \code{\link[limma]{designTests}}.}
-  \item{method}{ One of "same", "both", "up", "down". See details for
-    more information.}
+  \item{method}{ One of "same", "both", "up", "down", "sameup", or
+    "samedown". See details for more information.}
   \item{indices.only}{Boolean - Should just the indices indicating genes
     that fulfill the criteria be output?}
   \item{save}{Boolean - If \code{TRUE}, output a count of genes that
@@ -31,7 +31,7 @@ save = FALSE, ...)
   \item{...}{Used to pass other arguments to \code{probes2table}, in
     particular, to change the argument to \code{anncols} 
     which controls the columns of hyperlinks to online databases (e.g.,
-    Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more information.
+    Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more information.}
 }
 \details{
   As mentioned in the description, this function has multiple
@@ -51,7 +51,9 @@ save = FALSE, ...)
   regardless of direction. Choosing "up" or "down" will select genes
   that are only differentially expressed in one direction. Choosing
   "same" will select genes that are differentially expressed in the same
-  direction.
+  direction. Choosing "sameup" or "samedown" will select genes that are
+  differentially expressed in the same direction as well as 'up' or
+  'down'.
 
   Note that this is different than sequentially choosing "up"
   and then "down". For instance, a gene that is upregulated in one
@@ -85,8 +87,8 @@ save = FALSE, ...)
  Normally called only for the side effect of producing HTML and text
  tables. However, setting indices.only to \code{TRUE} will output a list of \code{TRUE}
  and \code{FALSE} values (normally used by \code{vennCounts2}), and
- setting save to \code{TRUE} will output a vector of counts.}
-}
-\author{James W. MacDonald}
+ setting save to \code{TRUE} will output a vector of counts.
+ }
+\author{James W. MacDonald <jmacdon@med.umich.edu>}
 
 \keyword{ manip}% at least one, from doc/KEYWORDS

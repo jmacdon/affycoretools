@@ -158,7 +158,7 @@ plotDeg <- function(dat, filenames){
 }
 
 plotPCA <- function(eset, groups, groupnames, addtext = NULL, x.coord = NULL, y.coord = NULL,
-                    screeplot = FALSE, squarepca = FALSE, ylim = NULL){
+                    screeplot = FALSE, squarepca = FALSE){
   pca <- prcomp(t(exprs(eset)))
   if(screeplot){
     plot(pca, main = "Screeplot")
@@ -167,7 +167,7 @@ plotPCA <- function(eset, groups, groupnames, addtext = NULL, x.coord = NULL, y.
       plot(pca$x[,1:2], type = "n")
       ylim <- (par("usr")[2] - par("usr")[1])/2
       ylim <- c(-ylim, ylim)
-    }
+    }else ylim <- NULL
     if(!is.null(groups)){
       plot(pca$x[,1:2], pch=groups, col=groups, ylab="PC2", xlab="PC1",
            main="Principal Components Plot", ylim = ylim)

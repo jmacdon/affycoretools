@@ -21,5 +21,5 @@ getOrd(x, design)
  This function returns the correct order for the contrasts.
 }
 
-\author{James W. MacDonald}
+\author{James W. MacDonald <jmacdon@med.umich.edu>}
 \keyword{ internal }% __ONLY ONE__ keyword per line

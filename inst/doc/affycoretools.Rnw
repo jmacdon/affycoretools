@@ -33,7 +33,7 @@
 
 \maketitle
 
-\SweaveOpts{ prefix.string= ../examples/affycoretools}
+
 
 \section{Overview}
 
@@ -93,16 +93,16 @@ or you simply may want to do a quick quality check to ensure the raw data
 are of high enough quality to proceed with the analysis. In this case we can just
 do some quality control plots and compute expression measures using \Rfunction{affystart}.
 
-<<>>=
-setwd(system.file("examples", package = "affycoretools"))
+The \Rfunction{affystart} function may be used to compute \Rfunction{rma}, \Rfunction{gcrma}
+or \Rfunction{mas5} expression values. In the case of \Rfunction{mas5} expression values, the
+output (written to a text file in the working directory) includes the P/M/A calls
+and associated $p$-values.
+
+<<echo=false>>=
 options(width = 70)
 @ 
 
-The preceding code simply points R to the correct working directory and sets the 
-page width in R so the output fits on this page.
-
 <<eval = false, width = 6>>=
-library(affy)
 library(affycoretools)
 pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
 eset <- affystart(groups = rep(1:4, each = 3), 
@@ -110,17 +110,16 @@ eset <- affystart(groups = rep(1:4, each = 3),
                   phenoData = pd)
 @ 
 
-<<echo = false>>=
-library(affy)
+<<echo = false, results=hide>>=
 library(affycoretools)
-dat <- read.affybatch(filenames = list.celfiles())
+dat <- ReadAffy(celfile.path = "../examples")
 eset <- rma(dat)
 @ 
 
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
-plotHist(dat, list.celfiles())
+plotHist(dat, list.celfiles("../examples"))
 @ 
 \caption{Density plot}
 \label{fig:hist}
@@ -129,7 +128,7 @@ plotHist(dat, list.celfiles())
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
-plotDeg(dat, list.celfiles())
+plotDeg(dat, list.celfiles("../examples"))
 @ 
 \caption{RNA degradation plot}
 \label{fig:deg}
@@ -138,7 +137,7 @@ plotDeg(dat, list.celfiles())
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
-pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
+pd <- read.phenoData("../examples/pdata.txt", header = TRUE, row.names = 1)
 plotPCA(eset, groups = rep(1:4, each = 3), 
         groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")))
 @ 
@@ -193,12 +192,19 @@ available in the \Rpackage{affyPLM} package), the next step is to make compariso
 lists of differentially expressed genes. Because of the obvious differences between the
 two sample sets, it is probably preferable to compute expression values separately and
 then combine the data.
+<<echo=false>>=
+setwd("../examples")
+@ 
 
 <<>>=
 eset1 <- affystart(filenames = list.celfiles()[1:6], plot = FALSE, pca = FALSE)
 eset2 <- affystart(filenames = list.celfiles()[7:12], plot = FALSE, pca = FALSE)
 eset <- new("exprSet", exprs = cbind(exprs(eset1), exprs(eset2)), phenoData = pd,
             annotation = annotation(eset1))
+@
+
+<<echo=false>>= 
+setwd("../doc")
 @ 
 
 I do most of my analyses using the \Rpackage{limma} package. I find that this package is
@@ -215,12 +221,24 @@ comparison is to fit a linear model, compute contrasts of sensitive and insensit
 samples for each sample set, and then look for genes that are significant in 
 both contrasts.
 
+First, we filter the data, removing those genes that appear not to be expressed in
+either sample. The criterion here is at least three of the samples have to have 
+expression values greater than $2^6$. 
+
 <<>>=
 library(genefilter)
 f1 <- kOverA(3, 6)
 filt <- filterfun(f1)
 index <- genefilter(eset, filt)
 eset <- eset[index,]
+@ 
+
+After filtering out the 'unexpressed' genes, we fit a linear model and extract
+contrasts of interest. Explaining the following code is beyond the scope of this
+vignette -- for more information on fitting linear models using \Rpackage{limma}, 
+please see the ``LIMMA User's guide''.
+
+<<>>=
 library(limma)
 grps <- paste(pData(eset)[,1], pData(eset)[,2], sep = ".")
 design <- model.matrix(~ 0 + factor(grps))
@@ -232,6 +250,11 @@ dimnames(contrasts) <-  list(ugrps, c(paste(ugrps[1], ugrps[2], sep = " - "),
 fit <- lmFit(eset, design)
 fit2 <- contrasts.fit(fit, contrasts)
 fit2 <- eBayes(fit2)
+@ 
+
+Printing out the design and contrast matrices may be helpful:
+
+<<>>=
 design
 contrasts
 @
@@ -265,6 +288,8 @@ vennDiagram(vc, cex = 0.6)
 \label{fig:venn}
 \end{figure}
 
+Figure~\ref{fig:venn} shows the Venn diagram for this analysis.
+
 At this point we may wish to output lists of the genes that are unique to each
 comparison, as well as the genes that are common to both. To do this, we use
 the \Rfunction{vennSelect} function.
@@ -297,7 +322,8 @@ limma2annaffy(eset, fit2, design, annotation(eset), pfilt = 0.05)
 
 This will output two HTML tables containing all genes that are significant at an 
 adjusted $p$-value of 0.05 (default multiplicity correction using false discovery
-rate). The gene lists will be sorted in descending $p$-value order, so theoretically
+rate \citet{Benjamini:1995}). The gene lists will be sorted in descending $p$-value 
+order, so theoretically
 the more 'interesting' genes will be at the top of the list. We have the option
 of outputting text files as well. I generally do so, because it is not uncommon
 for my clients to want to open these files in a spreadsheet program and do some 
@@ -309,6 +335,10 @@ significant genes. The \Rpackage{GOstats} package is quite useful for this
 sort of analysis, but the output is not always as compact as one might like.
 My clients generally just want to see a list of GO terms that are enriched, as
 well as the $p$-values associated with each term.
+
+We can get the Affy probe IDs for the genes in the intersection of the 
+Venn diagram, and then use those IDs to look for GO terms that are 'enriched'
+in that set of of probes.
 
 <<eval = false>>=
 index1 <- vennSelect(x = rslt, indices.only = TRUE)[[3]]

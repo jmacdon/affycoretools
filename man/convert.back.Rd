@@ -18,5 +18,5 @@ convert.back(M, A)
 \value{
  A matrix of log2 R and G values.
 }
-\author{ James W. MacDonald}
+\author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \keyword{hplot }% at least one, from doc/KEYWORDS

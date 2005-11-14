@@ -34,7 +34,8 @@ foldFilt <-function(object, fold = 1, groups, comps, compnames,
       idx <- getIndex(comps[[i]], groups)
       if(html || text)
         probes2table(object[,idx], probes[[i]][ord], object@annotation,
-                     FC = FCs[[i]][ord], text = text, html = html, filename = compnames[i])
+                     otherdata = list("Fold Change" = FCs[[i]][ord]),
+                     text = text, html = html, filename = compnames[i])
     }
   }
   direct <- matrix(NA, nc = length(comps), nr = dim(gps)[1])

@@ -5,9 +5,12 @@
 ##  probes2table - convert a vector of affy probe IDs
 ##                 to HTML or text tables
 ##
+##  11-08-2005 Removed FC, tstat, and pval in lieu of
+##      a list (otherdata) containing arbitrary information to add to table
+##
 ####################################################
 
-probes2table <- function(eset, probids, lib, FC=NULL, tstat=NULL, pval=NULL,
+probes2table <- function(eset, probids, lib, otherdata = NULL,
                          anncols=aaf.handler()[c(1:3, 7:8, 10:13)], html=TRUE,
                          text=FALSE, express = TRUE, save=FALSE,  filename){
 
@@ -16,24 +19,12 @@ probes2table <- function(eset, probids, lib, FC=NULL, tstat=NULL, pval=NULL,
  
 
   anntable <- aafTableAnn(probids, lib, anncols)
-  if(!is.null(tstat))
-    testtable <- aafTable("t-statistic" = round(tstat, 2))
-  if(!is.null(pval)){
-    if(exists("testtable")){
-      testtable <- merge(testtable, aafTable("p-value" = round(pval,3)))
-    }else{
-      testtable <- aafTable("p-value" = round(pval, 3))
-    }
+
+  if(!is.null(otherdata)){
+    if(!is(otherdata, "list")) stop("otherdata must be a list!")
+    if(is.null(names(otherdata))) stop("otherdata must be a *named* list!")
+    testtable <- aafTable(items = otherdata)
   }
-  
-  if(!is.null(FC)){
-    if(exists("testtable")){
-      testtable <- merge(testtable, aafTable("Fold change" = round(FC,2)))
-    }else{
-      testtable <- aafTable("Fold change" = round(FC, 2))
-    }
-  }
-  
   if(exists("testtable"))
     anntable <- merge(anntable, testtable)
   

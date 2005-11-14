@@ -7,7 +7,7 @@
 }
 \usage{
 plotPCA(eset, groups, groupnames, addtext = NULL, x.coord = NULL,
-y.coord = NULL, screeplot = FALSE)
+y.coord = NULL, screeplot = FALSE, squarepca = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -23,12 +23,14 @@ y.coord = NULL, screeplot = FALSE)
     fails}
   \item{screeplot}{Boolean: Plot a \code{\link[stats]{screeplot}}
     instead of a PCA plot? Defaults to \code{FALSE}}
-  
+  \item{squarepca}{Should the y-axis of the PCA plot be made comparable
+    to the x-axis? This may aid in interpretation of the PCA
+    plot. Defaults to \code{FALSE}}
 }
 
 \value{
  This function returns nothing. It is called only for the side effect of
  producing a PCA plot or screeplot.
 }
-\author{ James W. MacDonald}
+\author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \keyword{hplot }% at least one, from doc/KEYWORDS

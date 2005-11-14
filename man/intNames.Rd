@@ -18,5 +18,5 @@ intNames(x)
 \value{
  A vector of names.
 }
-\author{James W. MacDonald}
+\author{James W. MacDonald <jmacdon@med.umich.edu>}
 \keyword{ internal}

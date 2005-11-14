@@ -6,7 +6,7 @@
  A function to convert a vector of Affy ids to an annotated HTML table.
 }
 \usage{
-probes2table(eset, probids, lib, FC = NULL, tstat = NULL, pval = NULL,
+probes2table(eset, probids, lib, otherdata = NULL,
  anncols = aaf.handler()[c(1:3, 7:8, 10:13)], html = TRUE, text = FALSE,
  express = TRUE, save = FALSE, filename)
 }
@@ -16,10 +16,11 @@ probes2table(eset, probids, lib, FC = NULL, tstat = NULL, pval = NULL,
   values.}
   \item{probids}{ A vector of probe ids. }
    \item{lib}{ An annotation package for the Affy chips used. }
-  \item{FC}{ Output fold changes in table? Defaults to \code{FALSE}. }
-  \item{tstat}{ Output t-statistics in table? Defaults to \code{FALSE}. }
-  \item{pval}{ Output (adjusted) p-values in table?
-    Defaults to \code{FALSE}. }
+   \item{otherdata}{A *named* list of additional information to include
+     in the resulting table. Examples would be t-statistics, p-values,
+     fold change, etc. Each list item should be a vector the same length
+     as the probids vector. The name associated with each list item will
+     be used as the column name in the resulting table.}
   \item{anncols}{ A vector of things to annotate,
     produced by a call to aaf.handler().}
   \item{html}{ Output data in HTML tables? Defaults to \code{TRUE}. }

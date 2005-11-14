@@ -30,7 +30,7 @@ vennCounts2(x, method = "same")
 \value{
   A \code{\link[limma]{VennCounts}} object.
 }
-\author{ James W. MacDonald}
+\author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \examples{
 tstat <- matrix(rt(300,df=10),100,3)
 tstat[1:33,] <- tstat[1:33,]+2
