@@ -10,6 +10,10 @@
 ##  Added hyperG2Affy 10-10-2005
 ##   - This function takes GOIDs form hyperGtable and outputs
 ##     a list giving the Affy IDs associated with each GOID
+##
+##  Added hyperG2annaffy 12-12-05
+##    -This function takes the output of hyperGtable and outputs
+##     HTML tables from the Affy IDs associated with each GOID
 ###########################################
 
 hyperGtable <- function(probids, lib, type="MF", pvalue=0.05,
@@ -57,4 +61,24 @@ hyperG2Affy <- function(probids, lib, type="MF", pvalue=0.05,
 }
  
   
+hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp = 1,
+                           type="MF", pvalue = 0.05, min.count = 10){
+  tab <- hyperGtable(probids = probids, lib = lib, type = type, pvalue = pvalue,
+                     min.count = min.count, save = TRUE, output = FALSE)
+  if(!is.null(subset)) tab <- tab[subset,]
+  prbs <- vector("list", dim(tab)[1])
+  for(i in seq(along = prbs)) 
+    prbs[[i]] <- probids[probids %in% get(as.character(tab[i,1]), 
+                                          get(paste(lib, "GO2ALLPROBES", sep = "")))]
+  for(i in seq(along = prbs)){
+    class(prbs[[i]]) <- "character"
+    index <- geneNames(eset) %in% prbs[[i]]
+    ord <- order(abs(fit$t)[index], decreasing = TRUE)
+    otherdata <- list("t-statistic" = round(fit$t[index][ord], 2),
+                      "p-value" = round(p.adjust(fit$p.value, "fdr")[index][ord], 3),
+                      "Fold Change" = round(fit$coef[index][ord],2))
+    probes2table(eset, prbs[[i]][ord], annotation(eset), otherdata = otherdata,
+                 filename = paste(as.character(tab[i,2]), "genes", sep=" "))
+  }
+}
   
