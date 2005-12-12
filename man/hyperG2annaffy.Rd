@@ -46,7 +46,7 @@ pvalue = 0.05, min.count = 10)
  interest, one may use the \code{subset} argument to select only
  particular rows. In addition, if the relevant t-statistics, p-values
  and fold changes are of interest, one can also use the \code{fit}
- argument to point to an \code{link[limma]{lmFit}} object that contains
+ argument to point to an \code{\link[limma]{lmFit}} object that contains
  these data, as well as the \code{comp} argument to indicate which
  parameter or contrast to use. Note that the \code{comp} argument
  defaults to 1, so the first parameter or contrast will be extracted by default.
