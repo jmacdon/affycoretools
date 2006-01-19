@@ -73,12 +73,17 @@ hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp =
   for(i in seq(along = prbs)){
     class(prbs[[i]]) <- "character"
     index <- geneNames(eset) %in% prbs[[i]]
-    ord <- order(abs(fit$t)[index], decreasing = TRUE)
-    otherdata <- list("t-statistic" = round(fit$t[index][ord], 2),
-                      "p-value" = round(p.adjust(fit$p.value, "fdr")[index][ord], 3),
-                      "Fold Change" = round(fit$coef[index][ord],2))
-    probes2table(eset, prbs[[i]][ord], annotation(eset), otherdata = otherdata,
-                 filename = paste(as.character(tab[i,2]), "genes", sep=" "))
+    if(!is.null(fit)){
+      ord <- order(abs(fit$t)[index], decreasing = TRUE)
+      otherdata <- list("t-statistic" = round(fit$t[index][ord], 2),
+                        "p-value" = round(p.adjust(fit$p.value, "fdr")[index][ord], 3),
+                        "Fold Change" = round(fit$coef[index][ord],2))
+      probes2table(eset, prbs[[i]][ord], annotation(eset), otherdata = otherdata,
+                   filename = paste(as.character(tab[i,2]), "genes", sep=" "))
+    }else{
+      probes2table(eset, prbs[[i]], annotation(eset),
+                   filename = paste(as.character(tab[i,2]), "genes", sep = " "))
+    }
   }
 }
   

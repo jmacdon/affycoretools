@@ -35,9 +35,9 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
 }
 
 \value{
-  Returns a vector containing the number of significant genes in each
-  comparison. The function is mainly called for the side effect of
-  outputting HTML or text files containing annotated 'significant' gene lists.
+  Returns a list; see above for the elements of the list. This function
+  is mainly called for the side effect of outputting HTML or text files containing
+  annotated 'significant' gene lists.
 }
 \details{
   This function is useful for outputting annotated gene lists for
