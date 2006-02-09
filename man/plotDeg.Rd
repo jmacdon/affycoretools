@@ -8,8 +8,8 @@
  placement of legends.
 }
 \usage{
-plotDeg(dat, filenames)
-plotHist(dat, filenames)
+plotDeg(dat, filenames = NULL)
+plotHist(dat, filenames = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,7 +17,9 @@ plotHist(dat, filenames)
     \code{plotHist}, a matrix (e.g., from a call to
     \code{read.probematrix}. Note that \code{plotDeg} requires an
     \code{AffyBatch} object to work correctly. }
-  \item{filenames}{A vector of .cel filenames. Usually built using \code{list.celfiles()} }
+  \item{filenames}{Filenames that will be used in the legend of the
+    resulting plot. If \code{NULL} (the default), these names will be
+    extracted from the sampleNames slot of the \code{AffyBatch} object.}
 }
 \value{
 These functions are called only for the side effect of making the
@@ -28,7 +30,7 @@ plots. Nothing else is returned.
 \examples{
 library(affy)
 data(affybatch.example)
-plotDeg(affybatch.example, sampleNames(affybatch.example))
-plotHist(affybatch.example, sampleNames(affybatch.example))
+plotDeg(affybatch.example)
+plotHist(affybatch.example)
 }
 \keyword{ hplot }% at least one, from doc/KEYWORDS

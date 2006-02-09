@@ -1,13 +1,13 @@
 	IVT	Sensitivity
-sample1.CEL	Affy	Sensitive
-sample2.CEL	Affy	Sensitive
-sample3.CEL	Affy	Sensitive
-sample4.CEL	Affy	Insensitive
-sample5.CEL	Affy	Insensitive
-sample6.CEL	Affy	Insensitive
-sample7.CEL	NuGen	Sensitive
-sample8.CEL	NuGen	Sensitive
-sample9.CEL	NuGen	Sensitive
+sample01.CEL	Affy	Sensitive
+sample02.CEL	Affy	Sensitive
+sample03.CEL	Affy	Sensitive
+sample04.CEL	Affy	Insensitive
+sample05.CEL	Affy	Insensitive
+sample06.CEL	Affy	Insensitive
+sample07.CEL	NuGen	Sensitive
+sample08.CEL	NuGen	Sensitive
+sample09.CEL	NuGen	Sensitive
 sample10.CEL	NuGen	Insensitive
 sample11.CEL	NuGen	Insensitive
 sample12.CEL	NuGen	Insensitive

@@ -96,8 +96,9 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
   return(eset)
 }
 
-plotHist <- function(dat, filenames)
+plotHist <- function(dat, filenames = NULL)
 {
+  if(is.null(filenames)) filenames <- sampleNames(dat)
   cl <- make.cl(filenames)
   if(length(filenames) <= 8){
     if(is(dat, "AffyBatch"))
@@ -136,7 +137,8 @@ plotHist <- function(dat, filenames)
   }
 }
 
-plotDeg <- function(dat, filenames){
+plotDeg <- function(dat, filenames = NULL){
+  if(is.null(filenames)) filenames <- sampleNames(dat)
   plotAffyRNAdeg(AffyRNAdeg(dat), col=1:length(filenames))
   y.ax <- legend(0, par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
                  legend=filenames, lty=1, lwd=2, col=1:length(filenames), plot=FALSE)$rect$h
