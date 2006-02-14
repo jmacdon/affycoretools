@@ -8,7 +8,7 @@
 }
 \usage{
 foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
-= TRUE, html = TRUE)
+= TRUE, html = TRUE, filterfun = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -32,6 +32,9 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
     Vennn diagrams using the \code{vennDiagram} from the limma package.}
   \item{html}{Boolean - if \code{TRUE}, output HTML tables}
   \item{text}{Boolean - if \code{TRUE}, output text tables}
+  \item{filterfun}{A filtering function to be by
+    \code{\link[genefilter]{genefilter}} to filter the data using
+    additional criteria. See details for more information}
 }
 
 \value{
@@ -55,8 +58,15 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
   of the last three (the first chip is the control, and the other three
   are experimentals). The \code{exprSet} is called eset.
 
+  Additionally, say we don't want any genes called significant if both
+  of the samples have very low expression. We can set up a filter using
+  the \pkg{genefilter} package.
+
+  f1 <- kOverA(1,6)
+  filt <- filterfun(f1)
+
   foldFilt(eset, groups=1:4, comps=list(c(2, 1), c(3, 1), c(4, 1)),
-  compnames=c("Expt1-Cont","Expt2-Cont","Expt3-Cont"))
+  compnames=c("Expt1-Cont","Expt2-Cont","Expt3-Cont"), filterfun = filt)
 
   This will output three HTML tables called 'Expt1-Cont.html', etc.,
   each containing sorted genes that have two-fold or greater differences
