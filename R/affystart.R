@@ -44,8 +44,10 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
     calls1 <- exprs(calls)
     calls2 <- round(se.exprs(calls), 2)
     out.dat <- data.frame(cbind(out[,1],calls1[,1], calls2[,1]))
-    for (i in 2:dim(out)[2]){
-      out.dat <- data.frame(cbind(out.dat, out[,i], calls1[,i], calls2[,i]))
+    if(dim(out)[2] > 1){
+      for (i in 2:dim(out)[2]){
+        out.dat <- data.frame(cbind(out.dat, out[,i], calls1[,i], calls2[,i]))
+      }
     }
     nams <- NULL
     for(i in seq(along=filenames)) nams <- c(nams, filenames[i], "Call", "p-value")
