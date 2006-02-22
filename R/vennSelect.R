@@ -126,7 +126,7 @@ vennSelect <- function(eset, fit, design, x, method = "same",
     return(indices)
   ## ugly hack to get some ordering for genes
   if(ncontrasts == 2)
-    cont.ind <- c(1,1,2)
+    cont.ind <- c(1,2,1)
   else
     cont.ind <- c(1,2,3,1,1,2,1)
   ord <- getOrd(x, design)
