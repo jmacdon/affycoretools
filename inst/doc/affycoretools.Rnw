@@ -275,7 +275,7 @@ with \Rfunarg{method} = ``same'', which will require the same direction as well.
 
 <<>>=
 rslt <- decideTests(fit2)
-vc <- vennCounts2(rslt, method = "same")
+vc <- vennCounts2(fit2, rslt, method = "same")
 vennDiagram(vc, cex = 0.8)
 @ 
 

@@ -9,7 +9,7 @@
 ################################################
 
 
-vennCounts2 <- function(x, method = "same"
+vennCounts2 <- function(fit, x, method = "same", foldFilt = 0
                        ){
   ## x is a TestResults object from a call to
   ## decideTests()
@@ -17,7 +17,8 @@ vennCounts2 <- function(x, method = "same"
   ## that they all go the same direction
   require("limma", quietly = TRUE)
   tmp <- vennCounts(x)
-  newcnts <- sapply(vennSelect(x = x, method = method, indices.only = TRUE), sum)
+  newcnts <- sapply(vennSelect(fit = fit, x = x, method = method,
+                               foldFilt = foldFilt, indices.only = TRUE), sum)
   all <- sum(tmp[,dim(tmp)[2]])
   if(dim(x)[2] == 2)
     ord <- c(2, 1, 3)
@@ -101,7 +102,7 @@ getOrd <- function(x, design){
 }
     
   
-vennSelect <- function(eset, fit, design, x, method = "same",
+vennSelect <- function(eset, fit, design, x, method = "same", foldFilt = 0,
                        indices.only = FALSE, save = FALSE, ...){
   ## eset is exprSet containing data used for comparisons
   ## design is a design matrix from limma
@@ -109,7 +110,8 @@ vennSelect <- function(eset, fit, design, x, method = "same",
   ## output is a list containing the probe IDs of genes from each comparison
 
   require("limma", quietly = TRUE)
-  x <- as.matrix(x)
+  idx <- abs(fit$coefficients) > foldFilt
+  x <- as.matrix(x) * idx
   ncontrasts <- ncol(x)
   if(ncontrasts < 2 || ncontrasts > 3)
     stop("This function only works for two or three comparisons at a time.\n",

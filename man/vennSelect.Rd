@@ -11,8 +11,8 @@
   in the same direction.
 }
 \usage{
-vennSelect(eset, fit, design, x, method = "same", indices.only = FALSE,
-save = FALSE, ...)
+vennSelect(eset, fit, design, x, method = "same", foldFilt = 0,
+indices.only = FALSE, save = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,6 +24,8 @@ save = FALSE, ...)
     call to \code{\link[limma]{designTests}}.}
   \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
+  \item{foldFilt}{A fold change to use for filtering. Default is zero,
+    meaning no filtering will be done.}
   \item{indices.only}{Boolean - Should just the indices indicating genes
     that fulfill the criteria be output?}
   \item{save}{Boolean - If \code{TRUE}, output a count of genes that
