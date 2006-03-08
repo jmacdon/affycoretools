@@ -78,7 +78,10 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
         if(!is.null(addname))
           filename <- paste(filename, addname, sep=" ")
         ## Remove illegal characters from filename
-        filename <- gsub("/[1-9]", "", filename)
+        if(length(grep("[/|\\|?|*|:|<|>|\"|\|]", filename)) > 0)
+          warning(paste("Some illegal characters have been removed from the filename",
+                        filename, sep = " "), call. = FALSE)
+        filename <- gsub("[/|\\|?|*|:|<|>|\"|\|]", "", filename)
         
         ## Make aafTable object
         probeids <- geneNames(eset)[index]
@@ -87,10 +90,10 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
           testtable <- aafTable("t-statistic" = round(tables[[i]][,"t"],2))
         if(pval){
           if(!exists("testtable")){
-            testtable <- aafTable("p-value" = round(tables[[i]][,"adj.P.value"],3))
+            testtable <- aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3))
           }else{
             testtable <- merge(testtable,
-                               aafTable("p-value" = round(tables[[i]][,"adj.P.value"],3)))
+                               aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3)))
           }
         }
         if(FC){
@@ -155,8 +158,11 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
       if(!is.null(addname))
         filename <- paste(filename, addname, sep=" ")
       ## Remove illegal characters from filename
-      filename <- gsub("/[1-9]", "", filename)
-      
+      if(length(grep("[/|\\|?|*|:|<|>|\"|\|]", filename)) > 0)
+        warning(paste("Some illegal characters have been removed from the filename",
+                      filename, sep = " "), call. = FALSE)
+      filename <- gsub("[/|\\|?|*|:|<|>|\"|\|]", "", filename)
+           
       ## Make aafTable object
       probeids <- geneNames(eset)[index]
       anntable <- aafTableAnn(probeids, lib, anncols)
@@ -164,10 +170,10 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
         testtable <- aafTable("t-statistic" = round(tables[[i]][,"t"],2))
       if(pval){
         if(!exists("testtable")){
-            testtable <- aafTable("p-value" = round(tables[[i]][,"adj.P.value"],3))
+            testtable <- aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3))
           }else{
             testtable <- merge(testtable,
-                               aafTable("p-value" = round(tables[[i]][,"adj.P.value"],3)))
+                               aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3)))
           }
       }
       if(FC){
@@ -207,7 +213,7 @@ tableFilt <- function(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
   }
 ## Filter on p-value
   if(!is.null(pfilt))
-    tab <- tab[tab[,"adj.P.Value"] < pfilt,]
+    tab <- tab[tab[,"adj.P.Val"] < pfilt,]
   ## Filter on fold change
   if(!is.null(fldfilt))
     tab <- tab[abs(tab[,"M"]) > fldfilt,]
