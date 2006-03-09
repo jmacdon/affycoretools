@@ -11,7 +11,7 @@
   in the same direction.
 }
 \usage{
-vennSelect(eset, fit, design, x, method = "same", foldFilt = 0,
+vennSelect(eset, fit, design, x, contrasts,  method = "same", foldFilt = 0,
 indices.only = FALSE, save = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -22,6 +22,8 @@ indices.only = FALSE, save = FALSE, ...)
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
     call to \code{\link[limma]{designTests}}.}
+  \item{contrasts}{A contrasts matrix, produced either by hand, or by a
+    call to \code{\link[limma]{makeContrasts}}}
   \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
   \item{foldFilt}{A fold change to use for filtering. Default is zero,
