@@ -94,15 +94,30 @@ makeIndices <- function(x, method = "same"){
 }
       
 
-getOrd <- function(x, design){
-  ord <- vector()
-  for(i in seq(along = colnames(design)))
-    ord <- c(ord, which(design[,i] == 1))
-  ord
+
+getCols <- function(design, contrasts){
+
+  ## A function to get the correct columns of the exprSet to output based
+  ## on the design and contrasts matrices
+  ncontrasts <- ncol(contrasts)
+  if(ncontrasts == 2)
+    ind <- list(1, 2, c(1,2))
+  else
+    ind <- list(1, 2, 3, c(1, 2), c(1, 3), c(2, 3), 1:3)
+  add <- function(x){
+    if(is.null(dim(x)) || dim(x)[2] < 3)
+      do.call("+", as.data.frame(x))
+    else
+      do.call(rowSums, list(x))
+   }
+  inds <- lapply(ind, function(x) as.logical(add(contrasts[,x])))
+  cols <- lapply(inds, function(x) as.logical(add(design[,x])))
+  cols
 }
     
+    
   
-vennSelect <- function(eset, fit, design, x, method = "same", foldFilt = 0,
+vennSelect <- function(eset, fit, design, x, contrasts,  method = "same", foldFilt = 0,
                        indices.only = FALSE, save = FALSE, ...){
   ## eset is exprSet containing data used for comparisons
   ## design is a design matrix from limma
@@ -131,13 +146,13 @@ vennSelect <- function(eset, fit, design, x, method = "same", foldFilt = 0,
     cont.ind <- c(1,2,1)
   else
     cont.ind <- c(1,2,3,1,1,2,1)
-  ord <- getOrd(x, design)
+  cols <- getCols(design, contrasts)
   for(i in seq(along = indices)){
     tmp <- geneNames(eset)[indices[[i]]]
     gn.ord <- order(abs(fit$coefficients[tmp, colnames(x)[cont.ind[i]]]), decreasing = TRUE)
     if(length(tmp) == 0) next
     else
-      probes2table(eset[,ord], tmp[gn.ord], annotation(eset), text = TRUE,
+      probes2table(eset[,cols[[i]]], tmp[gn.ord], annotation(eset), text = TRUE,
                    filename = name[i], ...)
   }
   if(save)

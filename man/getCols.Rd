@@ -8,7 +8,7 @@
  called by the end user
 }
 \usage{
-getOrd(design, contrasts)
+getCols(design, contrasts)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
