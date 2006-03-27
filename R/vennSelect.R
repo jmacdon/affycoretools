@@ -9,15 +9,16 @@
 ################################################
 
 
-vennCounts2 <- function(fit, x, method = "same", foldFilt = 0
+vennCounts2 <- function(eset, x, method = "same", foldFilt = NULL, fit = NULL
                        ){
+  ## eset is an exprSet containing expression values
   ## x is a TestResults object from a call to
   ## decideTests()
   ## output is the counts of genes where the requirement is
   ## that they all go the same direction
   require("limma", quietly = TRUE)
   tmp <- vennCounts(x)
-  newcnts <- sapply(vennSelect(fit = fit, x = x, method = method,
+  newcnts <- sapply(vennSelect(eset = eset, fit = fit, x = x, method = method,
                                foldFilt = foldFilt, indices.only = TRUE), sum)
   all <- sum(tmp[,dim(tmp)[2]])
   if(dim(x)[2] == 2)
@@ -117,16 +118,20 @@ getCols <- function(design, contrasts){
     
     
   
-vennSelect <- function(eset, fit, design, x, contrasts,  method = "same", foldFilt = 0,
-                       indices.only = FALSE, save = FALSE, ...){
+vennSelect <- function(eset, design, x, contrasts,  method = "same", foldFilt = NULL,
+                       fit = NULL, indices.only = FALSE, save = FALSE, ...){
   ## eset is exprSet containing data used for comparisons
   ## design is a design matrix from limma
   ## x is a TestResults object from a call to decideTests()
   ## output is a list containing the probe IDs of genes from each comparison
 
   require("limma", quietly = TRUE)
-  idx <- abs(fit$coefficients) > foldFilt
-  x <- as.matrix(x) * idx
+  if(!is.null(foldFilt) && is.null(fit))
+    stop("You need a MarrayLM object to filter on fold change.\n See ?vennSelect for more info.")
+  if(!is.null(foldFilt) && !is.null(fit)){
+    idx <- abs(fit$coefficients) > foldFilt
+    x <- as.matrix(x) * idx
+  }
   ncontrasts <- ncol(x)
   if(ncontrasts < 2 || ncontrasts > 3)
     stop("This function only works for two or three comparisons at a time.\n",

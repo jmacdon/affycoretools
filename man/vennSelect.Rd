@@ -11,13 +11,12 @@
   in the same direction.
 }
 \usage{
-vennSelect(eset, fit, design, x, contrasts,  method = "same", foldFilt = 0,
-indices.only = FALSE, save = FALSE, ...)
+vennSelect(eset, design, x, contrasts,  method = "same", foldFilt = NULL,
+fit = NULL, indices.only = FALSE, save = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{eset}{ A \code{\link[Biobase]{exprSet}} object.}
-  \item{fit}{An \code{\link[limma]{MArrayLM}} object, from a call to \code{\link[limma]{eBayes}}.}
   \item{design}{ A \code{design} matrix, usually from a call to
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
@@ -26,8 +25,12 @@ indices.only = FALSE, save = FALSE, ...)
     call to \code{\link[limma]{makeContrasts}}}
   \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
-  \item{foldFilt}{A fold change to use for filtering. Default is zero,
+  \item{foldFilt}{A fold change to use for filtering. Default is \code{NULL},
     meaning no filtering will be done.}
+   \item{fit}{An \code{\link[limma]{MArrayLM}} object, from a call to
+     \code{\link[limma]{eBayes}}. The default is \code{NULL}. This is
+     only required if \code{foldFilt} is not \code{NULL}, as the fold
+     change data are extracted from this object.}
   \item{indices.only}{Boolean - Should just the indices indicating genes
     that fulfill the criteria be output?}
   \item{save}{Boolean - If \code{TRUE}, output a count of genes that
