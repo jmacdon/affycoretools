@@ -168,8 +168,7 @@ plotPCA <- function(eset, groups, groupnames, addtext = NULL, x.coord = NULL, y.
     plot(pca, main = "Screeplot")
   }else{
     if(squarepca){
-      plot(pca$x[,1:2], type = "n")
-      ylim <- (par("usr")[2] - par("usr")[1])/2
+      ylim <- sum(range(pca$x[,1]))
       ylim <- c(-ylim, ylim)
     }else ylim <- NULL
     if(!is.null(groups)){

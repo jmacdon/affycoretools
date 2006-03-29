@@ -9,21 +9,14 @@
   expressed in the same direction.
 }
 \usage{
-vennCounts2(eset,  x, method = "same", foldFilt = NULL, fit = NULL)
+vennCounts2(x, method = "same")
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{An \code{\link[Biobase]{exprSet}} object.}
   \item{x}{ A \code{\link[limma]{TestResults}} object, produced by a
-    call to \code{\link[limma]{decideTests}}.}
+    call to \code{\link[limma]{decideTests}} or \code{foldFilt}.}
   \item{method}{ One of "same", "both", "up", "down". See details for
     more information.}
-  \item{foldFilt}{A fold change to use for filtering. Default is \code{NULL},
-    meaning no filtering will be done.}
-   \item{fit}{A \code{\link[limma]{MArrayLM}} object, produced by a call
-    to \code{\link[limma]{eBayes}}. Default is \code{NULL}. This is only
-  required if \code{foldFilt} is used - the fold change data is
-  extracted from the \code{\link[limma]{MArrayLM}} object.}
 }
 \details{
   The function \code{\link[limma]{vennCounts}} will return identical
@@ -42,7 +35,7 @@ vennCounts2(eset,  x, method = "same", foldFilt = NULL, fit = NULL)
 tstat <- matrix(rt(300,df=10),100,3)
 tstat[1:33,] <- tstat[1:33,]+2
 clas <- classifyTestsF(tstat,df=10,p.value=0.05)
-a <- vennCounts(clas)
+a <- vennCounts2(clas)
 print(a)
 vennDiagram(a)
 }

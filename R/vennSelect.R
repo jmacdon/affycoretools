@@ -9,17 +9,15 @@
 ################################################
 
 
-vennCounts2 <- function(eset, x, method = "same", foldFilt = NULL, fit = NULL
-                       ){
-  ## eset is an exprSet containing expression values
+vennCounts2 <- function(x, method = "same"){
+
   ## x is a TestResults object from a call to
   ## decideTests()
-  ## output is the counts of genes where the requirement is
-  ## that they all go the same direction
+  ## alternatively it can be the 'dirs' matrix from
+  ## a call to foldFilt()
   require("limma", quietly = TRUE)
   tmp <- vennCounts(x)
-  newcnts <- sapply(vennSelect(eset = eset, fit = fit, x = x, method = method,
-                               foldFilt = foldFilt, indices.only = TRUE), sum)
+  newcnts <- sapply(makeIndices(x, method), sum)
   all <- sum(tmp[,dim(tmp)[2]])
   if(dim(x)[2] == 2)
     ord <- c(2, 1, 3)
@@ -118,17 +116,15 @@ getCols <- function(design, contrasts){
     
     
   
-vennSelect <- function(eset, design, x, contrasts,  method = "same", foldFilt = NULL,
-                       fit = NULL, indices.only = FALSE, save = FALSE, ...){
+vennSelect <- function(eset, design, x, contrasts, fit, method = "same", foldFilt = NULL,
+                       save = FALSE, ...){
   ## eset is exprSet containing data used for comparisons
   ## design is a design matrix from limma
   ## x is a TestResults object from a call to decideTests()
   ## output is a list containing the probe IDs of genes from each comparison
 
   require("limma", quietly = TRUE)
-  if(!is.null(foldFilt) && is.null(fit))
-    stop("You need a MarrayLM object to filter on fold change.\n See ?vennSelect for more info.")
-  if(!is.null(foldFilt) && !is.null(fit)){
+  if(!is.null(foldFilt)){
     idx <- abs(fit$coefficients) > foldFilt
     x <- as.matrix(x) * idx
   }
@@ -144,8 +140,6 @@ vennSelect <- function(eset, design, x, contrasts,  method = "same", foldFilt = 
               paste("Genes in intersection of", intNames(x)),
               "Genes common to all comparisons")
   indices <- makeIndices(x, method = method)
-  if(indices.only)
-    return(indices)
   ## ugly hack to get some ordering for genes
   if(ncontrasts == 2)
     cont.ind <- c(1,2,1)

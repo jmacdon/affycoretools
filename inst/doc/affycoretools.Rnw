@@ -275,7 +275,7 @@ with \Rfunarg{method} = ``same'', which will require the same direction as well.
 
 <<>>=
 rslt <- decideTests(fit2)
-vc <- vennCounts2(fit2, rslt, method = "same")
+vc <- vennCounts2(rslt, method = "same")
 vennDiagram(vc, cex = 0.8)
 @ 
 
@@ -295,7 +295,7 @@ comparison, as well as the genes that are common to both. To do this, we use
 the \Rfunction{vennSelect} function.
 
 <<eval = false>>=
-vennSelect(eset, fit2, design, rslt)
+vennSelect(eset, design, rslt, contrasts, fit2)
 @ 
 
 This will output both HTML and text files containing the gene names, links to 
