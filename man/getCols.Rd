@@ -8,13 +8,13 @@
  called by the end user
 }
 \usage{
-getCols(design, contrasts)
+getCols(design, contrast)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{design}{A design matrix, usually produced by a call to
     \code{model.matrix}.}
-  \item{contrasts}{A contrasts matrix, either produced by hand or as a
+  \item{contrast}{A contrasts matrix, either produced by hand or as a
     result of a call to \code{\link[limma]{makeContrasts}}}
 }
 

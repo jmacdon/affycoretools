@@ -1,0 +1,461 @@
+#########################################
+##
+## copyright 2006 James W. MacDonald
+##
+## Functions to integrate limma and biomaRt
+##
+## 6-16-2006 Preliminary functions. Still too much
+##           hard coding on the biomaRt side.
+##
+##
+##
+## vennSelectBM - a function designed to take the output from a Venn diagram
+##                and output tables for each cell of the Venn diagram. This emulates
+##                the existing vennSelect() function, only using biomaRt for annotation data.
+##
+## limma2biomaRt - a function to emulate limma2annaffy, only using biomaRt for annotation
+##                 data.
+##
+## TODO: Right now the repositories are hard coded, so the links argument doesn't really
+##       work. Same is true for the table.head argument. Also need to figure out how to
+##       add in the statistics for vennSelect() and vennSelectBM().
+##
+##
+######################################################
+
+## A function to either list out the sort of annotation that can be used to make hyperlinks
+## if called with no arguments. Alternatively, it can be used to get the correct attribute
+## names to pass to getBM(), after ensuring that these attributes exist for the given species,
+## as well as getting the correct names to pass to htmlpage().
+
+linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
+  choices <- list("UniGene" = "unigene",
+                  "RefSeq" = "refseq_dna",
+                  "EntrezGene" = "entrezgene",
+                  "SwissProt" = "uniprot_swissprot_accession",
+                  "OMIM" = "adf_omim")
+  if(missing(mart))
+    return(names(choices))
+  if(!class(mart) == "Mart")
+    stop("The 'mart' argument must be a connection to a Biomart.")
+  if(missing(annot))
+    return(names(choices[unlist(choices) %in% listAttributes(mart)]))
+  else{
+    notchoice <- !annot %in% names(choices)
+    if(any(notchoice))
+      stop(paste("'",paste(annot[notchoice], collapse = " and "),
+                 "' is not something I can use to make a hyperlink.\nPlease use linksBM()",
+                 "to see a list of valid choices.", sep = ""), call. = FALSE)
+  }
+
+  ## check to see if the choices are available
+  tmp <- unlist(choices[annot])
+  tst <- tmp %in% listAttributes(mart)
+  if(any(!tst))
+    warning(paste("The following annotation sources are not available at this mart\n",
+                  "for this species and were not used:",
+                  paste(names(choices[annot][!tst]), collapse = ", ")), call. = FALSE)
+  tmp <- tmp[tst]
+  annot <- annot[tst]
+  ## get repositories for htmlpage
+  repository <- vector()
+  
+  for(i in tmp){
+    tmp2 <-  switch(i,
+                    unigene = "ug",
+                    refseq_dna = "gb",
+                    entrezgene = "en",
+                    uniprot_swissprot_accession = "sp",
+                    adf_omim = "omim")
+    repository <- c(repository, tmp2)
+  }
+  
+  if(affyid){
+    tmp <- c(ann.source, tmp)
+    annot <- c("Affymetrix ID", annot)
+    repository <- c("affy", repository)
+  }
+  
+  out <- list(names = annot, repository = repository, links = tmp)
+  out
+}
+
+getSymbol <- function(mart){
+  attributes <- listAttributes(mart)
+  symbol <- attributes[grep("_symbol", attributes)]
+  if(length(symbol) == 0){
+    symbol <- "nosymbolavailable"
+  }
+  symbol
+}
+
+  
+
+## A function to either list out the sort of annotation that is available, but not
+## 'hyperlinkable', or to get the correct attribute names to pass to getBM() and
+## htmlpage(). As with linksBM(), we also check to ensure a given attribute is
+## available for the given species.
+
+annBM <- function(mart, annot){
+  choices <- list("Symbol" = "nothingyet",
+                  "Description" = "description",
+                  "GO" = "go_description",
+                  "GOID" = "go",
+                  "Chromosome" = "chromosome_name",
+                  "ChromLoc" = "chromosome_location")
+  if(missing(mart))
+    return(names(choices))
+  if(!class(mart) == "Mart")
+    stop("The 'mart' argument must be a connection to a Biomart.")
+  if(missing(annot))
+    return(names(choices[unlist(choices) %in% listAttributes(mart)]))
+  else{
+    choices$Symbol <- getSymbol(mart)
+    notchoice <- !annot %in% names(choices)
+    if(any(notchoice))
+      stop(paste("'",paste(annot[notchoice], collapse = " and "),
+                 "' is not something I can use to make a hyperlink.\nPlease use linksBM()",
+                 "to see a list of valid choices.", sep = ""), call. = FALSE)
+  }
+  repository <- vector()
+  ## check to see if the choices are available
+  tmp <- unlist(choices[annot])
+  tst <- tmp %in% listAttributes(mart)
+  if(any(!tst))
+    warning(paste("The following annotation sources are not available at this mart\n",
+                  "for this species and were not used:",
+                  paste(names(choices[annot][!tst]), collapse = ", ")), call. = FALSE)
+  out <- list(names = annot[tst], links = tmp[tst])
+  out
+}
+
+
+
+vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
+                          stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
+                          foldFilt = NULL, save = FALSE, species, links = linksBM()[1:3],
+                          otherdata = annBM()[1:3], mysql = TRUE, ann.source = "entrezgene",
+                          affyid = FALSE, ...){
+
+  require("limma", quietly = TRUE)
+  require("annotate", quietly= TRUE)
+  require("biomaRt", quietly = TRUE)
+  
+  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = mysql)
+
+  ## check to see if the ann.source is available
+
+  if(!ann.source %in% listFilters(mart)){
+    cat(paste("Error: '", ann.source, "'is not an available annotation source for",
+              "this biomaRt or this species.\nAvailable choices are listed below:\n"))
+    return(listFilters(mart))
+  }
+   
+
+  ## set up data to retrieve
+
+  links <- linksBM( mart, links, affyid, ann.source)
+  otherdata <- annBM(mart, otherdata)
+  
+  if (!is.null(foldFilt)) {
+    idx <- abs(fit$coefficients) > foldFilt
+    x <- as.matrix(x) * idx
+  }
+  ncontrasts <- ncol(x)
+  if (ncontrasts < 2 || ncontrasts > 3) 
+    stop("This function only works for two or three comparisons at a time.\n", 
+         call. = FALSE)
+  if (ncontrasts == 2) 
+    name <- c(paste("Genes unique to", colnames(x)), paste("Genes in intersection of", 
+                                                           intNames(x)))
+  if (ncontrasts == 3) 
+    name <- c(paste("Genes unique to", colnames(x)), paste("Genes in intersection of", 
+                                                           intNames(x)), "Genes common to all comparisons")
+  indices <- makeIndices(x, method = method)
+  cols <- getCols(design, contrast)
+  for (i in seq(along = indices)) {
+    tmp <- geneNames(eset)[indices[[i]]]
+    if(stat == "fstat")
+      stats <- f.stat.dat(fit, indices[[i]], contrast, adj.meth, c(stat, otherstats),
+                              order.by, ncontrasts, i)
+    if(stat == "tstat")
+      stats <- t.stat.dat(fit, indices[[i]], contrast, adj.meth, c(stat, otherstats),
+                              order.by, ncontrasts, i)
+    if(is.null(stat)) stats <- NULL
+    if (length(tmp) == 0){ 
+      next
+    }else{
+      if(!affyid){
+        if(!is.null(stats))
+          gn <- sub("_at$", "", tmp[stats$ord])
+        else
+          gn <- sub("_at$", "", tmp)
+      }else{
+        if(!is.null(stats))
+          gn <- tmp[stats$ord]
+        else
+          gn <- tmp
+      }
+      lnks <- getBM(attributes = links$links,
+                    filter = ann.source, values = gn, mart = mart, output = "list",
+                    na.value = "&nbsp;")
+      ## If there isn't any info for a particular gene at the Biomart, an empty string
+      ## is returned, so we need to put the original IDs into the output
+      lnks[[match(ann.source, names(lnks))]] <- gn
+      
+      nam <- getBM(attributes = otherdata$links,
+                   filter = ann.source, values = gn, mart = mart, output = "list",
+                   na.value = "&nbsp;")
+      table.head <- c(links$names, otherdata$names)
+      if(!is.null(stats)){
+        nam <- c(nam, stats$out)
+        nam$expression <- round(exprs(eset[,cols[[i]]])[tmp[stats$ord],], 3)
+        table.head <- c(table.head, names(stats$out))
+      }else{
+        nam$expression <- round(exprs(eset[,cols[[i]]])[tmp,], 3)
+      }
+
+      htmlpage(lnks, paste(name[i], "html", sep="."), name[i], nam,
+               c(table.head,  sampleNames(eset)[cols[[i]]]),
+               repository = as.list(links$repository))
+    }
+  }
+  martDisconnect(mart)
+  if (save) 
+    sapply(indices, sum)
+}
+
+
+limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM()[1:3],
+                           otherdata = annBM()[1:3], ann.source = "entrezgene", adjust = "fdr",
+                           number = 30, pfilt = NULL, fldfilt = NULL, tstat = TRUE,
+                           pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE,
+                           save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE,
+                           mysql = TRUE){
+
+  
+  if(!interactive){
+    limma2biomaRt.na(eset, fit, design, contrast, species, links, otherdata, ann.source,
+                     adjust, number, pfilt, fldfilt, tstat, pval, FC, expression,
+                     html, save, addname, affyid, mysql)
+  }else{
+    require(biomaRt, quietly = TRUE)
+    mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""),
+                    mysql = mysql)
+
+    ## check to see if ann.source is available
+
+    if(!ann.source %in% listFilters(mart)){
+      cat(paste("Error: '", ann.source, "'is not an available annotation source for",
+                "this biomaRt or this species.\nAvailable choices are listed below:\n"))
+      return(listFilters(mart))
+    }
+    
+ 
+    ## Set up default data to retrieve
+    links <- linksBM(mart, links, affyid, ann.source)
+    otherdata <- annBM(mart, otherdata)
+    
+    tables <- vector("list", dim(contrast)[2])
+    for (i in seq(along = colnames(contrast))) {
+      tables[[i]] <- tableFilt(fit, coef = i, number = number, 
+                               pfilt = pfilt, fldfilt = fldfilt, adjust = adjust)
+    }
+    rn <- vector()
+    for (i in 1:length(tables)) rn[i] <- dim(tables[[i]])[1]
+    cat("\nYou are going to output", length(tables), "tables,", 
+        "\nWith this many genes in each:\n", rn)
+    cat("\n")
+    doit <- getans2("Do you want to accept or change these values?", 
+                    allowed = c("a", "c"))
+    if (doit == "c") {
+      dopval <- getans2("Do you want to change the p-value?", 
+                        allowed = c("y", "n"))
+      if (dopval == "y") 
+        pfilt <- getpfil()
+      dofld <- getans2("Do you want to change the fold filter?", 
+                       allowed = c("y", "n"))
+      if (dofld == "y") 
+        fldfilt <- getfldfil()
+      limma2biomaRt(eset, fit, design, ann.source, contrast, species, links,
+                    otherdata, pfilt, fldfilt, adjust, tstat, pval, FC,
+                    expression, html, save, addname, interactive, affyid)
+      options(show.error.messages = FALSE)
+      stop()
+    }
+    if(html){
+      for (i in 1:length(tables)) {
+        if (dim(tables[[i]])[1] > 0) {
+          index <- as.numeric(row.names(tables[[i]]))
+          if (length(which(contrast[, i] > 0)) == 1) {
+            grp1 <- which(design[, which(contrast[, i] > 
+                                         0)] > 0)
+          }
+          else {
+            grp1 <- which(rowSums(design[, which(contrast[, 
+                                                          i] > 0)]) > 0)
+          }
+          if (length(which(contrast[, i] < 0)) == 1) {
+            grp2 <- which(design[, which(contrast[, i] < 
+                                         0)] > 0)
+          }
+          else {
+            grp2 <- which(rowSums(design[, which(contrast[, 
+                                                          i] < 0)]) > 0)
+          }
+          grps <- c(grp1, grp2)
+          filename <- colnames(contrast)[i]
+          if (!is.null(addname)) 
+            filename <- paste(filename, addname, sep = " ")
+          if (length(grep("[/|\\|?|*|:|<|>|\"||]", filename)) > 
+              0) 
+            warning(paste("Some illegal characters have been removed from the filename", 
+                          filename, sep = " "), call. = FALSE)
+          filename <- gsub("[/|\\|?|*|:|<|>|\"||]", "", 
+                           filename)
+          probeids <- geneNames(eset)[index]
+          if(affyid)
+            gn <- probeids
+          else
+            gn <- sub("_at$", "", probeids)
+          
+          anntable <- getBM(attributes = links$links, filter = ann.source,
+                            values = gn,
+                            mart = mart, output = "list", na.value = "&nbsp;")
+          ## Need to dump the 'values' into the anntable list - if no data at the mart,
+          ## biomaRt just returns an empty string
+
+          anntable[[match(ann.source, names(anntable))]] <-  gn
+          
+          testtable <- getBM(attributes = otherdata$links, filter = ann.source,
+                             values = gn, mart = mart, output = "list",
+                             na.value = "&nbsp;")
+          
+          if (tstat)
+            testtable$t.statistic <-  round(tables[[i]][,"t"], 2)
+          
+          if (pval) 
+            testtable$p.value <- round(tables[[i]][,"adj.P.Val"], 3)
+          
+          if (FC) {
+            fld <- tables[[i]][, 2]
+            testtable$fold.change <- round(fld,2)
+          }
+          if (expression) 
+            testtable$expression <- round(exprs(eset[, grps])[probeids,], 3)
+        }
+        table.head <- c(links$names, otherdata$names,
+                        c("t-statistic","p-value","Fold change")[c(tstat, pval, FC)],
+                        sampleNames(eset)[grps])
+        htmlpage(anntable, paste(filename, "html", sep = "."), filename, testtable,
+                 table.head, repository = as.list(links$repository))
+      }
+    }
+    
+    martDisconnect(mart)
+    if (save) 
+      return(tables)
+  }
+}
+
+
+limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = linksBM()[1:3],
+                           otherdata = annBM()[1:3], ann.source = "entrezgene", adjust = "fdr",
+                           number = 30, pfilt = NULL, fldfilt = NULL, tstat = TRUE,
+                           pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE,
+                           save = FALSE, addname = NULL, affyid = FALSE, mysql = TRUE){
+
+
+  require(biomaRt, quietly = TRUE)
+  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = TRUE)
+
+  ## check to see if ann.source is available
+
+  if(!ann.source %in% listFilters(mart)){
+    cat(paste("Error: '", ann.source, "'is not an available annotation source for",
+              "this biomaRt or this species.\nAvailable choices are listed below:\n"))
+    return(listFilters(mart))
+    }
+  
+  ## Set up default data to retrieve
+  links <- linksBM(mart, links, affyid, ann.source)
+  otherdata <- annBM(mart, otherdata)
+  
+  tables <- vector("list", dim(contrast)[2])
+  for (i in seq(along = colnames(contrast))) {
+    tables[[i]] <- tableFilt(fit, coef = i, number = number, 
+                                             pfilt = pfilt, fldfilt = fldfilt, adjust = adjust)
+  }
+  rn <- vector()
+ 
+  if(html){
+    for (i in 1:length(tables)) {
+      if (dim(tables[[i]])[1] > 0) {
+        index <- as.numeric(row.names(tables[[i]]))
+        if (length(which(contrast[, i] > 0)) == 1) {
+          grp1 <- which(design[, which(contrast[, i] > 
+                                       0)] > 0)
+        }
+        else {
+          grp1 <- which(rowSums(design[, which(contrast[, 
+                                                         i] > 0)]) > 0)
+        }
+        if (length(which(contrast[, i] < 0)) == 1) {
+          grp2 <- which(design[, which(contrast[, i] < 
+                                       0)] > 0)
+        }
+        else {
+          grp2 <- which(rowSums(design[, which(contrast[, 
+                                                         i] < 0)]) > 0)
+        }
+        grps <- c(grp1, grp2)
+        filename <- colnames(contrast)[i]
+        if (!is.null(addname)) 
+          filename <- paste(filename, addname, sep = " ")
+        if (length(grep("[/|\\|?|*|:|<|>|\"||]", filename)) > 
+            0) 
+          warning(paste("Some illegal characters have been removed from the filename", 
+                        filename, sep = " "), call. = FALSE)
+        filename <- gsub("[/|\\|?|*|:|<|>|\"||]", "", 
+                         filename)
+        probeids <- geneNames(eset)[index]
+
+        if(affyid)
+          gn <- probeids
+        else
+          gn <- sub("_at", "", probeids)
+        anntable <- getBM(attributes = links$links, filter = ann.source,
+                          values = gn, mart = mart, output = "list", na.value = "&nbsp;")
+        ## Need to dump the 'values' into the anntable list - if no data at the mart,
+        ## biomaRt just returns an empty string
+
+        anntable[[match(ann.source, names(anntable))]] <-  gn
+  
+        testtable <- getBM(attributes = otherdata$links, filter = ann.source,
+                     values = gn, mart = mart, output = "list",
+                     na.value = "&nbsp;")
+               
+        if (tstat)
+          testtable$t.statistic <-  round(tables[[i]][,"t"], 2)
+        
+        if (pval) 
+          testtable$p.value <- round(tables[[i]][,"adj.P.Val"], 3)
+        
+        if (FC) {
+          fld <- tables[[i]][, 2]
+          testtable$fold.change <- round(fld,2)
+        }
+        if (expression) 
+          testtable$expression <- round(exprs(eset[, grps])[probeids,], 3)
+      }
+      table.head <- c(links$names, otherdata$names,
+                      c("t-statistic","p-value","Fold change")[c(tstat, pval, FC)],
+                      sampleNames(eset)[grps])
+      htmlpage(anntable, paste(filename, "html", sep = "."), filename, testtable,
+               table.head, repository = as.list(links$repository))
+    }
+  }
+  martDisconnect(mart)
+  if (save) 
+    return(tables)
+}

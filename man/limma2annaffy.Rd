@@ -10,7 +10,7 @@
   be run without user intervention.
 }
 \usage{
-limma2annaffy(eset, fit, design, contrasts, lib, adjust = "fdr",
+limma2annaffy(eset, fit, design, contrast, lib, adjust = "fdr",
  anncols = aaf.handler()[c(1:3, 7:8, 10:13)], number = 30, pfilt = NULL,
  fldfilt= NULL,tstat = TRUE, pval = TRUE, FC = TRUE,
  expression = TRUE, html = TRUE, text = FALSE, save = FALSE, addname =
@@ -22,7 +22,7 @@ NULL, interactive = TRUE)
     expression values. }
   \item{fit}{An \code{lmFit} object. }
   \item{design}{ A \code{model.matrix} object. }
-  \item{contrasts}{A contasts matrix from limma. }
+  \item{contrast}{A contrasts matrix from limma. }
   \item{lib}{ An annotation package for the Affy chips used. }
   \item{adjust}{ Multiplicity adjustment. Choices are
     "fdr","holm","hommel","bonferroni", or "none". Partial matching allowed. }

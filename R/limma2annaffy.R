@@ -13,14 +13,14 @@
 ##
 #################################################
 
-limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
+limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                           anncols = aaf.handler()[c(1:3, 7:8, 10:13)], number = 30,
                           pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                           expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
                           addname = NULL, interactive = TRUE){
   
   if(!interactive){
-    limma2annaffy.na(eset = eset, fit = fit, design = design, contrasts = contrasts,
+    limma2annaffy.na(eset = eset, fit = fit, design = design, contrast = contrast,
                      lib = lib, adjust = adjust, anncols = anncols, number = number,
                      pfilt = pfilt, fldfilt = fldfilt, tstat = tstat, pval = pval,
                      FC = FC, expression = expression, html = html, text = text,
@@ -29,8 +29,8 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
     require(annaffy, quietly = TRUE)
     
     
-    tables <- vector("list", dim(contrasts)[2])
-    for(i in seq(along = colnames(contrasts))){
+    tables <- vector("list", dim(contrast)[2])
+    for(i in seq(along = colnames(contrast))){
       tables[[i]] <- tableFilt(fit, coef = i, number = number, pfilt = pfilt, fldfilt = fldfilt,
                                adjust = adjust)
     }
@@ -50,7 +50,7 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
       dofld <- getans2("Do you want to change the fold filter?", allowed = c("y", "n"))
       if(dofld == "y")
         fldfilt <- getfldfil()
-      limma2annaffy(eset=eset, fit=fit, design=design, contrasts=contrasts,
+      limma2annaffy(eset=eset, fit=fit, design=design, contrast=contrast,
                     lib=lib, anncols=anncols, pfilt=pfilt, fldfilt=fldfilt,
                     adjust=adjust, tstat=tstat, pval=pval, FC=FC, expression=expression,
                     html=html, text=text)
@@ -62,19 +62,19 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
     for(i in 1:length(tables)){
       if(dim(tables[[i]])[1]>0){
         index <- as.numeric(row.names(tables[[i]]))
-        if(length(which(contrasts[,i] > 0)) == 1){
-          grp1 <- which(design[,which(contrasts[,i] > 0)] > 0)
+        if(length(which(contrast[,i] > 0)) == 1){
+          grp1 <- which(design[,which(contrast[,i] > 0)] > 0)
         }else{
-          grp1 <- which(rowSums(design[,which(contrasts[,i] > 0)]) > 0)
+          grp1 <- which(rowSums(design[,which(contrast[,i] > 0)]) > 0)
         }
-        if(length(which(contrasts[,i] < 0)) == 1){
-          grp2 <- which(design[,which(contrasts[,i] < 0)] > 0)
+        if(length(which(contrast[,i] < 0)) == 1){
+          grp2 <- which(design[,which(contrast[,i] < 0)] > 0)
         }else{
-          grp2 <- which(rowSums(design[,which(contrasts[,i] < 0)]) > 0)
+          grp2 <- which(rowSums(design[,which(contrast[,i] < 0)]) > 0)
         }
         grps <- c(grp1, grp2)
         
-        filename <- colnames(contrasts)[i]
+        filename <- colnames(contrast)[i]
         if(!is.null(addname))
           filename <- paste(filename, addname, sep=" ")
         ## Remove illegal characters from filename
@@ -124,7 +124,7 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
   }
 }
 
-"limma2annaffy.na" <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
+"limma2annaffy.na" <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                                anncols = aaf.handler()[c(1:3, 7:8, 10:13)], number = 30,
                                pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                                expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
@@ -132,8 +132,8 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
   require(annaffy, quietly = TRUE)
   
   
-  tables <- vector("list", dim(contrasts)[2])
-  for(i in seq(along = colnames(contrasts))){
+  tables <- vector("list", dim(contrast)[2])
+  for(i in seq(along = colnames(contrast))){
     tables[[i]] <- tableFilt(fit, coef = i,  number = number, pfilt = pfilt, fldfilt = fldfilt,
                              adjust = adjust)
   }
@@ -142,19 +142,19 @@ limma2annaffy <- function(eset, fit, design, contrasts, lib, adjust = "fdr",
   for(i in 1:length(tables)){
     if(dim(tables[[i]])[1]>0){
       index <- as.numeric(row.names(tables[[i]]))
-      if(length(which(contrasts[,i] > 0)) == 1){
-        grp1 <- which(design[,which(contrasts[,i] > 0)] > 0)
+      if(length(which(contrast[,i] > 0)) == 1){
+        grp1 <- which(design[,which(contrast[,i] > 0)] > 0)
       }else{
-        grp1 <- which(rowSums(design[,which(contrasts[,i] > 0)]) > 0)
+        grp1 <- which(rowSums(design[,which(contrast[,i] > 0)]) > 0)
       }
-      if(length(which(contrasts[,i] < 0)) == 1){
-        grp2 <- which(design[,which(contrasts[,i] < 0)] > 0)
+      if(length(which(contrast[,i] < 0)) == 1){
+        grp2 <- which(design[,which(contrast[,i] < 0)] > 0)
       }else{
-        grp2 <- which(rowSums(design[,which(contrasts[,i] < 0)]) > 0)
+        grp2 <- which(rowSums(design[,which(contrast[,i] < 0)]) > 0)
       }
       grps <- c(grp1, grp2)
       
-      filename <- colnames(contrasts)[i]
+      filename <- colnames(contrast)[i]
       if(!is.null(addname))
         filename <- paste(filename, addname, sep=" ")
       ## Remove illegal characters from filename

@@ -1,0 +1,110 @@
+\name{limma2biomaRt}
+\alias{limma2biomaRt}
+\alias{limma2biomaRt.na}
+%- Also NEED an '\alias' for EACH other topic documented here.
+\title{ Function to Create HTML Tables from limma Objects using biomaRt
+  for Annotation }
+\description{
+  This function is designed to take an \code{exprSet} and an \code{lmFit}, \code{model.matrix},
+  and contrast object from limma and convert into HTML tables using
+  biomaRt. The alternate function \code{limma2biomaRt.na} is designed to
+  be run without user intervention.
+}
+\usage{
+limma2biomaRt(eset, fit, design, contrast, species, links = linksBM()[1:3],
+otherdata = annBM()[1:3], ann.source = "entrezgene", adjust = "fdr",
+number = 30, pfilt = NULL, fldfilt = NULL, tstat = TRUE,
+pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE,
+save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
+= TRUE)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{eset}{ An \code{exprSet} containing affymetrix
+    expression values. }
+  \item{fit}{An \code{lmFit} object. }
+  \item{design}{ A \code{model.matrix} object. }
+  \item{contrast}{A contrasts matrix from limma. }
+  \item{species}{The species name. This must be in a particular format
+    for biomaRt. An example for human is "hsapiens", or for mouse
+    "mmusculus".}
+  \item{links}{A character vector of things to annotate with hyperlinks
+    to online databases. See \code{linksBM} for possible values.}
+  \item{otherdata}{A character vector of things to annotate with text
+    only (i.e., no hyperlinks). See \code{annBM} for possible values.}
+  \item{ann.source}{The annotation source of the IDs that will be used
+    to annotate the genes. The default value is "entrezgene". See
+    details for other possibilities.}
+  \item{adjust}{ Multiplicity adjustment. Choices are
+    "fdr","holm","hommel","bonferroni", or "none". Partial matching allowed. }
+  \item{number}{ Number of genes to output to table. See
+    details for more information. }
+  \item{pfilt}{ A p-value to filter output. See details
+    for more information. }
+  \item{fldfilt}{ A fold change to filter output. See
+    details for more information. }
+  \item{tstat}{Boolean: Output t-statistics in table? Defaults to \code{FALSE}. }
+  \item{pval}{Boolean: Output (adjusted) p-values in table?
+    Defaults to \code{FALSE}. }
+  \item{FC}{Boolean: Output fold changes in table? Defaults to \code{FALSE}. }
+  \item{expression}{ Boolean: Output expression values in
+    table? Defaults to \code{TRUE}. }
+  \item{html}{Boolean: Output data in HTML tables? Defaults to \code{TRUE}. }
+  \item{save}{ Boolean: Save tables as R objects for further
+    processing? Defaults to \code{FALSE}. }
+  \item{addname}{ A character vector to add to the end of
+  the automatically generated output file names. Useful for multiple
+  calls to eliminate over-writing of existing HTML or text tables.}
+  \item{interactive}{Boolean: Is this an interactive call, or run as
+    part of a script (e.g., in an \code{Sweave} document)? Defaults to
+    \code{TRUE}}
+  \item{affyid}{Boolean. Are the IDs used to annotate these data
+    Affymetrix IDs?}
+  \item{mysql}{Boolean. Should \code{biomaRt} use \code{RMySQL} to
+    connect to the Biomart? Default is \code{TRUE} because the
+    \code{RCurl} interface of \code{biomaRt} is very slow for more than
+    a few genes.}
+}
+\details{
+  This function is designed to automatically output HTML tables,
+  with filenames taken from the column names of the contrast matrix. The
+  number of genes output can be controlled several different
+  ways. First, if pfilt and fldfilt are both \code{NULL}, the top genes
+  will be output based on the \code{number} variable. Otherwise, the
+  genes are filtered based on p-value, fold change, or both. If the
+  genes are filtered this way, the number of genes to be output will be
+  listed and the filter(s) can then be adjusted if necessary.
+
+  This function currently only supports Affymetrix data. It
+  is designed for Affymetrix chips that don't have an
+  annotation package, which includes data that have been analyzed using
+  the 're-mapped' CDFs supplied to BioC by MBNI at University of
+  Michigan.
+
+  The IDs that will be used to annotate the genes depend on the source
+  of the data. If, for example, one is using an Affymetrix chip that
+  doesn't have a BioC annotation package, then the IDs will be
+  Affymetrix IDs. To find out the correct name to use for the ann.source
+  argument, one can create a connection to a Biomart database using
+  \code{\link[biomaRt]{useMart}} and then deduce the correct argument by
+  the output from \code{\link[biomaRt]{listFilters(mart)}}. It will usually be
+  something starting with 'affy', and contain the name of the chip.
+
+  If one is using one of the re-mapped CDFs from MBNI at University of
+  Michigan, then the IDs to use depend on the mapping used to create the
+  CDF. At this time, only three types of CDFs can be used; EntrezGene,
+  UniGene, and RefSeq. One can determine the correct ann.source argument
+  by creating a connection to a Biomart database, and then calling
+  \code{linksBM(mart, linksBM())[[3]]}.
+  
+}
+\value{
+ If \code{save} is \code{TRUE}, a list of tables from
+ \code{\link[limma]{topTable}} will be output.
+}
+
+\author{ James W. MacDonald <jmacdon@med.umich.edu> }
+
+\seealso{ \code{\link[limma]{topTable}}, \code{\link[annaffy]{aafTableAnn}}}
+
+\keyword{ manip }% at least one, from doc/KEYWORDS

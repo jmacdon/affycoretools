@@ -1,15 +1,20 @@
-\name{vennSelect}
-\alias{vennSelect}
+\name{vennSelectBM}
+\alias{vennSelectBM}
 %- Also NEED an '\alias' for EACH other topic documented here.
-\title{Select and Output Genelists Based on Venn Diagrams }
+\title{Select and Output Genelists Based on Venn Diagrams using biomaRt }
 \description{
   This function is designed to output text and/or HTML tables based on
-  the results of a call to \code{\link[limma]{decideTests}}.
+  the results of a call to \code{\link[limma]{decideTests}}. This
+  function is very similar to \code{vennSelect}, except it uses the
+  \code{biomaRt} package to annotate genes, and the \code{annotate}
+  package to create the HTML table.
 }
 \usage{
-vennSelect(eset, design, x, contrast, fit, method = "same", adj.meth =
-"BH", stat = "fstat", otherstats = c("pval","FC"), order.by = "pval",
-foldFilt = NULL, save = FALSE, ...)
+vennSelectBM(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
+stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
+foldFilt = NULL, save = FALSE, species, links = linksBM()[1:3],
+otherdata = annBM()[1:3], mysql = TRUE, ann.source = "entrezgene",
+affyid = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -44,18 +49,49 @@ foldFilt = NULL, save = FALSE, ...)
     meaning no filtering will be done.}
   \item{save}{Boolean - If \code{TRUE}, output a count of genes that
     fulfill the criteria. Useful for e.g., Sweave-type reports.}
-  \item{...}{Used to pass other arguments to \code{probes2table}, in
-    particular, to change the argument to \code{anncols} 
-    which controls the columns of hyperlinks to online databases (e.g.,
-    Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more information.}
+  \item{species}{The species name. This must be in a particular format
+    for biomaRt. An example for human is "hsapiens", or for mouse
+    "mmusculus".}
+  \item{links}{A character vector of things to annotate with hyperlinks
+    to online databases. See \code{linksBM} for possible values.}
+  \item{otherdata}{A character vector of things to annotate with text
+    only (i.e., no hyperlinks). See \code{annBM} for possible values.}
+  \item{mysql}{Boolean. If \code{TRUE}, then \code{biomaRt} will use the
+    \code{RMySQL} package to connect to the Biomart server (note that
+    this requires \code{RMySQL} to be installed). If \code{FALSE},
+    \code{biomaRt} will use the \code{RCurl} interface. WARNING: if you
+    are planning to annotate a large number of genes, you will almost
+    certainly need to use the \code{RMySQL} interface.}
+  \item{ann.source}{The annotation source of the IDs that will be used
+    to annotate the genes. The default value is "entrezgene". See
+    details for other possibilities.}
+  \item{affyid}{Boolean. Are the IDs used to annotate these data
+    Affymetrix IDs?}
+  \item{...}{Used to pass other variables to e.g., \code{htmlpage}.}
 }
 \details{
-  The purpose of this function is to output HTML and text tables with
+  The purpose of this function is to output HTML tables with
   lists of genes that fulfill the criteria of a call to
   \code{\link[limma]{decideTests}} as well as the direction of
   differential expression.
 
-  Some important things to note: First, the names of the HTML and text
+  The IDs that will be used to annotate the genes depend on the source
+  of the data. If, for example, one is using an Affymetrix chip that
+  doesn't have a BioC annotation package, then the IDs will be
+  Affymetrix IDs. To find out the correct name to use for the ann.source
+  argument, one can create a connection to a Biomart database using
+  \code{\link[biomaRt]{useMart}} and then deduce the correct argument by
+  the output from \code{\link[biomaRt]{listFilters(mart)}}. It will usually be
+  something starting with 'affy', and contain the name of the chip.
+
+  If one is using one of the re-mapped CDFs from MBNI at University of
+  Michigan, then the IDs to use depend on the mapping used to create the
+  CDF. At this time, only three types of CDFs can be used; EntrezGene,
+  UniGene, and RefSeq. One can determine the correct ann.source argument
+  by creating a connection to a Biomart database, and then calling
+  \code{linksBM(mart, linksBM())[[3]]}. 
+
+  Some important things to note: First, the names of the HTML 
   tables are extracted from the \code{colnames} of the
   \code{TestResults} object, which come from the contrasts matrix, so
   it is important to use something descriptive. Second, the method
@@ -78,17 +114,15 @@ foldFilt = NULL, save = FALSE, ...)
   and it will be listed in the union (e.g., not selected) if "same" is
   chosen.
 
-  Calling the function normally will result in the output of HTML and
-  text tables:
-
-  vennSelect(eset, fit, design, x)
+  Calling the function normally will result in the output of HTML
+  tables. 
 
   Calling the function with save set to \code{TRUE} will output both
   HTML and text tables as well as a vector of counts for each
   comparison. This is useful when using the function programmatically
   (e.g., when making reports using Sweave).
 
-  out <- vennSelect(eset, fit, design, x, save = TRUE)
+  out <- vennSelectBM(eset, fit, design, x, <other arguments>,  save = TRUE)
 
   An alternative would be to use \code{vennCounts2} and
   \code{\link[limma]{vennDiagram}} to output a Venn diagram, which is
@@ -96,7 +130,7 @@ foldFilt = NULL, save = FALSE, ...)
   be based on a Venn diagram.
 }
 \value{
- Normally called only for the side effect of producing HTML and text
+ Normally called only for the side effect of producing HTML
  tables. However, setting save to \code{TRUE} will output a vector of
  counts that can be used for making Sweave-style reports.
  }

@@ -9,7 +9,7 @@
   expressed in the same direction.
 }
 \usage{
-vennCounts2(x, method = "same")
+vennCounts2(x, method = "same", fit = NULL, foldFilt = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +17,12 @@ vennCounts2(x, method = "same")
     call to \code{\link[limma]{decideTests}} or \code{foldFilt}.}
   \item{method}{ One of "same", "both", "up", "down". See details for
     more information.}
+  \item{fit}{An \code{\link[limma]{MArrayLM}} object, produced by a call
+    to \code{\link[limma]{lmFit}} and \code{\link[limma]{eBayes}}. Only
+    necessary if 'foldFilt' = \code{TRUE}.}
+  \item{foldFilt}{A fold change to filter samples. This is primarily
+    here for consistency with the corresponding argument in
+    \code{vennSelect}.}
 }
 \details{
   The function \code{\link[limma]{vennCounts}} will return identical
