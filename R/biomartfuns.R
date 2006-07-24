@@ -16,9 +16,11 @@
 ## limma2biomaRt - a function to emulate limma2annaffy, only using biomaRt for annotation
 ##                 data.
 ##
-## TODO: Right now the repositories are hard coded, so the links argument doesn't really
-##       work. Same is true for the table.head argument. Also need to figure out how to
-##       add in the statistics for vennSelect() and vennSelectBM().
+## probes2tableBM - a function to emulate probes2table()
+##
+## foldFiltBM - a function to emulate foldFilt()
+##
+##  TODO: Add functionality to output text tables in addition to HTML
 ##
 ##
 ######################################################
@@ -458,4 +460,99 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
   martDisconnect(mart)
   if (save) 
     return(tables)
+}
+
+probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
+                           links = linksBM()[1:3], otherann = annBM()[1:3],
+                           ann.source = "entrezgene", express = TRUE, 
+                           affyid = FALSE, mysql = TRUE){
+  require(biomaRt, quietly = TRUE)
+  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = TRUE)
+  
+  ## check to see if ann.source is available
+  
+  if(!ann.source %in% listFilters(mart)){
+    cat(paste("Error: '", ann.source, "'is not an available annotation source for",
+              "this biomaRt or this species.\nAvailable choices are listed below:\n"))
+    return(listFilters(mart))
+  }
+  
+  ## Set up default data to retrieve
+  links <- linksBM(mart, links, affyid, ann.source)
+  otherann <- annBM(mart, otherann)
+
+  ## get link data
+
+  if(affyid)
+    gn <- probids
+  else
+    gn <- sub("_at", "", probids)
+  anntable <-  getBM(attributes = links$links, filter = ann.source,
+                     values = gn, mart = mart, output = "list", na.value = "&nbsp;")
+  ## Need to dump the 'values' into the anntable list - if no data at the mart,
+  ## biomaRt just returns an empty string
+  
+  anntable[[match(ann.source, names(anntable))]] <-  gn
+  
+  testtable <- getBM(attributes = otherann$links, filter = ann.source,
+                     values = gn, mart = mart, output = "list",
+                     na.value = "&nbsp;")
+  table.head <- c(links$names, otherann$names, names(otherdata),
+                  sampleNames(eset))
+  if(!is.null(otherdata))
+    testtable <- c(testtable, otherdata)
+  if(express)
+    testtable <- c(testtable, as.data.frame(round(exprs(eset)[probids,], 2)))
+  htmlpage(anntable, paste(filename, "html", sep = "."), filename, testtable,
+               table.head, repository = as.list(links$repository))
+
+  martDisconnect(mart)
+ }
+
+foldFiltBM <- function(object, fold = 1, groups, comps, compnames, species,
+                       links = linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL,
+                       ann.source = "entrezgene", affyid = FALSE, mysql = TRUE,
+                       save = FALSE){
+ 
+  if(is(object, "exprSet"))
+    x  <- exprs(object)
+  if(length(unique(groups)) != length(groups)){
+    gps <- matrix(NA, nc = length(unique(groups)), nr = dim(x)[1])
+    for(i in unique(groups)){
+      if(length(groups[which(groups == i)]) != 1)
+        gps[,i] <- rowMeans(x[,which(groups == i)])
+      else
+        gps[,i] <- x[,which(groups == i)]
+    }
+  }else{
+    gps <- x
+  }
+  colnames(gps) <- unique(groups)
+  flds <- lapply(comps, function(y) round(gps[,y[1]] - gps[,y[2]], 2))
+  indices <- lapply(flds, function(y) abs(y) > fold)
+  
+  if(!is.null(filterfun)){
+    filt.ind <- lapply(comps, function(y) genefilter(cbind(gps[,y[1]], gps[,y[2]]), filterfun))
+    indices <- mapply(function(x, y) x * y, indices, filt.ind, SIMPLIFY = FALSE)
+    indices <- lapply(indices, as.logical)
+  }
+  
+  probes <- lapply(indices, function(y) row.names(x)[y])
+  FCs <- vector("list", unique(groups))
+  for(i in seq(along=flds)){
+    FCs[[i]] <- flds[[i]][indices[[i]]]
+    if(length(FCs[[i]]) > 0){
+      ord <- order(abs(FCs[[i]]), decreasing = TRUE)
+      idx <- getIndex(comps[[i]], groups)
+      probes2tableBM(object[,idx], probes[[i]][ord], species, compnames[i],
+                     list("Fold change" = FCs[[i]][ord]), links, otherann,
+                     ann.source, TRUE, affyid, mysql)
+    }
+  }
+  direct <- matrix(NA, nc = length(comps), nr = dim(gps)[1])
+  for(i in seq(along = flds)){
+    direct[,i] <- sign(flds[[i]] * indices[[i]])
+  }
+  if(save)
+   return(list(sums =  sapply(indices, sum), dirs = direct))
 }

@@ -86,9 +86,8 @@ save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
   doesn't have a BioC annotation package, then the IDs will be
   Affymetrix IDs. To find out the correct name to use for the ann.source
   argument, one can create a connection to a Biomart database using
-  \code{\link[biomaRt]{useMart}} and then deduce the correct argument by
-  the output from \code{\link[biomaRt]{listFilters(mart)}}. It will usually be
-  something starting with 'affy', and contain the name of the chip.
+  \code{\link[biomaRt]{useMart}} and then get a list of available Affy
+  arrays using \code{\link[biomaRt]{getAffyArrays}}.
 
   If one is using one of the re-mapped CDFs from MBNI at University of
   Michigan, then the IDs to use depend on the mapping used to create the

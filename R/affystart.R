@@ -16,8 +16,11 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
                       express=c("rma", "mas5", "gcrma"), addname=NULL,
                       phenoData = new("phenoData")){
   require(affy, quietly=TRUE)
-  if(is.null(filenames))
+  if(is.null(filenames)){
     filenames <- list.files(pattern="\\.[cC][eE][lL]$")
+    if(length(filenames) == 0)
+      stop("There are no celfiles in the current working directory!", call. = FALSE)
+  }
   dat <- read.affybatch(filenames = filenames, phenoData = phenoData)
   filenames <- sub("\\.[cC][eE][lL]$", "", filenames)
   

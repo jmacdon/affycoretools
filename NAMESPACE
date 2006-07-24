@@ -1,4 +1,4 @@
 export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma, probes2table,
        affystart, plotDeg, plotHist, plotPCA, convert.back, hyperG2annaffy, vennSelectBM,
-       limma2biomaRt, linksBM, annBM)
+       limma2biomaRt, linksBM, annBM, foldFiltBM, probes2tableBM)
 import(annaffy)
