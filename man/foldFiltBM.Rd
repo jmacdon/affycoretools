@@ -4,7 +4,9 @@
 \title{ Output Fold Change Data using biomaRt }
 \description{
   This function is designed to take an \code{exprSet} and some
-  comparisons and output HTML tables.
+  comparisons and output HTML tables. It is very similar to
+  \code{foldFilt} except it uses the \code{biomaRt} package to annotate
+  genes and the annotate package to create the HTML table(s).
 }
 \usage{
 foldFiltBM(object, fold = 1, groups, comps, compnames, species, links =
@@ -31,7 +33,7 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
     to online databases. See \code{linksBM} for possible values.}
   \item{otherann}{A character vector of things to annotate with text
     only (i.e., no hyperlinks). See \code{annBM} for possible values.}
-  \item{filterfun}{A filtering function to be by
+  \item{filterfun}{A filtering function created by
     \code{\link[genefilter]{genefilter}} to filter the data using
     additional criteria. See details for more information}
   \item{ann.source}{The annotation source of the IDs that will be used
@@ -49,7 +51,7 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
     matrix of -1's, 0's and 1's indicating a significant difference, and
     the direction of the difference. The first item is useful for
     creating Sweave - based reports and the second is useful for making
-    Vennn diagrams using the \code{vennDiagram} from the limma package.}
+    Vennn diagrams using \code{vennDiagram} from the limma package.}
 }
 
 \value{
@@ -89,6 +91,7 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
   argument. An example would be:
 
   f <- kOverA(1, 6)
+
   filt <- filterfun(f)
 
   Then add filterfun = filt as an argument to the call to \code{foldFilt}.

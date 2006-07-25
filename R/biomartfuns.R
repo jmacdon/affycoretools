@@ -116,7 +116,7 @@ annBM <- function(mart, annot){
     notchoice <- !annot %in% names(choices)
     if(any(notchoice))
       stop(paste("'",paste(annot[notchoice], collapse = " and "),
-                 "' is not something I can use to make a hyperlink.\nPlease use linksBM()",
+                 "' is not something I can use to make a hyperlink.\nPlease use annBM()",
                  "to see a list of valid choices.", sep = ""), call. = FALSE)
   }
   repository <- vector()

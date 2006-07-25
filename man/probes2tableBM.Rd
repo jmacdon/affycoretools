@@ -3,7 +3,10 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Convert Affy Probe ids to Annotated HTML Table using biomaRt }
 \description{
- A function to convert a vector of Affy ids to an annotated HTML table.
+ A function to convert a vector of Affy ids to an annotated HTML
+ table. This function is very similar to \code{probes2table}, except it
+   uses the \code{biomaRt} package to annotate genes, and the
+   \code{annotate} package to create the HTML table.
 }
 \usage{
 probes2tableBM(eset, probids, species, filename, otherdata = NULL,

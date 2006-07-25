@@ -32,7 +32,7 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
     Vennn diagrams using the \code{vennDiagram} from the limma package.}
   \item{html}{Boolean - if \code{TRUE}, output HTML tables}
   \item{text}{Boolean - if \code{TRUE}, output text tables}
-  \item{filterfun}{A filtering function to be by
+  \item{filterfun}{A filtering function, created by
     \code{\link[genefilter]{genefilter}} to filter the data using
     additional criteria. See details for more information}
 }
@@ -63,6 +63,7 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
   the \pkg{genefilter} package.
 
   f1 <- kOverA(1,6)
+  
   filt <- filterfun(f1)
 
   foldFilt(eset, groups=1:4, comps=list(c(2, 1), c(3, 1), c(4, 1)),

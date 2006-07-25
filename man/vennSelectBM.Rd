@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Select and Output Genelists Based on Venn Diagrams using biomaRt }
 \description{
-  This function is designed to output text and/or HTML tables based on
+  This function is designed to output HTML tables based on
   the results of a call to \code{\link[limma]{decideTests}}. This
   function is very similar to \code{vennSelect}, except it uses the
   \code{biomaRt} package to annotate genes, and the \code{annotate}
@@ -117,8 +117,8 @@ affyid = FALSE, ...)
   Calling the function normally will result in the output of HTML
   tables. 
 
-  Calling the function with save set to \code{TRUE} will output both
-  HTML and text tables as well as a vector of counts for each
+  Calling the function with save set to \code{TRUE} will output
+  HTML tables as well as a vector of counts for each
   comparison. This is useful when using the function programmatically
   (e.g., when making reports using Sweave).
 
