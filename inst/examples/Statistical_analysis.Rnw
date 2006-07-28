@@ -24,11 +24,8 @@ library(genefilter)
 if(!file.exists("pdfs"))
   dir.create("pdfs")
 pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
-dat <- read.affybatch(filenames=list.celfiles())
-eset1 <- rma(dat[,1:6])
-eset2 <- rma(dat[,7:12])
-eset <- new("exprSet", exprs = cbind(exprs(eset1), exprs(eset2)), phenoData = pd,
-            annotation = annotation(eset1))
+dat <- ReadAffy()
+eset <- rma(dat)
 
 ## load annotation package
 options(show.error.messages = FALSE)
@@ -50,16 +47,14 @@ Filenames and samples were as follows:
 
 <<results=tex>>=
 ## Put a table of filenames and sample types in PDF
-type <- rep(c("Affy Sensitive","Affy Insensitive",
-              "NuGen Sensitive", "NuGen Insensitive"), each = 3)
+type <- rep(LETTERS[1:4], each = 3)
 tmp <- data.frame(list.celfiles(), type)
 names(tmp) <- c("Filenames","Samples")
 xtable(tmp)
 @
 
-The goal of this analysis is to see if the \textit{in vitro transcription} kits
-from Affymetrix and NuGen result in the same genes being called differentially
-expressed.
+The goal of this analysis is to see if there is a difference between the A and B
+samples, as well as between the C and D samples.
 
 The first step in my analysis was to make some quality control plots that can 
 be used to check the overall quality of the raw data.
@@ -78,9 +73,10 @@ One of the underlying assumptions for the normalization procedure I use is that
 the PM probe data all come from the same distribution, with the only differences 
 being the location and scale. Basically, this means that we want the shape of the 
 curves to be very similar, and we want the curves to be fairly 
-close to each other. Since we have used two different \textit{IVT} kits, we have
-two different sets of curves. However, there are few differences within each 
-set.
+close to each other. There appears to be a large difference between the A/B and
+C/D samples that may have an impact on our analysis. Since we are only concerned
+with the comparison of A/B and C/D it might make sense to pre-process these samples
+separately.
 
 \begin{figure}
 \centering
@@ -100,11 +96,12 @@ process each set of samples separately and then combine later.
 \begin{figure}
 \centering
 <<fig = true, width=6, height=6>>=
-boxplot(data.frame(exprs(eset1), exprs(eset2)))
+boxplot(data.frame(exprs(eset)))
 @ 
 \caption{Boxplot of Expression values from both sets}
 \label{fig:box}
 \end{figure}
+
 
 I calculated expression values for each gene using a robust multi-array average (RMA)
 \citet{Irizarry2003}.
@@ -112,9 +109,9 @@ This is a modeling strategy that converts the PM probe values into an expression
 value for each gene. Note that the expression values are $log_2$ transformed data. These
 data can be converted to the natural scale by exponentiating (e.g., convert by using
 $2^x$, where \emph{x} is the expression value). Figure~\ref{fig:box} shows a boxplot
-of the expression values for each set of data. There does not appear to be any
-need to further normalize these data, so they were combined as is.
- 
+of the expression values for each set of data. It appears here that the data are 
+fairly well normalized.
+
 As a final quality control step, I fit a principal components analysis (PCA) on the 
 expression values and then plotted the first two principal components (PCs). PCA can 
 be used to visualize the overall structure of high dimensional data; in this case, we 
@@ -131,17 +128,26 @@ plotPCA(eset, groups = rep(1:4, each = 3),
 \label{fig:pca}
 \end{figure}
 
-Figure~\ref{fig:pca} shows the PCA plot. 
+Figure~\ref{fig:pca} shows the PCA plot. Here again we can see that there is a very large 
+difference between the A/B and C/D samples. 
 
 
 <<echo=false>>=
-num <- 
-val <- 
+num <- 3
+val <- 6
 f1 <- kOverA(num, val) ## filter s.t. at least 'num' samples are < 2^val
 flt <- filterfun(f1)
 index <- genefilter(exprs(eset), flt) 
 eset1 <- eset[index,]
-
+design <- model.matrix(~ 0 + factor(rep(1:4,each=3)))
+colnames(design) <- LETTERS[1:4]
+contrast <- makeContrasts(A - B, C - D, levels = design)
+fit <- lmFit(eset, design)
+fit2 <- contrasts.fit(fit, contrast)
+fit2 <- eBayes(fit2)
+out <- limma2annaffy(eset1, fit2, design, contrast, annotation(eset),
+                     pfilt = 0.05, fldfilt = 1, save = TRUE, text = TRUE,
+                     interactive = FALSE)
 
 
 @ 
@@ -149,7 +155,26 @@ eset1 <- eset[index,]
 Prior to making comparisons, I filtered the genes to remove any that do not appear to be
 differentially expressed in any samples, based on at least \Sexpr{num} samples having an 
 expression value of $2^\Sexpr{val}$ or greater. This resulted in a total of \Sexpr{sum(index)} 
-genes.
+genes. I then made the requested comparisons using a modeling strategy developed for microarray
+analyses (\citet{Smyth:2004}), selecting those probesets with an adjusted
+$p$-value less than 0.05 and a two-fold difference (adjusting for multiple comparisons using
+false discovery rate (\citet{Benjamini:1995})). This resulted in the following number
+of probesets:
+
+<<results=tex>>=
+a <- data.frame(paste(unique(type)[c(1,3)], unique(type)[c(2,4)], sep = " vs "),
+                sapply(out, function(x) dim(x)[1]))
+names(a) <- c("Comparisons","Probesets")
+xtable(a, digits = rep(0, 3))
+@ 
+
+I output these data in HTML and text tables that include various statistics, as well
+as annotation for the different probesets. I also output all the expression values in a 
+text table that can be opened using a spreadsheet and used for ongoing analyses, or to
+look for probesets that might not appear in the HTML tables.
+
+Please note that I used the affy, and limma packages of Bioconductor for this analysis.
+If you publish these results, please use the following citations.
 
 
 \bibliography{Statistical_analysis}
