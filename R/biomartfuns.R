@@ -109,8 +109,10 @@ annBM <- function(mart, annot){
     return(names(choices))
   if(!class(mart) == "Mart")
     stop("The 'mart' argument must be a connection to a Biomart.")
-  if(missing(annot))
+  if(missing(annot)){
+    choices$Symbol <- getSymbol(mart)
     return(names(choices[unlist(choices) %in% listAttributes(mart)]))
+  }
   else{
     choices$Symbol <- getSymbol(mart)
     notchoice <- !annot %in% names(choices)
@@ -369,7 +371,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
 
 
   require(biomaRt, quietly = TRUE)
-  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = TRUE)
+  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = mysql)
 
   ## check to see if ann.source is available
 
@@ -467,7 +469,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
                            ann.source = "entrezgene", express = TRUE, 
                            affyid = FALSE, mysql = TRUE){
   require(biomaRt, quietly = TRUE)
-  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = TRUE)
+  mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = mysql)
   
   ## check to see if ann.source is available
   
