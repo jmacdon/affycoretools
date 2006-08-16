@@ -91,15 +91,13 @@ annotate.
 
 First, we compute expression values.
 
-<<echo=false, results=hide>>=
-options(width = 70)
-library(affycoretools)
-eset <- justRMA(celfile.path = "../examples",cdfname = "hsfocushsentrezg7cdf")
-@ 
-
 <<eval = false>>=
 library(affycoretools)
 eset <- justRMA(cdfname = "hsfocushsentrezg7cdf")
+@ 
+
+<<echo=false, results=hide>>=
+load("../examples/exprSet.Rdata")
 @ 
 
 Now we model the data using \Rpackage{limma}. Using a cell means

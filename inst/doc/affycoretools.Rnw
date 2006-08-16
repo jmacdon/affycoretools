@@ -80,7 +80,7 @@ text document.
 \section{Interactive Analyses}
 \subsection{Quality Control}
 
-For these examples, I will be using some data that was generated in our microarray
+For these examples, I will be using some data that were generated in our microarray
 core. The experiment is a simple comparison of two different cell lines, one of 
 which is sensitive to a particular treatment, whereas the other is not. One set of
 samples was prepared using the Affymetrix \textit{in vitro translation} kit, whereas
@@ -112,8 +112,8 @@ eset <- affystart(groups = rep(1:4, each = 3),
 
 <<echo = false, results=hide>>=
 library(affycoretools)
-dat <- ReadAffy(celfile.path = "../examples")
-eset <- rma(dat)
+load("../examples/abatch.Rdata")
+load("../examples/exprSet.Rdata")
 @ 
 
 \begin{figure}
