@@ -209,7 +209,7 @@ t.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
   if("tstat" %in% stats)
     t.stat <- getStat("tstat", ncontrasts, num, fit, contrast, index)
   if("pval" %in% stats){
-    p.val <- getStat("pval", ncontrasts, num, fit, contrast, index)
+    p.val <- getStat("pval", ncontrasts, num, fit, contrast, index, adj.meth)
     if(exists("t.stat")) out <- c(t.stat, p.val) else out <- p.val
   }
   if("FC" %in% stats){
