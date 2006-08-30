@@ -119,7 +119,7 @@ load("../examples/exprSet.Rdata")
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
-plotHist(dat, list.celfiles("../examples"))
+plotHist(dat)
 @ 
 \caption{Density plot}
 \label{fig:hist}
@@ -128,7 +128,7 @@ plotHist(dat, list.celfiles("../examples"))
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
-plotDeg(dat, list.celfiles("../examples"))
+plotDeg(dat)
 @ 
 \caption{RNA degradation plot}
 \label{fig:deg}
@@ -140,6 +140,7 @@ plotDeg(dat, list.celfiles("../examples"))
 pd <- read.phenoData("../examples/pdata.txt", header = TRUE, row.names = 1)
 plotPCA(eset, groups = rep(1:4, each = 3), 
         groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")))
+phenoData(eset) <- pd
 @ 
 \caption{PCA plot}
 \label{fig:pca}
@@ -196,7 +197,7 @@ then combine the data.
 setwd("../examples")
 @ 
 
-<<>>=
+<<eval = false>>=
 eset1 <- affystart(filenames = list.celfiles()[1:6], plot = FALSE, pca = FALSE)
 eset2 <- affystart(filenames = list.celfiles()[7:12], plot = FALSE, pca = FALSE)
 eset <- new("exprSet", exprs = cbind(exprs(eset1), exprs(eset2)), phenoData = pd,

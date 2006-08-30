@@ -144,23 +144,50 @@ plotHist <- function(dat, filenames = NULL)
 
 plotDeg <- function(dat, filenames = NULL){
   if(is.null(filenames)) filenames <- sampleNames(dat)
+
+  ## reset things when exiting
+  op <- par(no.readonly = TRUE)
+  on.exit(par(op))
+  
+  ## put plot on left, legend on right
+  layout(matrix(1:2, nc = 2), c(3,1))
   plotAffyRNAdeg(AffyRNAdeg(dat), col=1:length(filenames))
-  y.ax <- legend(0, par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
-                 legend=filenames, lty=1, lwd=2, col=1:length(filenames), plot=FALSE)$rect$h
+
+  ## fake a plot
+  par(mai = c(0,0,1.01,0))
+  plot(1:10, type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n")
+  
+  tmp <- legend("topleft", legend=filenames, lty=1, lwd=2,
+                col=1:length(filenames), plot=FALSE)
+
+  y.ax <- tmp$rect$h
+  x.ax <- tmp$rect$w
   ydiff <- par("usr")[4] - par("usr")[3]
+  xdiff <- par("usr")[2] - par("usr")[1]
+
+  
   ## If legend is too big, shrink to fit
-  if(y.ax < ydiff){
-    legend(0, par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
-           legend=filenames, lty=1, lwd=2, col=1:length(filenames))
+  if(y.ax < ydiff && x.ax < xdiff){
+    legend("topleft", legend=filenames, lty=1, lwd=2, col=1:length(filenames))
   }else{
     cexval <- 1
     while(y.ax > ydiff){
       cexval <- cexval - 0.05
-      y.ax <- legend(0, par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
-                     legend=filenames, lty=1, lwd=2, col=1:length(filenames), plot=FALSE, cex=cexval)$rect$h
+      tmp <- legend("topleft", legend=filenames, lty=1, lwd=2,
+                    col=1:length(filenames), plot=FALSE, cex=cexval)
+      y.ax <- tmp$rect$h
+      x.ax <- tmp$rect$w
     }
-    legend(0, par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
-           legend=filenames, lty=1, lwd=2, col=1:length(filenames), cex=cexval)
+    if(x.ax < xdiff){
+      legend("topleft", legend=filenames, lty=1, lwd=2, col=1:length(filenames), cex=cexval)
+    }else{
+      while(x.ax > xdiff){
+        cexval <- cexval - 0.05
+        x.ax <- legend("topleft", legend=filenames, lty=1, lwd=2,
+                       col=1:length(filenames), plot=FALSE, cex=cexval)$rect$w
+      }
+      legend("topleft", legend=filenames, lty=1, lwd=2, col=1:length(filenames), cex=cexval)
+    }
   }
 }
 
