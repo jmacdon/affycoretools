@@ -97,6 +97,7 @@ eset <- justRMA(cdfname = "hsfocushsentrezg7cdf")
 @ 
 
 <<echo=false, results=hide>>=
+library(affycoretools)
 load("../examples/exprSet.Rdata")
 @ 
 
@@ -107,6 +108,7 @@ in the \Rpackage{affycoretools} package, as the names for the
 output are in general extracted from the contrasts matrix.
 
 <<>>=
+library(limma)
 design <- model.matrix(~ 0 + factor(rep(1:4, each = 3)))
 colnames(design) <- LETTERS[1:4]
 contrast <- makeContrasts(A-B, C-D, levels = design)
