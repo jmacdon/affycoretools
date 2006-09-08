@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Select and Output Genelists Based on Venn Diagrams using biomaRt }
 \description{
-  This function is designed to output HTML tables based on
+  This function is designed to output HTML and text tables based on
   the results of a call to \code{\link[limma]{decideTests}}. This
   function is very similar to \code{vennSelect}, except it uses the
   \code{biomaRt} package to annotate genes, and the \code{annotate}
@@ -14,7 +14,7 @@ vennSelectBM(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
 stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
 foldFilt = NULL, save = FALSE, species, links = linksBM()[1:3],
 otherdata = annBM()[1:3], mysql = TRUE, ann.source = "entrezgene",
-affyid = FALSE, ...)
+html = TRUE, text = TRUE, affyid = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -65,6 +65,8 @@ affyid = FALSE, ...)
   \item{ann.source}{The annotation source of the IDs that will be used
     to annotate the genes. The default value is "entrezgene". See
     details for other possibilities.}
+  \item{html}{Boolean. Output HTML tables? Defaults to \code{TRUE}}
+  \item{text}{Boolean. Output text tables? Defaulst to \code{TRUE}}
   \item{affyid}{Boolean. Are the IDs used to annotate these data
     Affymetrix IDs?}
   \item{...}{Used to pass other variables to e.g., \code{htmlpage}.}

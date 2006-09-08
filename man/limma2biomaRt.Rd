@@ -6,7 +6,7 @@
   for Annotation }
 \description{
   This function is designed to take an \code{exprSet} and an \code{lmFit}, \code{model.matrix},
-  and contrast object from limma and convert into HTML tables using
+  and contrast object from limma and convert into HTML and text tables using
   biomaRt. The alternate function \code{limma2biomaRt.na} is designed to
   be run without user intervention.
 }
@@ -14,7 +14,7 @@
 limma2biomaRt(eset, fit, design, contrast, species, links = linksBM()[1:3],
 otherdata = annBM()[1:3], ann.source = "entrezgene", adjust = "fdr",
 number = 30, pfilt = NULL, fldfilt = NULL, tstat = TRUE,
-pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE,
+pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE, text = TRUE,
 save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
 = TRUE)
 }
@@ -49,7 +49,9 @@ save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
   \item{FC}{Boolean: Output fold changes in table? Defaults to \code{FALSE}. }
   \item{expression}{ Boolean: Output expression values in
     table? Defaults to \code{TRUE}. }
-  \item{html}{Boolean: Output data in HTML tables? Defaults to \code{TRUE}. }
+  \item{html}{Boolean: Output data in HTML tables? Defaults to
+    \code{TRUE}. }
+  \item{text}{Boolean: Output data in text tables? Defaults to \code{TRUE}}
   \item{save}{ Boolean: Save tables as R objects for further
     processing? Defaults to \code{FALSE}. }
   \item{addname}{ A character vector to add to the end of

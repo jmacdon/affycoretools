@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Convert Affy Probe ids to Annotated HTML Table using biomaRt }
 \description{
- A function to convert a vector of Affy ids to an annotated HTML
+ A function to convert a vector of Affy ids to an annotated HTML or text
  table. This function is very similar to \code{probes2table}, except it
    uses the \code{biomaRt} package to annotate genes, and the
    \code{annotate} package to create the HTML table.
@@ -11,7 +11,7 @@
 \usage{
 probes2tableBM(eset, probids, species, filename, otherdata = NULL,
  links = linksBM()[1:3], otherann = annBM()[1:3], ann.source = "entrezgene",
- express = TRUE, affyid = FALSE, mysql = TRUE)
+ express = TRUE, html = TRUE, text = TRUE, affyid = FALSE, mysql = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -36,6 +36,8 @@ probes2tableBM(eset, probids, species, filename, otherdata = NULL,
     details for other possibilities.}
   \item{express}{ Output expression values in table?
     Defaults to \code{TRUE}. }
+  \item{html}{Boolean. Output HTML table? Defaults to \code{TRUE}}
+  \item{text}{Boolean. Output text table? Defaults to \code{TRUE}}
   \item{affyid}{Boolean. Are the IDs used to annotate these data
     Affymetrix IDs?}
   \item{mysql}{Boolean. Should \code{biomaRt} use \code{RMySQL} to
