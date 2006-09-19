@@ -15,17 +15,19 @@
 
 <<echo=FALSE, results=hide>>=
 library(affycoretools)
-library(affy)
-library(limma)
+library(KEGG)
 library(xtable)
-library(annaffy)
-library(genefilter)
 ## Make pdfs folder if it doesn't exist
 if(!file.exists("pdfs"))
   dir.create("pdfs")
 pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
-dat <- ReadAffy()
-eset <- rma(dat)
+
+## no celfiles in package any more, fake this step
+#dat <- ReadAffy()
+#eset <- rma(dat)
+
+load("abatch.Rdata")
+load("exprSet.Rdata")
 
 ## load annotation package
 options(show.error.messages = FALSE)
@@ -40,7 +42,8 @@ do.call("library", list(annotation(eset)))
 write.table(exprs(eset), "Expression values.txt", quote = FALSE,
             sep = "\t", col.names = NA)
 @ 
-This analysis is based on microarrays that were processed in the microarray facility. 
+This analysis is based on microarrays that were processed in the microarray facility
+in August 2004. 
 Filenames and samples were as follows:
 
 \SweaveOpts{echo = false, prefix.string=pdfs/Statistical_analysis}
@@ -48,7 +51,7 @@ Filenames and samples were as follows:
 <<results=tex>>=
 ## Put a table of filenames and sample types in PDF
 type <- rep(LETTERS[1:4], each = 3)
-tmp <- data.frame(list.celfiles(), type)
+tmp <- data.frame(sampleNames(eset), type)
 names(tmp) <- c("Filenames","Samples")
 xtable(tmp)
 @
@@ -62,7 +65,7 @@ be used to check the overall quality of the raw data.
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6>>=
-plotHist(dat, list.celfiles())
+plotHist(dat, sampleNames(eset))
 @ 
 \caption{Plot of perfect match (PM) chip densities}
 \label{fig:digest}
@@ -81,7 +84,7 @@ separately.
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6>>=
-plotDeg(dat, list.celfiles())
+plotDeg(dat, sampleNames(eset))
 @ 
 \caption{RNA degradation plot}
 \label{fig:deg}
@@ -142,7 +145,7 @@ eset1 <- eset[index,]
 design <- model.matrix(~ 0 + factor(rep(1:4,each=3)))
 colnames(design) <- LETTERS[1:4]
 contrast <- makeContrasts(A - B, C - D, levels = design)
-fit <- lmFit(eset, design)
+fit <- lmFit(eset1, design)
 fit2 <- contrasts.fit(fit, contrast)
 fit2 <- eBayes(fit2)
 out <- limma2annaffy(eset1, fit2, design, contrast, annotation(eset),

@@ -191,8 +191,9 @@ plotDeg <- function(dat, filenames = NULL){
   }
 }
 
-plotPCA <- function(eset, groups, groupnames, addtext = NULL, x.coord = NULL, y.coord = NULL,
-                    screeplot = FALSE, squarepca = FALSE){
+plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
+                    screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, ...){
+  if(is.null(groupnames)) groupnames <- sampleNames(eset)
   pca <- prcomp(t(exprs(eset)))
   if(screeplot){
     plot(pca, main = "Screeplot")
@@ -202,17 +203,21 @@ plotPCA <- function(eset, groups, groupnames, addtext = NULL, x.coord = NULL, y.
       ylim <- c(-ylim, ylim)
     }else ylim <- NULL
     if(!is.null(groups)){
-      plot(pca$x[,1:2], pch=groups, col=groups, ylab="PC2", xlab="PC1",
-           main="Principal Components Plot", ylim = ylim)
+      if(is.null(pch)) pch <- groups
+      if(is.null(col)) col <- groups
+      plot(pca$x[,1:2], pch = pch, col = col, ylab="PC2", xlab="PC1",
+           main="Principal Components Plot", ylim = ylim, ...)
     }else{
-      plot(pca$x[,1:2], pch=1:length(filenames), col=1:length(filenames),
-           ylab="PC2", xlab="PC1", main="Principal Components Plot", ylim = ylim)
+      if(is.null(pch)) pch <- 0:length(sampleNames(eset))
+      if(is.null(col)) col <- 1:length(sampleNames(eset))
+      plot(pca$x[,1:2], pch=pch, col=col,
+           ylab="PC2", xlab="PC1", main="Principal Components Plot", ylim = ylim, ...)
     }
     if(is.null(addtext)){
-      pca.legend(pca, groupnames, groups, x.coord = x.coord, y.coord = y.coord)
+      pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
     }else{
-      smidge <-  pca.legend(pca, groupnames, groups, x.coord = x.coord, y.coord = y.coord,
-                            saveup = TRUE)
+      smidge <-  pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord,
+                            saveup = TRUE, ...)
       text(pca$x[,1], pca$x[,2] + smidge, label = addtext, cex = 0.7)
     }
   }
@@ -236,13 +241,14 @@ make.cl <- function(filenames){
   cl
 }
 
-pca.legend <- function(pca, groupnames, groups, x.coord = NULL, y.coord = NULL,
+pca.legend <- function(pca, groupnames, pch, col, x.coord = NULL, y.coord = NULL,
                        saveup = FALSE){
   ## A function to try to automagically place legend in a pca plot
 
-  groups <- sort(unique(groups))
-  x.lab <- legend(1, 1, legend = groupnames, pch = groups, plot = FALSE)$rect$w
-  y.lab <- legend(1, 1, legend = groupnames, pch = groups, plot = FALSE)$rect$h
+  pch <- sort(unique(pch))
+  col <- sort(unique(col))
+  x.lab <- legend(1, 1, legend = groupnames, pch = pch, plot = FALSE)$rect$w
+  y.lab <- legend(1, 1, legend = groupnames, pch = pch, plot = FALSE)$rect$h
   
 
   right <- par("usr")[2] - (par("usr")[2] - par("usr")[1])/100 - x.lab
@@ -258,21 +264,21 @@ pca.legend <- function(pca, groupnames, groups, x.coord = NULL, y.coord = NULL,
   where <- match(TRUE, c(upright, upleft, downleft, downright))
   if(!is.na(where)){
     if(where == 1)
-      legend(right, up + y.lab, legend=groupnames, pch=groups, col=groups)
+      legend(right, up + y.lab, legend=groupnames, pch=pch, col=col)
     if(where == 2)
-      legend(left - x.lab, up + y.lab, legend=groupnames, pch=groups, col=groups)
+      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col=col)
     if(where == 3)
-      legend(left - x.lab, down, legend=groupnames, pch=groups, col=groups)
+      legend(left - x.lab, down, legend=groupnames, pch=pch, col=col)
     if(where == 4)
-      legend(right, down, legend=groupnames, pch=groups, col=groups)
+      legend(right, down, legend=groupnames, pch=pch, col=col)
   }else if(!is.null(x.coord) & !is.null(y.coord)){
-    legend(x.coord, y.coord, legend = groupnames, pch = groups, col = groups)
+    legend(x.coord, y.coord, legend = groupnames, pch = pch, col = col)
   }else{
     answer <- readline("Please give the x-coordinate for a legend.")
     x.c <- as.numeric(answer)
     answer <- readline("Please give the y-coordinate for a legend.")
     y.c <- as.numeric(answer)
-    legend(x.c, y.c, legend=groupnames, pch=groups, col=groups)
+    legend(x.c, y.c, legend=groupnames, pch=pch, col=col)
   }
   if(saveup)
     return((par("usr")[4] - par("usr")[3])/50)

@@ -6,15 +6,19 @@
  This function makes a PCA plot from an exprSet
 }
 \usage{
-plotPCA(eset, groups, groupnames, addtext = NULL, x.coord = NULL,
-y.coord = NULL, screeplot = FALSE, squarepca = FALSE)
+plotPCA(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
+y.coord = NULL, screeplot = FALSE, squarepca = FALSE, pch = NULL, col =
+NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{eset}{ An \code{exprSet} }
-  \item{groups}{A numeric vector delineating group membership for samples. }
+  \item{groups}{A numeric vector delineating group membership for
+    samples. Default is \code{NULL}, in which case default plotting symbols and
+    colors will be used.}
   \item{groupnames}{A character vector describing the different
-    groups. }
+    groups. Default is \code{NULL}, in which case the sample names will
+    be used.}
   \item{addtext}{A character vector of additional text to be placed just
     above the plotting symbol for each sample. This is helpful if there
     are a lot of samples for identifying e.g., outliers.}
@@ -26,6 +30,16 @@ y.coord = NULL, screeplot = FALSE, squarepca = FALSE)
   \item{squarepca}{Should the y-axis of the PCA plot be made comparable
     to the x-axis? This may aid in interpretation of the PCA
     plot. Defaults to \code{FALSE}}
+  \item{pch}{A numeric vector indicating what plotting symbols to
+    use. Default is \code{NULL}, in which case default plotting symbols
+    will be used. Note that this argument will override the 'groups'
+    argument.}
+  \item{col}{A numeric or character vector indicating what color(s) to
+    use for the plotting symbols. Default is \code{NULL} in which case
+    default colors will be used. Note that this argument will override
+    the 'groups' argument.}
+  \item{...}{Further arguments to be passed to \code{plot}. See the help page
+    for \code{plot} for further information.}
 }
 
 \value{

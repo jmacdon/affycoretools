@@ -67,7 +67,7 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
   if(!class(mart) == "Mart")
     stop("The 'mart' argument must be a connection to a Biomart.")
   if(missing(annot))
-    return(names(choices[unlist(choices) %in% listAttributes(mart)]))
+    return(names(choices[unlist(choices) %in% listAttributes(mart)[,1]]))
   else{
     notchoice <- !annot %in% names(choices)
     if(any(notchoice))
@@ -78,7 +78,7 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
 
   ## check to see if the choices are available
   tmp <- unlist(choices[annot])
-  tst <- tmp %in% listAttributes(mart)
+  tst <- tmp %in% listAttributes(mart)[,1]
   if(any(!tst))
     warning(paste("The following annotation sources are not available at this mart\n",
                   "for this species and were not used:",
@@ -109,7 +109,7 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
 }
 
 getSymbol <- function(mart){
-  attributes <- listAttributes(mart)
+  attributes <- listAttributes(mart)[,1]
   symbol <- attributes[grep("_symbol", attributes)]
   if(length(symbol) == 0){
     symbol <- "nosymbolavailable"
@@ -137,7 +137,7 @@ annBM <- function(mart, annot){
     stop("The 'mart' argument must be a connection to a Biomart.")
   if(missing(annot)){
     choices$Symbol <- getSymbol(mart)
-    return(names(choices[unlist(choices) %in% listAttributes(mart)]))
+    return(names(choices[unlist(choices) %in% listAttributes(mart)[,1]]))
   }
   else{
     choices$Symbol <- getSymbol(mart)
@@ -150,7 +150,7 @@ annBM <- function(mart, annot){
   repository <- vector()
   ## check to see if the choices are available
   tmp <- unlist(choices[annot])
-  tst <- tmp %in% listAttributes(mart)
+  tst <- tmp %in% listAttributes(mart)[,1]
   if(any(!tst))
     warning(paste("The following annotation sources are not available at this mart\n",
                   "for this species and were not used:",
