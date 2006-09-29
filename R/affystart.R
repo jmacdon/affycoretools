@@ -194,6 +194,7 @@ plotDeg <- function(dat, filenames = NULL){
 plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, ...){
   if(is.null(groupnames)) groupnames <- sampleNames(eset)
+  if(is.factor(groupnames)) groupnames <- as.character(groupnames)
   pca <- prcomp(t(exprs(eset)))
   if(screeplot){
     plot(pca, main = "Screeplot")
