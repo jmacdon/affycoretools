@@ -18,6 +18,7 @@
 ##  Moved hyperGtable and hyperG2Affy to GOstats 2-23-06
 ###########################################
 
+## FIXME: this needs to change to use probeSetSummary() instead of hyperG2Affy().
 
 hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp = 1,
                            type = "MF", pvalue = 0.05, min.count = 10){

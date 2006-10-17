@@ -4,7 +4,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Function to Create HTML Tables from limma Objects }
 \description{
-  This function is designed to take an \code{exprSet} and an \code{lmFit}, \code{model.matrix},
+  This function is designed to take an \code{ExpressionSet} and an \code{lmFit}, \code{model.matrix},
   and contrast object from limma and convert into HTML tables using
   annaffy. The alternate function \code{limma2annaffy.na} is designed to
   be run without user intervention.
@@ -18,7 +18,7 @@ NULL, interactive = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ An \code{exprSet} containing affymetrix
+  \item{eset}{ An \code{ExpressionSet} containing affymetrix
     expression values. }
   \item{fit}{An \code{lmFit} object. }
   \item{design}{ A \code{model.matrix} object. }

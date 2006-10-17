@@ -253,6 +253,13 @@ vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth
     name <- c(paste("Genes unique to", colnames(x)),
               paste("Genes in intersection of", intNames(x)),
               "Genes common to all comparisons")
+  
+   ## Remove illegal characters from filenames
+  if(length(grep("[/|\\|?|*|:|<|>|\"|\|]", name)) > 0)
+    warning(paste("Some illegal characters have been removed from the filenames",
+                  name, sep = " "), call. = FALSE)
+  name <- gsub("[/|\\|?|*|:|<|>|\"|\|]", "", name)
+  
   indices <- makeIndices(x, method = method)
   cols <- getCols(design, contrast)
   for(i in seq(along = indices)){

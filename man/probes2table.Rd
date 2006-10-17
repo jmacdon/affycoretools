@@ -12,7 +12,7 @@ probes2table(eset, probids, lib, otherdata = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ An \code{exprSet} containing Affy expression
+  \item{eset}{ An \code{ExpressionSet} containing Affy expression
   values.}
   \item{probids}{ A vector of probe ids. }
    \item{lib}{ An annotation package for the Affy chips used. }

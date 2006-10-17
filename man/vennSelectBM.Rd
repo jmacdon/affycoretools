@@ -18,7 +18,7 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ A \code{\link[Biobase]{exprSet}} object.}
+  \item{eset}{ A \code{\link[Biobase]{ExpressionSet}} object.}
   \item{design}{ A \code{design} matrix, usually from a call to
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a

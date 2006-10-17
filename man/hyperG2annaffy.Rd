@@ -14,7 +14,7 @@ pvalue = 0.05, min.count = 10)
 \arguments{
   \item{probids}{ A vector of Affymetrix probe IDs}
   \item{lib}{ An annotation package (e.g., \code{hgu95av2})}
-  \item{eset}{An \code{exprSet}}
+  \item{eset}{An \code{ExpressionSet}}
   \item{fit}{ An \code{\link[limma]{lmFit}} object. Only necessary if
     statistics are desired in the resulting table. Defaults to \code{NULL}.}
   \item{subset}{A numeric vector used to select GO terms to output (see

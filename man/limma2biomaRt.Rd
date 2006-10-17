@@ -5,7 +5,7 @@
 \title{ Function to Create HTML Tables from limma Objects using biomaRt
   for Annotation }
 \description{
-  This function is designed to take an \code{exprSet} and an \code{lmFit}, \code{model.matrix},
+  This function is designed to take an \code{ExpressionSet} and an \code{lmFit}, \code{model.matrix},
   and contrast object from limma and convert into HTML and text tables using
   biomaRt. The alternate function \code{limma2biomaRt.na} is designed to
   be run without user intervention.
@@ -20,7 +20,7 @@ save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ An \code{exprSet} containing affymetrix
+  \item{eset}{ An \code{ExpressionSet} containing affymetrix
     expression values. }
   \item{fit}{An \code{lmFit} object. }
   \item{design}{ A \code{model.matrix} object. }

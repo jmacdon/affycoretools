@@ -15,7 +15,7 @@ probes2tableBM(eset, probids, species, filename, otherdata = NULL,
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ An \code{exprSet} containing Affy expression
+  \item{eset}{ An \code{ExpressionSet} containing Affy expression
   values.}
   \item{probids}{ A vector of probe ids. }
   \item{species}{The species name. This must be in a particular format

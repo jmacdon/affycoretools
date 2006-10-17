@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Output Fold Change Data }
 \description{
-  This function is designed to take an \code{exprSet} and some
+  This function is designed to take an \code{ExpressionSet} and some
   comparisons and output either HTML tables, text files, or both.
 }
 \usage{
@@ -12,7 +12,7 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{An \code{exprSet} object}
+  \item{object}{An \code{ExpressionSet} object}
   \item{fold}{The log fold change cutoff to use. Note that this is log
     base two.}
   \item{groups}{A vector of group identifiers. Probably easiest to use a
@@ -52,11 +52,11 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
   Without attaching a data file to this package, it is not possible to
   give a working example. Instead, here is a 'for instance'.
 
-  Say you have an \code{exprSet} containing four Affy HG-U133Plus2
+  Say you have an \code{ExpressionSet} containing four Affy HG-U133Plus2
   chips. There is no replication, and you simply want to output genes
   with a two-fold or greater difference between the first chip and each
   of the last three (the first chip is the control, and the other three
-  are experimentals). The \code{exprSet} is called eset.
+  are experimentals). The \code{ExpressionSet} is called eset.
 
   Additionally, say we don't want any genes called significant if both
   of the samples have very low expression. We can set up a filter using

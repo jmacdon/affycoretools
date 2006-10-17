@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{ Output Fold Change Data using biomaRt }
 \description{
-  This function is designed to take an \code{exprSet} and some
+  This function is designed to take an \code{ExpressionSet} and some
   comparisons and output HTML tables. It is very similar to
   \code{foldFilt} except it uses the \code{biomaRt} package to annotate
   genes and the annotate package to create the HTML table(s).
@@ -15,7 +15,7 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{An \code{exprSet} object}
+  \item{object}{An \code{ExpressionSet} object}
   \item{fold}{The log fold change cutoff to use. Note that this is log
     base two.}
   \item{groups}{A vector of group identifiers. Probably easiest to use a

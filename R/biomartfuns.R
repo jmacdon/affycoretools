@@ -561,7 +561,7 @@ foldFiltBM <- function(object, fold = 1, groups, comps, compnames, species,
                        ann.source = "entrezgene", affyid = FALSE, mysql = TRUE, html = TRUE,
                        text = TRUE, save = FALSE){
  
-  if(is(object, "exprSet"))
+  if(is(object, "exprSet") || is(object, "ExpressionSet"))
     x  <- exprs(object)
   if(length(unique(groups)) != length(groups)){
     gps <- matrix(NA, nc = length(unique(groups)), nr = dim(x)[1])
