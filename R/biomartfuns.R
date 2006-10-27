@@ -347,11 +347,11 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
         filename <- colnames(contrast)[i]
         if (!is.null(addname)) 
           filename <- paste(filename, addname, sep = " ")
-        if (length(grep("[/|\\|?|*|:|<|>|\"||]", filename)) > 
+        if (length(grep("[/|\\|?|*|:|<|>|\"|\\|]", filename)) > 
             0) 
           warning(paste("Some illegal characters have been removed from the filename", 
                         filename, sep = " "), call. = FALSE)
-        filename <- gsub("[/|\\|?|*|:|<|>|\"||]", "", 
+        filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", 
                          filename)
         probeids <- geneNames(eset)[index]
         if(affyid)
@@ -455,11 +455,11 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
       filename <- colnames(contrast)[i]
       if (!is.null(addname)) 
         filename <- paste(filename, addname, sep = " ")
-      if (length(grep("[/|\\|?|*|:|<|>|\"||]", filename)) > 
+      if (length(grep("[/|\\|?|*|:|<|>|\"|\\|]", filename)) > 
           0) 
         warning(paste("Some illegal characters have been removed from the filename", 
                       filename, sep = " "), call. = FALSE)
-      filename <- gsub("[/|\\|?|*|:|<|>|\"||]", "", 
+      filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", 
                        filename)
       probeids <- geneNames(eset)[index]
 

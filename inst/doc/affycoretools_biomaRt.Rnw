@@ -91,7 +91,7 @@ annotate.
 
 First, we compute expression values.
 
-<<eval = false>>=
+<<eval = FALSE>>=
 library(affycoretools)
 eset <- justRMA(cdfname = "hsfocushsentrezg7cdf")
 @ 

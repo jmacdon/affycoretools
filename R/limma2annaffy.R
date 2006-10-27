@@ -78,10 +78,10 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         if(!is.null(addname))
           filename <- paste(filename, addname, sep=" ")
         ## Remove illegal characters from filename
-        if(length(grep("[/|\\|?|*|:|<|>|\"|\|]", filename)) > 0)
+        if(length(grep("[/|\\|?|*|:|<|>|\"|\\|]", filename)) > 0)
           warning(paste("Some illegal characters have been removed from the filename",
                         filename, sep = " "), call. = FALSE)
-        filename <- gsub("[/|\\|?|*|:|<|>|\"|\|]", "", filename)
+        filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", filename)
         
         ## Make aafTable object
         probeids <- geneNames(eset)[index]
@@ -158,10 +158,10 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
       if(!is.null(addname))
         filename <- paste(filename, addname, sep=" ")
       ## Remove illegal characters from filename
-      if(length(grep("[/|\\|?|*|:|<|>|\"|\|]", filename)) > 0)
+      if(length(grep("[/|\\|?|*|:|<|>|\"|\\|]", filename)) > 0)
         warning(paste("Some illegal characters have been removed from the filename",
                       filename, sep = " "), call. = FALSE)
-      filename <- gsub("[/|\\|?|*|:|<|>|\"|\|]", "", filename)
+      filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", filename)
            
       ## Make aafTable object
       probeids <- geneNames(eset)[index]

@@ -28,7 +28,7 @@ hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp =
   tab <- lapply(tab, unique)
   for(i in seq(along = tab)){
     if(!is.null(fit)){
-      index <- tab[[i]] %in% geneNames(eset)
+      index <- geneNames(eset) %in% tab[[i]]
       ord <- order(abs(fit$t)[index], decreasing = TRUE)
       otherdata <- list("t-statistic" = round(fit$t[,comp][index][ord], 2),
                         "p-value" = round(p.adjust(fit$p.value[,comp], "fdr")[index][ord], 3),
