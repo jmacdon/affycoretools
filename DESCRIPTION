@@ -9,7 +9,7 @@ Description: Various wrapper functions that have been written to
 	might see.
 Maintainer: James W. MacDonald <jmacdon@med.umich.edu>
 License: Artistic
-Depends: affy, limma, GOstats, biomaRt, gcrma, Biobase, annotate, annaffy
+Depends: affy, limma, GOstats, biomaRt, gcrma, Biobase, annotate
 Imports: annaffy
 Suggests: hgfocus, hgfocuscdf, xtable
 biocViews: ReportWriting, Microarray, OneChannel, Preprocessing
