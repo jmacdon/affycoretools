@@ -192,7 +192,10 @@ plotDeg <- function(dat, filenames = NULL){
 }
 
 plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
-                    screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, ...){
+                    screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2), ...){
+  if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
+  if(max(pcs) > dim(exprs(eset))[2])
+    stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
   if(is.null(groupnames)) groupnames <- sampleNames(eset)
   if(is.factor(groupnames)) groupnames <- as.character(groupnames)
   pca <- prcomp(t(exprs(eset)))
@@ -200,26 +203,27 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
     plot(pca, main = "Screeplot")
   }else{
     if(squarepca){
-      ylim <- max(abs(range(pca$x[,1])))
+      ylim <- max(abs(range(pca$x[,pcs[1]])))
       ylim <- c(-ylim, ylim)
     }else ylim <- NULL
     if(!is.null(groups)){
       if(is.null(pch)) pch <- groups
       if(is.null(col)) col <- groups
-      plot(pca$x[,1:2], pch = pch, col = col, ylab="PC2", xlab="PC1",
+      plot(pca$x[,pcs], pch = pch, col = col, ylab= paste("PC", pcs[2], sep=""),
+           xlab=paste("PC", pcs[1], sep=""),
            main="Principal Components Plot", ylim = ylim, ...)
     }else{
       if(is.null(pch)) pch <- 0:length(sampleNames(eset))
       if(is.null(col)) col <- 1:length(sampleNames(eset))
-      plot(pca$x[,1:2], pch=pch, col=col,
-           ylab="PC2", xlab="PC1", main="Principal Components Plot", ylim = ylim, ...)
+      plot(pca$x[,pcs], pch=pch, col=col,
+           ylab=paste("PC", pcs[2]), xlab=paste("PC", pcs[1]), main="Principal Components Plot", ylim = ylim, ...)
     }
     if(is.null(addtext)){
       pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
     }else{
       smidge <-  pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord,
                             saveup = TRUE, ...)
-      text(pca$x[,1], pca$x[,2] + smidge, label = addtext, cex = 0.7)
+      text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext, cex = 0.7)
     }
   }
 }
