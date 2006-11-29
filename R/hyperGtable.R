@@ -22,13 +22,14 @@
 
 hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp = 1,
                            type = "MF", pvalue = 0.05, min.count = 10){
+  .Deprecated("hyperGoutput")
   tab <- hyperG2Affy(probids, lib, type, pvalue, min.count)
   if(!is.null(subset))
     tab <- tab[subset]
   tab <- lapply(tab, unique)
   for(i in seq(along = tab)){
     if(!is.null(fit)){
-      index <- geneNames(eset) %in% tab[[i]]
+      index <- featureNames(eset) %in% tab[[i]]
       ord <- order(abs(fit$t)[index], decreasing = TRUE)
       otherdata <- list("t-statistic" = round(fit$t[,comp][index][ord], 2),
                         "p-value" = round(p.adjust(fit$p.value[,comp], "fdr")[index][ord], 3),
@@ -40,4 +41,128 @@ hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp =
                    filename = paste(Term(get(names(tab)[i], GOTERM)), "genes", sep = " "))
     }
   }
+}
+
+hyperGoutput <- function(hyptObj, eset, pvalue, categorySize, fit = NULL,
+                         subset = NULL, comp = 1, output = c("selected", "all", "split"),
+                         statistics = c("tstat","pval","FC"), html = TRUE, text = TRUE, ...){
+  require(annotation(hyptObj), character.only = TRUE, quietly = TRUE)
+  if (!is(hyptObj, "GOHyperGResult")) 
+    stop("result must be a GOHyperGResult instance (or subclass)")
+  if(!all(output %in% c("significant", "all", "split")))
+    stop(paste(output, "is not a valid choice!",
+               "Please choose from 'significant', 'all', and 'split'.", call. = FALSE))
+  tmp <- probeSetSummary(hyptObj, pvalue, categorySize)
+  if(!is.null(subset))
+    tmp <- tmp[subset]
+  output <- match.arg(output)
+  for(i in seq(along = tmp)){
+    switch(output,
+           significant = houtSel(tmp[i], fit, comp, statistics, html, text),
+           all = houtAll(tmp[i], eset, fit, comp, statistics, html, text),
+           split = houtSplit(tmp[i], eset, fit, comp, statistics, html, text))
+  }
+}
+
+houtSel <- function(tab, fit, comp, statistics, html, text){
+  nam <- names(tab)
+  tab <- tab[[1]]
+  index <- tab[,3] == 1
+  prbs <- tab[index,2]
+  if(!is.null(fit)){
+    ord <- order(abs(fit$t[prbs,comp]), decreasing = TRUE)
+    otherdata <- extractStats(prbs[ord], fit, comp, statistics)
+    probes2table(eset, prbs[ord], annotation(eset), otherdata, html = html, text = text,
+                 filename = paste("Probesets annotated to", Term(get(nam, GOTERM))))
+  }else{
+    probes2table(eset, prbs, annotation(eset), html = html, text = text,
+                 filename =  paste("Probesets annotated to", Term(get(nam, GOTERM))))
+  }
+}
+
+houtAll <- function(tab, eset, fit, comp, statistics, html, text){
+  nam <- names(tab)
+  tab <- tab[[1]]
+  ## subset tab to those under consideration
+  index <- tab[,2] %in% featureNames(eset)
+  tab <- tab[index,]
+  tmpprbs <- tab[tab[,3] == 1,2]
+  if(!is.null(fit)){
+    ## First order the selected probesets, then the unselected ones
+    ord <- order(abs(fit2$t[tmpprbs,comp]), decreasing = TRUE)
+    oprbs <- tmpprbs[ord]
+    oegids <- tab[match(oprbs, tab[,2]),1]
+    smtab <- tab[tab[,3] == 0,]
+    prbs <- vector()
+    for(i in seq(along = oegids)){
+      index <- smtab[,1] %in% oegids[i]
+      ord <- order(abs(fit2$t[smtab[index,2],comp]), decreasing = TRUE)
+      prbs <- c(prbs, oprbs[i], smtab[index,2][ord])
+    }
+    otherdata <- extractStats(prbs, fit, comp, statistics)
+    probes2table(eset, prbs, annotation(eset), otherdata, html = html, text = text,
+                 filename = paste("Probesets annotated to", Term(get(nam, GOTERM))))
+  }else{
+    ord <- order(tab[,1], -tab[,3])
+    prbs <- tab[,2][ord]
+    probes2table(eset, prbs, annotation(eset), html = html, text = text,
+                 filename =  paste("Probesets annotated to", Term(get(nam, GOTERM))))
+  }
+}
+
+houtSplit <- function(tab, eset, fit, comp, statistics, html, text){
+  nam <- names(tab)
+  tab <- tab[[1]]
+  ## subset tab to those under consideration
+  index <- tab[,2] %in% featureNames(eset)
+  tab <- tab[index,]
+  tmpprbs <- tab[tab[,3] == 1,2]
+  if(!is.null(fit)){
+    ord <- order(abs(fit2$t[tmpprbs,comp]), decreasing = TRUE)
+    oprbs <- tmpprbs[ord]
+    oegids <- tab[match(oprbs, tab[,2]),1]
+    smtab <- tab[tab[,3] == 0,]
+    prbs <- oprbs
+    for(i in seq(along = oegids)){
+      index <- smtab[,1] %in% oegids[i]
+      ord <- order(abs(fit2$t[smtab[index,2],comp]), decreasing = TRUE)
+      prbs <- c(prbs, smtab[index,2][ord])
+    }
+    otherdata <- extractStats(prbs, fit, comp, statistics)
+    probes2table(eset, prbs, annotation(eset), otherdata, html = html, text = text,
+                 filename = paste("Probesets annotated to", Term(get(nam, GOTERM))))
+  }else{
+    ord <- order(-tab[,3], tab[,1])
+    prbs <- tab[,2][ord]
+    probes2table(eset, prbs, annotation(eset), html = html, text = text,
+                 filename =  paste("Probesets annotated to", Term(get(nam, GOTERM))))
+  }
+}
+
+extractStats <- function(prbs, fit, comp, statistics){
+  if(!all(statistics %in% c("tstat","pval","FC")))
+    stop(paste("The 'statistics' supplied (", statistics,") are not correct\n",
+               "valid values are 'tstat', 'pval', 'FC'.", call. = FALSE))
+  statistics <- as.list(statistics)
+  out <- lapply(statistics, function(x) {
+    switch(x,
+           tstat = round(fit$t[prbs,comp], 2),
+           pval = round(fit$p.value[prbs,comp],3),
+           FC = round(fit$coef[prbs,comp],2))})
+  nam <- vector()
+  for(i in seq(along = statistics))
+    nam[i] <- switch(statistics[[i]],
+                     tstat = "t-statistic",
+                     pval = "p-value",
+                     FC = "Fold change")
+  names(out) <- nam
+  out
+}
+  
+getUniqueLL <- function(probes, annot){
+  require(annotate, quietly = TRUE)
+  out <- getLL(probes, annot)
+  out <- out[match(unique(out), out)]
+  out <- out[!is.na(out)]
+  out
 }

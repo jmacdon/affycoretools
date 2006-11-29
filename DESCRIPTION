@@ -2,14 +2,13 @@ Package: affycoretools
 Date: 2005-12-12
 Title: Functions useful for those doing repetitive analyses
 	with Affymetrix GeneChips.
-Version: 1.7.2
+Version: 1.7.3
 Author: James W. MacDonald
 Description: Various wrapper functions that have been written to
 	streamline the more common analyses that a core Biostatistician
 	might see.
 Maintainer: James W. MacDonald <jmacdon@med.umich.edu>
 License: Artistic
-Depends: affy, limma, GOstats, biomaRt, gcrma, Biobase, annotate, xtable
-Imports: annaffy
+Depends: affy, limma, GOstats, biomaRt, gcrma, Biobase, annotate, xtable, annaffy
 Suggests: hgfocus, hgfocuscdf
 biocViews: ReportWriting, Microarray, OneChannel, Preprocessing

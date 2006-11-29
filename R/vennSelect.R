@@ -263,7 +263,7 @@ vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth
   indices <- makeIndices(x, method = method)
   cols <- getCols(design, contrast)
   for(i in seq(along = indices)){
-    tmp <- geneNames(eset)[indices[[i]]]
+    tmp <- featureNames(eset)[indices[[i]]]
     if(stat == "fstat")
       otherdata <- f.stat.dat(fit, indices[[i]], contrast, adj.meth, c(stat, otherstats),
                               order.by, ncontrasts, i)

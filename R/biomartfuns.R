@@ -204,7 +204,7 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
   indices <- makeIndices(x, method = method)
   cols <- getCols(design, contrast)
   for (i in seq(along = indices)) {
-    tmp <- geneNames(eset)[indices[[i]]]
+    tmp <- featureNames(eset)[indices[[i]]]
     if(stat == "fstat")
       stats <- f.stat.dat(fit, indices[[i]], contrast, adj.meth, c(stat, otherstats),
                               order.by, ncontrasts, i)
@@ -353,7 +353,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
                         filename, sep = " "), call. = FALSE)
         filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", 
                          filename)
-        probeids <- geneNames(eset)[index]
+        probeids <- featureNames(eset)[index]
         if(affyid)
           gn <- probeids
         else
@@ -461,7 +461,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
                       filename, sep = " "), call. = FALSE)
       filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", 
                        filename)
-      probeids <- geneNames(eset)[index]
+      probeids <- featureNames(eset)[index]
 
       if(affyid)
         gn <- probeids

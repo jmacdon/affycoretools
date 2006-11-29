@@ -84,7 +84,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", filename)
         
         ## Make aafTable object
-        probeids <- geneNames(eset)[index]
+        probeids <- featureNames(eset)[index]
         anntable <- aafTableAnn(probeids, lib, anncols)
         if(tstat)
           testtable <- aafTable("t-statistic" = round(tables[[i]][,"t"],2))
@@ -164,7 +164,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
       filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", filename)
            
       ## Make aafTable object
-      probeids <- geneNames(eset)[index]
+      probeids <- featureNames(eset)[index]
       anntable <- aafTableAnn(probeids, lib, anncols)
       if(tstat)
         testtable <- aafTable("t-statistic" = round(tables[[i]][,"t"],2))
@@ -216,6 +216,6 @@ tableFilt <- function(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
     tab <- tab[tab[,"adj.P.Val"] < pfilt,]
   ## Filter on fold change
   if(!is.null(fldfilt))
-    tab <- tab[abs(tab[,"M"]) > fldfilt,]
+    tab <- tab[abs(tab[,"logFC"]) > fldfilt,]
   tab
 }

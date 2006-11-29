@@ -104,7 +104,7 @@ options(width = 70)
 
 <<eval = false, width = 6>>=
 library(affycoretools)
-pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
+pd <- new("AnnotatedDataFrame", data = read.table("pdata.txt", header = TRUE, row.names = 1))
 eset <- affystart(groups = rep(1:4, each = 3), 
                   groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")), 
                   phenoData = pd)
@@ -137,7 +137,9 @@ plotDeg(dat)
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
-pd <- read.phenoData("../examples/pdata.txt", header = TRUE, row.names = 1)
+pd <- new("AnnotatedDataFrame", 
+          data = read.table("../examples/pdata.txt", header = TRUE, row.names = 1))
+sampleNames(pd) <- sampleNames(eset)
 plotPCA(eset, groups = rep(1:4, each = 3), 
         groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")))
 phenoData(eset) <- pd
@@ -200,7 +202,7 @@ setwd("../examples")
 <<eval = FALSE>>=
 eset1 <- affystart(filenames = list.celfiles()[1:6], plot = FALSE, pca = FALSE)
 eset2 <- affystart(filenames = list.celfiles()[7:12], plot = FALSE, pca = FALSE)
-eset <- new("exprSet", exprs = cbind(exprs(eset1), exprs(eset2)), phenoData = pd,
+eset <- new("ExpressionSet", exprs = cbind(exprs(eset1), exprs(eset2)), phenoData = pd,
             annotation = annotation(eset1))
 @
 
