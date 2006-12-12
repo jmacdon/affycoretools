@@ -192,7 +192,8 @@ plotDeg <- function(dat, filenames = NULL){
 }
 
 plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
-                    screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2), ...){
+                    screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
+                    legend = TRUE, ...){
   if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
   if(max(pcs) > dim(exprs(eset))[2])
     stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
@@ -219,11 +220,13 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
            ylab=paste("PC", pcs[2]), xlab=paste("PC", pcs[1]), main="Principal Components Plot", ylim = ylim, ...)
     }
     if(is.null(addtext)){
-      pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
+        if(legend)
+            pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
     }else{
-      smidge <-  pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord,
-                            saveup = TRUE, ...)
-      text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext, cex = 0.7)
+        smidge <-  (par("usr")[4] - par("usr")[3])/50
+        text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext, cex = 0.7)
+        if(legend)
+            pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
     }
   }
 }

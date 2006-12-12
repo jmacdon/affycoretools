@@ -8,7 +8,7 @@
 \usage{
 plotPCA(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
 y.coord = NULL, screeplot = FALSE, squarepca = FALSE, pch = NULL, col =
-NULL, pcs = c(1,2), ...)
+NULL, pcs = c(1,2), legend = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,6 +40,8 @@ NULL, pcs = c(1,2), ...)
     the 'groups' argument.}
   \item{pcs}{A character vector of length two indicating which principal
     components to plot. Defaults to the first two principal components.}
+  \item{legend}{Boolean. Should a legend be added to the plot? Defaults
+    to \code{TRUE}}
   \item{...}{Further arguments to be passed to \code{plot}. See the help page
     for \code{plot} for further information.}
 }
