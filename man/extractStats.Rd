@@ -1,0 +1,34 @@
+\name{extractStats}
+\alias{extractStats}
+
+\title{Extract Statistics from an MArrayLM object}
+\description{
+  This is a utility function that can be used to extract the statistics
+  for a set of probesets from an \code{\link[limma]{MArrayLM}}
+  object. This may be useful for others, but currently is considered an
+  internal function and is not intended to be called by end users.
+}
+\usage{
+extractStats(prbs, fit, comp, statistics)
+}
+%- maybe also 'usage' for other objects documented here.
+\arguments{
+  \item{prbs}{ A vector of probe IDs}
+  \item{fit}{An \code{\link[limma]{MArrayLM}} object}
+  \item{comp}{Numeric vector of length one, designating which comparison
+    to select from the \code{\link[limma]{MArrayLM}} object}
+  \item{statistics}{Any or all of 'tstat', 'pval', 'FC', used to control
+    the output of statistics from the \code{\link[limma]{MArrayLM}}
+    object}
+}
+\details{
+  This is an internal function used to return a named list of
+  statistics, which can then be passed to \code{probes2table} for
+  creating HTML and/or text tables.
+}
+\value{
+ A named list that can have up to three vectors of statistics.
+}
+\author{James W. MacDonald <jmacdon@med.umich.edu> }
+
+\keyword{ internal}

@@ -3,7 +3,7 @@
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{A Function to Make a PCA Plot from an ExpressionSet }
 \description{
- This function makes a PCA plot from an ExpressionSet
+ This function makes a PCA plot from an ExpressionSet, exprSet or matrix
 }
 \usage{
 plotPCA(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
@@ -12,7 +12,7 @@ NULL, pcs = c(1,2), legend = TRUE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ An \code{ExpressionSet} }
+  \item{eset}{ An \code{ExpressionSet}, \code{exprSet} or matrix }
   \item{groups}{A numeric vector delineating group membership for
     samples. Default is \code{NULL}, in which case default plotting symbols and
     colors will be used.}

@@ -195,11 +195,26 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
                     legend = TRUE, ...){
   if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
-  if(max(pcs) > dim(exprs(eset))[2])
-    stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
-  if(is.null(groupnames)) groupnames <- sampleNames(eset)
-  if(is.factor(groupnames)) groupnames <- as.character(groupnames)
-  pca <- prcomp(t(exprs(eset)))
+  
+  if(is(eset, "ExpressionSet") || is(eset, "exprSet")){
+      if(max(pcs) > dim(exprs(eset))[2])
+          stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
+      if(is.null(groupnames)) groupnames <- sampleNames(eset)
+      if(is.factor(groupnames)) groupnames <- as.character(groupnames)
+      pca <- prcomp(t(exprs(eset)))
+      len <- length(sampleNames(eset))
+ }else{
+     if(class(eset) == "matrix"){
+         if(max(pcs) > dim(eset)[2])
+             stop(paste("There are only", dim(eset)[2], "principal components to plot.\n", call. = FALSE))
+         if(is.null(groupnames)) groupnames <- colnames(eset)
+         if(is.factor(groupnames)) groupnames <- as.character(groupnames)
+         pca <- prcomp(t(eset))
+         len <- dim(eset)[2]
+  }else{
+      stop("plotPCA currently only supports exprSet, ExpressionSet and matrices")
+  }
+ }
   if(screeplot){
     plot(pca, main = "Screeplot")
   }else{
@@ -214,8 +229,8 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
            xlab=paste("PC", pcs[1], sep=""),
            main="Principal Components Plot", ylim = ylim, ...)
     }else{
-      if(is.null(pch)) pch <- 0:length(sampleNames(eset))
-      if(is.null(col)) col <- 1:length(sampleNames(eset))
+      if(is.null(pch)) pch <- 0:(len-1)
+      if(is.null(col)) col <- 1:len
       plot(pca$x[,pcs], pch=pch, col=col,
            ylab=paste("PC", pcs[2]), xlab=paste("PC", pcs[1]), main="Principal Components Plot", ylim = ylim, ...)
     }
