@@ -17,7 +17,7 @@ foldFilt = NULL, save = FALSE, ...)
   \item{design}{ A \code{design} matrix, usually from a call to
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
-    call to \code{\link[limma]{designTests}}.}
+    call to \code{\link[limma]{decideTests}}.}
   \item{contrast}{A contrasts matrix, produced either by hand, or by a
     call to \code{\link[limma]{makeContrasts}}}
    \item{fit}{An \code{\link[limma]{MArrayLM}} object, from a call to

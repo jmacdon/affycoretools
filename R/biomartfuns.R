@@ -267,9 +267,11 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
 
   
   if(!interactive){
-    limma2biomaRt.na(eset, fit, design, contrast, species, links, otherdata, ann.source,
-                     adjust, number, pfilt, fldfilt, tstat, pval, FC, expression,
-                     html, save, addname, affyid, mysql)
+    limma2biomaRt.na(eset=eset, fit=fit, design=design, contrast=contrast, species=species,
+                     links=links, otherdata=otherdata, ann.source=ann.source,
+                     adjust=adjust, number=number, pfilt=pfilt, fldfilt=fldfilt,
+                     tstat=tstat, pval=pval, FC=FC, expression=expression,
+                     html=html, save=save, addname=addname, affyid=affyid, mysql=mysql)
   }else{
     require(biomaRt, quietly = TRUE)
     mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""),
@@ -277,7 +279,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
 
     ## check to see if ann.source is available
 
-    if(!ann.source %in% listFilters(mart)){
+    if(!ann.source %in% listFilters(mart)[,1]){
       cat(paste("Error: '", ann.source, "'is not an available annotation source for",
                 "this biomaRt or this species.\nAvailable choices are listed below:\n"))
       return(listFilters(mart))
@@ -414,7 +416,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
 
   ## check to see if ann.source is available
 
-  if(!ann.source %in% listFilters(mart)){
+  if(!ann.source %in% listFilters(mart)[,1]){
     cat(paste("Error: '", ann.source, "'is not an available annotation source for",
               "this biomaRt or this species.\nAvailable choices are listed below:\n"))
     return(listFilters(mart))
@@ -515,7 +517,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   
   ## check to see if ann.source is available
   
-  if(!ann.source %in% listFilters(mart)){
+  if(!ann.source %in% listFilters(mart)[,1]){
     cat(paste("Error: '", ann.source, "'is not an available annotation source for",
               "this biomaRt or this species.\nAvailable choices are listed below:\n"))
     return(listFilters(mart))
