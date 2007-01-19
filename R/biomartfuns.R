@@ -175,7 +175,7 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
 
   ## check to see if the ann.source is available
 
-  if(!ann.source %in% listFilters(mart)){
+  if(!ann.source %in% listFilters(mart)[,1]){
     cat(paste("Error: '", ann.source, "'is not an available annotation source for",
               "this biomaRt or this species.\nAvailable choices are listed below:\n"))
     return(listFilters(mart))
@@ -201,6 +201,12 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
   if (ncontrasts == 3) 
     name <- c(paste("Genes unique to", colnames(x)), paste("Genes in intersection of", 
                                                            intNames(x)), "Genes common to all comparisons")
+  ## Remove illegal characters from filenames
+  if(length(grep("[/|\\|?|*|:|<|>|\"|\\|]", name)) > 0)
+    warning(paste("Some illegal characters have been removed from the filenames",
+                  name, sep = " "), call. = FALSE)
+  name <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", name)
+  
   indices <- makeIndices(x, method = method)
   cols <- getCols(design, contrast)
   for (i in seq(along = indices)) {
@@ -239,10 +245,10 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
       table.head <- c(links$names, otherdata$names)
       if(!is.null(stats)){
         nam <- c(nam, stats$out)
-        nam$expression <- round(exprs(eset[,cols[[i]]])[tmp[stats$ord],], 3)
+        nam$expression <- round(exprs(eset[,cols[[i]]])[tmp[stats$ord], , drop = FALSE], 3)
         table.head <- c(table.head, names(stats$out))
       }else{
-        nam$expression <- round(exprs(eset[,cols[[i]]])[tmp,], 3)
+        nam$expression <- round(exprs(eset[,cols[[i]]])[tmp, , drop = FALSE], 3)
       }
       if(html)
         htmlpage(lnks, paste(name[i], "html", sep="."), name[i], nam,
