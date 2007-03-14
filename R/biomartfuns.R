@@ -390,7 +390,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
           testtable$fold.change <- round(fld,2)
         }
         if (expression) 
-          testtable$expression <- round(exprs(eset[, grps])[probeids,], 3)
+          testtable$expression <- round(exprs(eset[, grps])[probeids, , drop = FALSE], 3)
       }
       table.head <- c(links$names, otherdata$names,
                       c("t-statistic","p-value","Fold change")[c(tstat, pval, FC)],
@@ -497,7 +497,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
         testtable$fold.change <- round(fld,2)
       }
       if (expression) 
-        testtable$expression <- round(exprs(eset[, grps])[probeids,], 3)
+        testtable$expression <- round(exprs(eset[, grps])[probeids, , drop = FALSE], 3)
     }
     table.head <- c(links$names, otherdata$names,
                     c("t-statistic","p-value","Fold change")[c(tstat, pval, FC)],
@@ -554,7 +554,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   if(!is.null(otherdata))
     testtable <- c(testtable, otherdata)
   if(express)
-    testtable <- c(testtable, as.data.frame(round(exprs(eset)[probids,], 2)))
+    testtable <- c(testtable, as.data.frame(round(exprs(eset)[probids, , drop = FALSE], 2)))
   if(html)
     htmlpage(anntable, paste(filename, "html", sep = "."), filename, testtable,
              table.head, repository = as.list(links$repository))
