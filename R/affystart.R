@@ -196,9 +196,7 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
                     legend = TRUE, ...){
   if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
 
-  if(is.null(groupnames) && is.null(pch) || is.null(col))
-      stop("You need to supply either a groupnames or pch and col arguments to make a PCA plot!", call. = FALSE)
-  
+ 
   
   if(is(eset, "ExpressionSet") || is(eset, "exprSet")){
       if(max(pcs) > dim(exprs(eset))[2])
