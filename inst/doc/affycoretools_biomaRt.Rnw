@@ -6,6 +6,7 @@
 % \VignetteDepends{genefilter, annotate, biomaRt, RMySQL}
 % \VignetteKeywords{Expression Analysis, Postprocessing}
 % \VignettePackage{affycoretools}
+\SweaveOpts(keep.source=TRUE)
 
 \documentclass[11pt]{article}
 
@@ -124,7 +125,8 @@ fitting the model and computing contrasts, we can output all significant
 probesets with an adjusted $p$-value less than 0.05 using \Rfunction{limma2biomaRt}.
 
 <<eval=false>>=
-limma2biomaRt(eset, fit2, design, contrast, species = "hsapiens", pfilt = 0.05,
+limma2biomaRt(eset, fit2, design, contrast, 
+              species = "hsapiens", pfilt = 0.05,
               interactive = FALSE)
 @ 
 
@@ -167,7 +169,8 @@ Now if we want to output tables containing the probesets in each cell of the
 Venn diagram, we can use \Rfunction{vennSelectBM}.
 
 <<eval=false>>=
-vennSelectBM(eset, design, rslt, contrast, fit2, species = "hsapiens")
+vennSelectBM(eset, design, rslt, 
+             contrast, fit2, species = "hsapiens")
 @ 
 
 Note that there are two helper functions being used by these functions; \Rfunction{linksBM},
@@ -188,9 +191,11 @@ databases don't have gene symbols.
 
 <<>>=
 annBM()
-mart <- useMart("ensembl", "hsapiens_gene_ensembl")
+mart <- useMart("ensembl", 
+                "hsapiens_gene_ensembl")
 annBM(mart)
-mart <- useMart("ensembl", "celegans_gene_ensembl")
+mart <- useMart("ensembl", 
+                "celegans_gene_ensembl")
 annBM(mart)
 martDisconnect(mart)
 @ 
