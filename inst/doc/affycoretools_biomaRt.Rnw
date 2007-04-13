@@ -6,7 +6,7 @@
 % \VignetteDepends{genefilter, annotate, biomaRt, RMySQL}
 % \VignetteKeywords{Expression Analysis, Postprocessing}
 % \VignettePackage{affycoretools}
-\SweaveOpts(keep.source=TRUE)
+\SweaveOpts{keep.source=TRUE}
 
 \documentclass[11pt]{article}
 

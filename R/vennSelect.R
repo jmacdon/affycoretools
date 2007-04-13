@@ -160,7 +160,7 @@ getStat <- function(stat, ncontrasts, num, fit, contrast, index, adj.meth){
     if(length(tmp[[num]]) == 1){
       out <- list("Fold change" = fit$coefficients[index,tmp[[num]]])
     }else{
-      out <- as.list(as.data.frame(fit$coefficients[index,tmp[[num]]]))
+      out <- as.list(as.data.frame(fit$coefficients[index,tmp[[num]], drop = FALSE]))
       names(out) <- paste("Fold change for ", colnames(contrast)[tmp[[num]]], sep = "")
     }
   
