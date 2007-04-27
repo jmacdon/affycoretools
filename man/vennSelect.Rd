@@ -13,7 +13,7 @@ foldFilt = NULL, save = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ A \code{\link[Biobase]{ExpressionSet}} object.}
+  \item{eset}{ A \code{\link[Biobase:class.ExpressionSet]{ExpressionSet}} object.}
   \item{design}{ A \code{design} matrix, usually from a call to
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
@@ -60,8 +60,8 @@ foldFilt = NULL, save = FALSE, ...)
   \code{TestResults} object, which come from the contrasts matrix, so
   it is important to use something descriptive. Second, the method
   argument is analogous to the \code{include} argument from
-  \code{\link[limma]{vennCounts}} or
-  \code{\link[limma]{vennDiagram}}. Choosing "both" will select genes
+  \code{\link[limma:venn]{vennCounts}} or
+  \code{\link[limma:venn]{vennDiagram}}. Choosing "both" will select genes
   that are differentially expressed in one or more comparisons,
   regardless of direction. Choosing "up" or "down" will select genes
   that are only differentially expressed in one direction. Choosing
@@ -91,7 +91,7 @@ foldFilt = NULL, save = FALSE, ...)
   out <- vennSelect(eset, fit, design, x, save = TRUE)
 
   An alternative would be to use \code{vennCounts2} and
-  \code{\link[limma]{vennDiagram}} to output a Venn diagram, which is
+  \code{\link[limma:venn]{vennDiagram}} to output a Venn diagram, which is
   probably more reasonable since the tables being output are supposed to
   be based on a Venn diagram.
 }

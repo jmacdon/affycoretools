@@ -51,14 +51,15 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
  1.) Compute expression values
  2.) Fit a model using \code{limma}
  3.) Output significant probesets using \code{limma2annaffy}
- 4.) Perform hypergeometric test using \code{\link[Category]{hyperGTest}}
+ 4.) Perform hypergeometric test using
+ \code{\link[Category:HyperGResult-accessors]{hyperGTest}}
 
  At step 4, one can output a list of the over-represented terms using
- \code{\link[Category]{htmlReport}}. One might then be interested in
+ \code{\link[Category:HyperGResult-accessors]{htmlReport}}. One might then be interested in
  knowing which probesets contributed to the significance of a particular
  term, which is what this function is designed to do.
 
- One argument that can be passed to \code{\link[Category]{htmlReport}}
+ One argument that can be passed to \code{\link[Category:HyperGResult-accessors]{htmlReport}}
  (and also to \code{hyperGoutput}) is \code{categorySize}, which gives a
  lower bound for the number of probesets with a particular term in the
  universe. In other words, assume that a particular GO term is annotated
@@ -83,10 +84,10 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
  terms, which may end up being quite a few tables. Usually only a few
  terms are of interest, so there is a \code{subset} argument that can be
  used to select only those terms. This argument follows directly from
- the order of the table output by \code{\link[Category]{htmlReport}} or
- \code{\link[GOstats]{summary}}. For instance, if the first, third and
+ the order of the table output by \code{\link[Category:HyperGResult-accessors]{htmlReport}} or
+ \code{\link[GOstats:GOHyperGResult-class]{summary}}. For instance, if the first, third and
  fifth terms in the HTML table output by
- \code{\link[Category]{htmlReport}} were of interest, one would use
+ \code{\link[Category:HyperGResult-accessors]{htmlReport}} were of interest, one would use
  subset=c(1,3,5).
 
  One critical step prior to the hypergeometric test is to subset the

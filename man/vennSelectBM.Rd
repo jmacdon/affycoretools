@@ -18,11 +18,11 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ A \code{\link[Biobase]{ExpressionSet}} object.}
+  \item{eset}{ A \code{\link[Biobase:class.ExpressionSet]{ExpressionSet}} object.}
   \item{design}{ A \code{design} matrix, usually from a call to
     \code{model.matrix}. See details for more information.}
   \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
-    call to \code{\link[limma]{designTests}}.}
+    call to \code{\link[limma]{decideTests}}.}
   \item{contrast}{A contrasts matrix, produced either by hand, or by a
     call to \code{\link[limma]{makeContrasts}}}
    \item{fit}{An \code{\link[limma]{MArrayLM}} object, from a call to
@@ -83,7 +83,7 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
   Affymetrix IDs. To find out the correct name to use for the ann.source
   argument, one can create a connection to a Biomart database using
   \code{\link[biomaRt]{useMart}} and then deduce the correct argument by
-  the output from \code{\link[biomaRt]{listFilters(mart)}}. It will usually be
+  the output from \code{listFilters(mart)}. It will usually be
   something starting with 'affy', and contain the name of the chip.
 
   If one is using one of the re-mapped CDFs from MBNI at University of

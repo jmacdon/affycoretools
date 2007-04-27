@@ -14,7 +14,7 @@ vennSelectFC(eset, x, comps, order.by = "sum", method =
 "same", text = TRUE, html = TRUE, ...)
 }
 \arguments{
-  \item{eset}{A \code{\link[Biobase]{ExpressionSet}} object.}
+  \item{eset}{A \code{\link[Biobase:class.ExpressionSet]{ExpressionSet}} object.}
   \item{x}{An indicator matrix showing up or down regulation based on
     fold change, usually from a call to \code{foldFilt}. See details for
     more information.}
@@ -61,7 +61,7 @@ vennSelectFC(eset, x, comps, order.by = "sum", method =
   vector of the number of probesets in each comparison, the second item
   being an indicator matrix showing up or down regulation based on a
   two-fold difference. We could make a Venn diagram using this matrix
-  with \code{vennCounts2} and \code{\link[limma]{vennDiagram}}. If we
+  with \code{vennCounts2} and \code{\link[limma:venn]{vennDiagram}}. If we
   then wanted to output the probesets in each cell of that Venn diagram,
   we could use \code{vennSelectFC} as follows:
 

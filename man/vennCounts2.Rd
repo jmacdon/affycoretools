@@ -34,7 +34,7 @@ vennCounts2(x, method = "same", fit = NULL, foldFilt = NULL)
   comparisons without any requirement that the direction be the same.
 }
 \value{
-  A \code{\link[limma]{VennCounts}} object.
+  A \code{\link[limma:venn]{VennCounts}} object.
 }
 \author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \examples{
