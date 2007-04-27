@@ -9,7 +9,9 @@
 \usage{
 affystart(..., filenames=NULL, groups = NULL, groupnames = NULL, plot =
 TRUE, pca = TRUE,  squarepca = FALSE, plottype="pdf", express = c("rma",
-"mas5", "gcrma"), addname = NULL, phenoData = new("phenoData"))
+"mas5", "gcrma"), addname = NULL, output = c("txt", "xls"), annotate =
+FALSE, ann.vec =  c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ"),
+phenoData = new("phenoData"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -35,6 +37,12 @@ TRUE, pca = TRUE,  squarepca = FALSE, plottype="pdf", express = c("rma",
   \item{addname}{ Used to append something to the name of the pca plot
     and the expression values output file (e.g., if function is run
     twice using different methods to compute expression values)}
+  \item{output}{Output expression values in either a text ("txt") file
+    or an Excel spreadsheet ("xls"). The latter requires the
+    \code{xlsReadWrite} package.}
+  \item{annotate}{Boolean. Add annotation data to the output file?}
+  \item{ann.vec}{A character vector of annotation data to add to the
+    output file.}
   \item{phenoData}{A \code{phenoData} object.}
 }
 

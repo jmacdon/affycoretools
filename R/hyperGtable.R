@@ -43,8 +43,8 @@ hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp =
   }
 }
 
-hyperGoutput <- function(hyptObj, eset, pvalue, categorySize, fit = NULL,
-                         subset = NULL, comp = 1, output = c("selected", "all", "split"),
+hyperGoutput <- function(hyptObj, eset, pvalue, categorySize, sigProbesets, fit = NULL,
+                         subset = NULL, comp = 1, output = c("significant", "all", "split"),
                          statistics = c("tstat","pval","FC"), html = TRUE, text = TRUE, ...){
   require(annotation(hyptObj), character.only = TRUE, quietly = TRUE)
   if (!is(hyptObj, "GOHyperGResult")) 
@@ -52,19 +52,20 @@ hyperGoutput <- function(hyptObj, eset, pvalue, categorySize, fit = NULL,
   if(!all(output %in% c("significant", "all", "split")))
     stop(paste(output, "is not a valid choice!",
                "Please choose from 'significant', 'all', and 'split'.", call. = FALSE))
-  tmp <- probeSetSummary(hyptObj, pvalue, categorySize)
+  tmp <- probeSetSummary(result=hyptObj, pvalue=pvalue, categorySize=categorySize,
+                         sigProbesets=sigProbesets)
   if(!is.null(subset))
     tmp <- tmp[subset]
   output <- match.arg(output)
   for(i in seq(along = tmp)){
     switch(output,
-           significant = houtSel(tmp[i], fit, comp, statistics, html, text),
+           significant = houtSel(tmp[i], eset, fit, comp, statistics, html, text),
            all = houtAll(tmp[i], eset, fit, comp, statistics, html, text),
            split = houtSplit(tmp[i], eset, fit, comp, statistics, html, text))
   }
 }
 
-houtSel <- function(tab, fit, comp, statistics, html, text){
+houtSel <- function(tab, eset, fit, comp, statistics, html, text){
   nam <- names(tab)
   tab <- tab[[1]]
   index <- tab[,3] == 1

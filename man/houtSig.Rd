@@ -9,7 +9,7 @@
  not intended to be called directly by the end user.
 }
 \usage{
-houtSel(tab, fit, comp, statistics, html, text)
+houtSel(tab, eset, fit, comp, statistics, html, text)
 houtAll(tab, eset, fit, comp, statistics, html, text)
 houtSplit(tab, eset, fit, comp, statistics, html, text)
 }

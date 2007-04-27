@@ -7,8 +7,8 @@
   based on the results from a call to hyperGtest.}
 }
 \usage{
-hyperGoutput(hyptObj, eset, pvalue, categorySize, fit = NULL,
-subset = NULL,comp = 1, output = c("selected", "all", "split"),
+hyperGoutput(hyptObj, eset, pvalue, categorySize, sigProbesets, fit = NULL,
+subset = NULL,comp = 1, output = c("significant", "all", "split"),
 statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
 }
 
@@ -21,6 +21,8 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
     \code{HyperGResult} object}
   \item{categorySize}{Number of terms in the universe required for a
     term to be significant. See details for more information}
+  \item{sigProbesets}{Vector of probeset IDs that were significant in
+    the original analysis.} 
   \item{fit}{An \code{\link[limma]{MArrayLM}} object, produced from a
     call to \code{\link[limma]{eBayes}}}
   \item{subset}{Numeric vector used to select particular tables to
@@ -49,7 +51,7 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
  1.) Compute expression values
  2.) Fit a model using \code{limma}
  3.) Output significant probesets using \code{limma2annaffy}
- 4.) Perform hypergeometric test using \code{\link[Category]{hyperGtest}}
+ 4.) Perform hypergeometric test using \code{\link[Category]{hyperGTest}}
 
  At step 4, one can output a list of the over-represented terms using
  \code{\link[Category]{htmlReport}}. One might then be interested in
@@ -91,18 +93,25 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
  probesets to unique Entrez Gene IDs. It should be noted however, that
  the functions used by \code{hypergOutput} will output all the probesets
  annotated to a particular term. The \code{output} argument is used to
- control this behavior. If output = "selected" (the default), then only
+ control this behavior. If output = "significant" (the default), then only
  those probesets that correspond to the original subsetting will be
  output. If output = "all", then all probesets will be output (grouped
  by Entrez ID), with the
- 'selected' probeset first. If output = "split", then all the probesets
- will be output, with all the 'selected' probesets first, followed by
+ 'significant' probeset first. If output = "split", then all the probesets
+ will be output, with all the 'significant' probesets first, followed by
  the other probesets, grouped by Entrez ID.
 
- Note that this functionality is reliant on the probesets being
- subsetted in a manner that keeps the probeset ID appended to the Entrez
- Gene ID. This can be accomplished by using either
+ Note that the 'significant' probesets come from one of two
+ sources. First, one can pass a character vector of probeset IDs
+ corresponding to those that were significant in the original analysis
+ (recommended). Second, if the \code{geneIds} slot of the \code{GOHyperGParams}
+ object containes a named vector of Entrez Gene IDs, then the names from
+ that vector will be used. This can be accomplished by using either
  \code{\link[genefilter]{findLargest}} or \code{getUniqueLL}.
+
+ Since the \code{geneIds} are by definition a unique set of Entrez Gene
+ IDs, any duplicate probeset IDs will have been removed, so the first
+ method is to be preferred for accuracy.
  
 }
 \value{

@@ -14,6 +14,8 @@
 affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
                       plot=TRUE, pca=TRUE, squarepca = FALSE, plottype="pdf",
                       express=c("rma", "mas5", "gcrma"), addname=NULL,
+                      output = c("txt", "xls"), annotate = FALSE,
+                      ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ"),
                       phenoData = new("phenoData")){
   require(affy, quietly=TRUE)
   if(is.null(filenames)){
@@ -36,12 +38,16 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
     require(gcrma, quietly=TRUE)
     eset <- gcrma(dat)
   }
-  if(express == "rma" |express == "gcrma"){
-    if(is.null(addname))
-      write.exprs(eset, "Expression values.txt", col.names=NA)
-    else
-      write.exprs(eset, paste("Expression values", paste(" ", addname), ".txt",  sep=""), col.names=NA)
-  }
+  if(express == "rma" || express == "gcrma"){
+    if(annotate){
+        ann <- addAnnot(eset, ann.vec = ann.vec)
+        out <- data.frame(ann, exprs(eset))
+        outPut(out, addname = addname, meth = output)
+    }else{
+        outPut(eset, addname = addname, meth = output)
+    }
+    
+}
   if(express == "mas5"){
     out <- round(exprs(eset), 2)
     calls1 <- exprs(calls)
@@ -55,11 +61,15 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
     nams <- NULL
     for(i in seq(along=filenames)) nams <- c(nams, filenames[i], "Call", "p-value")
     colnames(out.dat) <- nams
-    if(is.null(addname))
-       write.table(out.dat, "Expression values.txt", sep="\t", quote=FALSE, col.names=NA)
-    else
-      write.table(out.dat, paste("Expression values", paste(" ", addname), ".txt",  sep=""), sep="\t", quote=FALSE, col.names=NA)
-  }
+    if(annotate){
+        ann <- addAnnot(eset, ann.vec = ann.vec)
+        out <- data.frame(ann, out.dat)
+        outPut(out, addname = addname, meth = output)
+    }else{
+        outPut(out.dat, addname = addname, meth = output)
+    }
+}
+
 
    ##Plots
   
@@ -100,6 +110,56 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
   }
   return(eset)
 }
+
+addAnnot <- function(eset, ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ")){
+    require(annotation(eset), character.only = TRUE, quiet = TRUE) ||
+    stop(paste("The", annotation(eset), "package needs to be installed to annotate your data"),
+         call. = FALSE)
+    make.name <- function(x, y)
+        get(paste(x, y, sep = ""))
+    make.vec <- function(chip, annot, probes){
+        tmp <- mget(probes, make.name(chip, annot))
+    if(any(sapply(tmp, length) > 1))
+        sapply(tmp, function(x) paste(x, collapse = "//"))
+    else
+        unlist(tmp)
+    }
+    out <- data.frame(matrix(NA, ncol = length(ann.vec), nrow = length(featureNames(eset))),
+                      stringsAsFactors = FALSE)
+    for(i in seq(along = ann.vec))
+        out[,i] <- make.vec(annotation(eset), ann.vec[i], featureNames(eset))
+    names(out) <- ann.vec
+    row.names(out) <- featureNames(eset)
+    out
+}
+    
+
+outPut <- function(out, addname, meth = c("txt","xls")){
+    meth <- match.arg(meth, c("txt", "xls"))
+    
+    switch(meth,
+           txt = {
+               if(!is.null(addname)) nam <- paste("Expression values ",
+                                                  addname, ".txt", sep = "")
+               else nam <- "Expression values.txt"
+               if(is(out, "data.frame"))
+                   write.table(out, nam, quote = FALSE, sep = "\t",
+                               col.names = NA)
+               if(is(out, "ExpressionSet") || is(out, "exprSet"))
+                   write.exprs(out, nam, col.names = NA)
+           }, xls = {
+               require("xlsReadWrite", quietly = TRUE, character.only = TRUE) ||
+               stop("The xlsReadWrite package is required to output Excel files", call.=FALSE)
+               if(!is.null(addname)) nam <- paste("Expression values ",
+                                                  addname, ".xls", sep = "")
+               else nam <- "Expression values.xls"
+               if(is(out, "data.frame"))
+                   write.xls(out, nam)
+               if(is(out, "ExpressionSet") || is(out, "exprSet"))
+                   write.xls(exprs(out), nam)
+           })
+}
+           
 
 plotHist <- function(dat, filenames = NULL)
 {
