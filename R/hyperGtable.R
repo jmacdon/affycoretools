@@ -90,14 +90,14 @@ houtAll <- function(tab, eset, fit, comp, statistics, html, text){
   tmpprbs <- tab[tab[,3] == 1,2]
   if(!is.null(fit)){
     ## First order the selected probesets, then the unselected ones
-    ord <- order(abs(fit2$t[tmpprbs,comp]), decreasing = TRUE)
+    ord <- order(abs(fit$t[tmpprbs,comp]), decreasing = TRUE)
     oprbs <- tmpprbs[ord]
     oegids <- tab[match(oprbs, tab[,2]),1]
     smtab <- tab[tab[,3] == 0,]
     prbs <- vector()
     for(i in seq(along = oegids)){
       index <- smtab[,1] %in% oegids[i]
-      ord <- order(abs(fit2$t[smtab[index,2],comp]), decreasing = TRUE)
+      ord <- order(abs(fit$t[smtab[index,2],comp]), decreasing = TRUE)
       prbs <- c(prbs, oprbs[i], smtab[index,2][ord])
     }
     otherdata <- extractStats(prbs, fit, comp, statistics)
@@ -119,14 +119,14 @@ houtSplit <- function(tab, eset, fit, comp, statistics, html, text){
   tab <- tab[index,]
   tmpprbs <- tab[tab[,3] == 1,2]
   if(!is.null(fit)){
-    ord <- order(abs(fit2$t[tmpprbs,comp]), decreasing = TRUE)
+    ord <- order(abs(fit$t[tmpprbs,comp]), decreasing = TRUE)
     oprbs <- tmpprbs[ord]
     oegids <- tab[match(oprbs, tab[,2]),1]
     smtab <- tab[tab[,3] == 0,]
     prbs <- oprbs
     for(i in seq(along = oegids)){
       index <- smtab[,1] %in% oegids[i]
-      ord <- order(abs(fit2$t[smtab[index,2],comp]), decreasing = TRUE)
+      ord <- order(abs(fit$t[smtab[index,2],comp]), decreasing = TRUE)
       prbs <- c(prbs, smtab[index,2][ord])
     }
     otherdata <- extractStats(prbs, fit, comp, statistics)

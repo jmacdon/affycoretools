@@ -29,7 +29,7 @@ houtSplit(tab, eset, fit, comp, statistics, html, text)
 }
 \details{
   These functions control the output and ordering of the probesets for
-  the \code{hyperGoutput} function.}
+  the \code{hyperGoutput} function.
 }
 \value{
  Nothing is returned. These functions are called solely for their side

@@ -218,7 +218,7 @@ t.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
   }
   
   ord <- switch(order.by, pval = order(p.val[[1]]),
-                fstat = order(f.stat[[1]], decreasing = TRUE),
+                tstat = order(t.stat[[1]], decreasing = TRUE),
                 fc = order(fc[[1]], decreasing = TRUE))
   out <- lapply(out, function(x) x[ord])
   out <- lapply(out, round, 3)

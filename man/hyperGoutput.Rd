@@ -4,7 +4,7 @@
 \description{
   This function will output various tables containing probesets that are
   annotated to a particular GO, KEGG, or PFAM term. The tables are
-  based on the results from a call to hyperGtest.}
+  based on the results from a call to hyperGtest.
 }
 \usage{
 hyperGoutput(hyptObj, eset, pvalue, categorySize, sigProbesets, fit = NULL,
