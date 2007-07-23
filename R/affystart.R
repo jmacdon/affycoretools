@@ -51,7 +51,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
   if(express == "mas5"){
     out <- round(exprs(eset), 2)
     calls1 <- exprs(calls)
-    calls2 <- round(se.exprs(calls), 2)
+    calls2 <- round(assayDataElement(calls, "se.exprs"), 2)
     out.dat <- data.frame(cbind(out[,1],calls1[,1], calls2[,1]))
     if(dim(out)[2] > 1){
       for (i in 2:dim(out)[2]){
