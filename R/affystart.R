@@ -148,7 +148,7 @@ outPut <- function(out, addname, meth = c("txt","xls")){
                if(is(out, "ExpressionSet") || is(out, "exprSet"))
                    write.exprs(out, nam, col.names = NA)
            }, xls = {
-               library("xlsReadWrite", quietly = TRUE, character.only = TRUE) ||
+               require("xlsReadWrite", quietly = TRUE, character.only = TRUE) ||
                stop("The xlsReadWrite package is required to output Excel files", call.=FALSE)
                if(!is.null(addname)) nam <- paste("Expression values ",
                                                   addname, ".xls", sep = "")
