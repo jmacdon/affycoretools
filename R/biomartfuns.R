@@ -110,7 +110,7 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
 
 getSymbol <- function(mart){
   attributes <- listAttributes(mart)[,1]
-  symbol <- attributes[grep("_symbol", attributes)]
+  symbol <- attributes[grep("symbol", attributes)][1]
   if(length(symbol) == 0){
     symbol <- "nosymbolavailable"
   }

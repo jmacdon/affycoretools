@@ -20,7 +20,7 @@ library(xtable)
 ## Make pdfs folder if it doesn't exist
 if(!file.exists("pdfs"))
   dir.create("pdfs")
-pd <- read.phenoData("pdata.txt", header = TRUE, row.names = 1)
+pd <- read.AnnotatedDataFrame("pdata.txt", header = TRUE, row.names = 1)
 
 ## no celfiles in package any more, fake this step
 #dat <- ReadAffy()

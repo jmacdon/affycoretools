@@ -14,7 +14,7 @@
 #################################################
 
 limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
-                          anncols = aaf.handler()[c(1:3, 7:8, 10:13)], number = 30,
+                          anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30,
                           pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                           expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
                           addname = NULL, interactive = TRUE){
@@ -125,7 +125,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
 }
 
 "limma2annaffy.na" <- function(eset, fit, design, contrast, lib, adjust = "fdr",
-                               anncols = aaf.handler()[c(1:3, 7:8, 10:13)], number = 30,
+                               anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30,
                                pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                                expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
                                addname = NULL){

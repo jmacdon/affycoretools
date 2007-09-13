@@ -14,16 +14,15 @@
 affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
                       plot=TRUE, pca=TRUE, squarepca = FALSE, plottype="pdf",
                       express=c("rma", "mas5", "gcrma"), addname=NULL,
-                      output = c("txt", "xls"), annotate = FALSE,
-                      ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ"),
-                      phenoData = new("phenoData")){
+                      output = "txt", annotate = FALSE,
+                      ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ")){
   require(affy, quietly=TRUE)
   if(is.null(filenames)){
     filenames <- list.files(pattern="\\.[cC][eE][lL]$")
     if(length(filenames) == 0)
       stop("There are no celfiles in the current working directory!", call. = FALSE)
   }
-  dat <- read.affybatch(filenames = filenames, phenoData = phenoData)
+  dat <- ReadAffy(filenames = filenames )
   filenames <- sub("\\.[cC][eE][lL]$", "", filenames)
   
   express <- match.arg(express, c("rma","mas5","gcrma"))
@@ -147,17 +146,18 @@ outPut <- function(out, addname, meth = c("txt","xls")){
                                col.names = NA)
                if(is(out, "ExpressionSet") || is(out, "exprSet"))
                    write.exprs(out, nam, col.names = NA)
-           }, xls = {
-               require("xlsReadWrite", quietly = TRUE, character.only = TRUE) ||
-               stop("The xlsReadWrite package is required to output Excel files", call.=FALSE)
-               if(!is.null(addname)) nam <- paste("Expression values ",
-                                                  addname, ".xls", sep = "")
-               else nam <- "Expression values.xls"
-               if(is(out, "data.frame"))
-                   write.xls(out, nam)
-               if(is(out, "ExpressionSet") || is(out, "exprSet"))
-                   write.xls(exprs(out), nam)
-           })
+           }, ##xls = {
+              ## require("xlsReadWrite", quietly = TRUE, character.only = TRUE) ||
+              ## stop("The xlsReadWrite package is required to output Excel files", call.=FALSE)
+              ## if(!is.null(addname)) nam <- paste("Expression values ",
+              ##                                    addname, ".xls", sep = "")
+              ## else nam <- "Expression values.xls"
+              ## if(is(out, "data.frame"))
+              ##     write.xls(out, nam)
+              ## if(is(out, "ExpressionSet") || is(out, "exprSet"))
+              ##     write.xls(exprs(out), nam)
+          ## }
+           )
 }
            
 
