@@ -94,12 +94,12 @@ First, we compute expression values.
 
 <<eval = FALSE>>=
 library(affycoretools)
-eset <- justRMA(cdfname = "hsfocushsentrezg7cdf")
+eset <- justRMA(cdfname = "hsfocushsentrezgcdf")
 @ 
 
 <<echo=false, results=hide>>=
 library(affycoretools)
-load("../examples/exprSet.Rdata")
+load("exprSet2.Rdata")
 @ 
 
 Now we model the data using \Rpackage{limma}. Using a cell means

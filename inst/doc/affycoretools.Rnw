@@ -114,8 +114,8 @@ eset <- affystart(groups = rep(1:4, each = 3),
 
 <<echo = false, results=hide>>=
 library(affycoretools)
-load("../examples/abatch.Rdata")
-load("../examples/exprSet.Rdata")
+load("abatch.Rdata")
+load("exprSet.Rdata")
 @ 
 
 \begin{figure}
@@ -140,7 +140,7 @@ plotDeg(dat)
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
 pd <- new("AnnotatedDataFrame", 
-          data = read.table("../examples/pdata.txt", header = TRUE, row.names = 1))
+          data = read.table("pdata.txt", header = TRUE, row.names = 1))
 sampleNames(pd) <- sampleNames(eset)
 plotPCA(eset, groups = rep(1:4, each = 3), 
         groupnames = unique(paste(pData(pd)[,1], pData(pd)[,2], sep = "-")))
@@ -197,9 +197,7 @@ available in the \Rpackage{affyPLM} package), the next step is to make compariso
 lists of differentially expressed genes. Because of the obvious differences between the
 two sample sets, it is probably preferable to compute expression values separately and
 then combine the data.
-<<echo=false>>=
-setwd("../examples")
-@ 
+
 
 <<eval = FALSE>>=
 eset1 <- affystart(filenames = list.celfiles()[1:6], 
@@ -212,9 +210,7 @@ eset <- new("ExpressionSet",
             annotation = annotation(eset1))
 @
 
-<<echo=false>>= 
-setwd("../doc")
-@ 
+
 
 I do most of my analyses using the \Rpackage{limma} package. I find that this package is
 capable of analyzing most of the experiments that I see. I also like to use the
