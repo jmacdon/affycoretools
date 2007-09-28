@@ -75,6 +75,17 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
                  "' is not something I can use to make a hyperlink.\nPlease use linksBM()",
                  "to see a list of valid choices.", sep = ""), call. = FALSE)
   }
+  ## check to make sure the filter and attribute name for ann.source are the same
+  if(missing(affy.attr)){
+      att.name <- listAttributes(mart)[,1]
+      att.name <- att.name[grep("affy", att.name)]
+      if(!any(att.name %in% ann.source))
+          stop(paste("\n\nThe ann.source argument", ann.source, "is problematic because it is\n",
+                     "different from the corresponding attributes name. In this case you need to\n",
+                     "choose the correct attributes name from the following list and then re-run\n",
+                     "the function using that value for the affy.attr argument.\n\n",
+                     paste(att.name, collapse="\n")), call.=FALSE)
+  }
 
   ## check to see if the choices are available
   tmp <- unlist(choices[annot])
@@ -97,9 +108,14 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
                     adf_omim = "omim")
     repository <- c(repository, tmp2)
   }
-  
+
   if(affyid){
-    tmp <- c(ann.source, tmp)
+    ## kludge to account for the fact that the filter != attribute
+    ## for this particular chip
+    an.src <- switch(ann.source,
+                     affu_hg_u133a_2="affy_hg_u133a_v2",
+                     ann.source)
+    tmp <- c(an.src, tmp)
     annot <- c("Affymetrix ID", annot)
     repository <- c("affy", repository)
   }
@@ -107,6 +123,7 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
   out <- list(names = annot, repository = repository, links = tmp)
   out
 }
+
 
 getSymbol <- function(mart){
   attributes <- listAttributes(mart)[,1]
@@ -277,7 +294,8 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
                      links=links, otherdata=otherdata, ann.source=ann.source,
                      adjust=adjust, number=number, pfilt=pfilt, fldfilt=fldfilt,
                      tstat=tstat, pval=pval, FC=FC, expression=expression,
-                     html=html, save=save, addname=addname, affyid=affyid, mysql=mysql)
+                     html=html, save=save, addname=addname, affyid=affyid, mysql=mysql,
+                     affy.attr=affy.attr)
   }else{
     require(biomaRt, quietly = TRUE)
     mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""),
@@ -526,7 +544,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   if(!ann.source %in% listFilters(mart)[,1]){
     cat(paste("Error: '", ann.source, "'is not an available annotation source for",
               "this biomaRt or this species.\nAvailable choices are listed below:\n"))
-    return(listFilters(mart))
+    return(listFilter(mart))
   }
   
   ## Set up default data to retrieve

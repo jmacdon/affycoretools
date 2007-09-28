@@ -11,7 +11,7 @@
 ####################################################
 
 probes2table <- function(eset, probids, lib, otherdata = NULL,
-                         anncols=aaf.handler()[c(1:3, 7:8, 10:13)], html=TRUE,
+                         anncols=aaf.handler()[c(1:3, 6:7, 9:12)], html=TRUE,
                          text=FALSE, express = TRUE, save=FALSE,  filename){
 
   require(annaffy, quietly=TRUE)

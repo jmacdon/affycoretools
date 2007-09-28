@@ -7,7 +7,7 @@
 }
 \usage{
 probes2table(eset, probids, lib, otherdata = NULL,
- anncols = aaf.handler()[c(1:3, 7:8, 10:13)], html = TRUE, text = FALSE,
+ anncols = aaf.handler()[c(1:3, 6:7, 9:12)], html = TRUE, text = FALSE,
  express = TRUE, save = FALSE, filename)
 }
 %- maybe also 'usage' for other objects documented here.
