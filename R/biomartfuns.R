@@ -75,17 +75,6 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
                  "' is not something I can use to make a hyperlink.\nPlease use linksBM()",
                  "to see a list of valid choices.", sep = ""), call. = FALSE)
   }
-  ## check to make sure the filter and attribute name for ann.source are the same
-  if(missing(affy.attr)){
-      att.name <- listAttributes(mart)[,1]
-      att.name <- att.name[grep("affy", att.name)]
-      if(!any(att.name %in% ann.source))
-          stop(paste("\n\nThe ann.source argument", ann.source, "is problematic because it is\n",
-                     "different from the corresponding attributes name. In this case you need to\n",
-                     "choose the correct attributes name from the following list and then re-run\n",
-                     "the function using that value for the affy.attr argument.\n\n",
-                     paste(att.name, collapse="\n")), call.=FALSE)
-  }
 
   ## check to see if the choices are available
   tmp <- unlist(choices[annot])
@@ -112,24 +101,28 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
   if(affyid){
     ## kludge to account for the fact that the filter != attribute
     ## for this particular chip
+    ## because of this we also need to output the corrected ann.source
     an.src <- switch(ann.source,
-                     affu_hg_u133a_2="affy_hg_u133a_v2",
+                     affy_hg_u133a_2="affy_hg_u133a_v2",
                      ann.source)
     tmp <- c(an.src, tmp)
     annot <- c("Affymetrix ID", annot)
     repository <- c("affy", repository)
   }
   
-  out <- list(names = annot, repository = repository, links = tmp)
+  out <- list(names = annot, repository = repository, links = tmp,
+              ann.source = an.src)
   out
 }
 
 
 getSymbol <- function(mart){
   attributes <- listAttributes(mart)[,1]
-  symbol <- attributes[grep("symbol", attributes)][1]
+  symbol <- grep("symbol", attributes, value=TRUE)
   if(length(symbol) == 0){
-    symbol <- "nosymbolavailable"
+    symbol <- grep("hgnc", attributes, value=TRUE)
+    if(length(symbol) == 0)
+        symbol <- "nosymbolavailable"
   }
   symbol
 }
@@ -254,7 +247,7 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
                     na.value = "&nbsp;")
       ## If there isn't any info for a particular gene at the Biomart, an empty string
       ## is returned, so we need to put the original IDs into the output
-      lnks[[match(ann.source, names(lnks))]] <- gn
+      lnks[[match(links$ann.source, names(lnks))]] <- gn
       
       nam <- getBM(attributes = otherdata$links,
                    filter = ann.source, values = gn, mart = mart, output = "list",
@@ -390,7 +383,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
         ## Need to dump the 'values' into the anntable list - if no data at the mart,
         ## biomaRt just returns an empty string
         
-        anntable[[match(ann.source, names(anntable))]] <-  gn
+        anntable[[match(links$ann.source, names(anntable))]] <-  gn
         
         testtable <- getBM(attributes = otherdata$links, filter = ann.source,
                            values = gn, mart = mart, output = "list",
@@ -497,7 +490,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
       ## Need to dump the 'values' into the anntable list - if no data at the mart,
       ## biomaRt just returns an empty string
 
-      anntable[[match(ann.source, names(anntable))]] <-  gn
+      anntable[[match(links$ann.source, names(anntable))]] <-  gn
       
       testtable <- getBM(attributes = otherdata$links, filter = ann.source,
                          values = gn, mart = mart, output = "list",
@@ -543,7 +536,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   if(!ann.source %in% listFilters(mart)[,1]){
     cat(paste("Error: '", ann.source, "'is not an available annotation source for",
               "this biomaRt or this species.\nAvailable choices are listed below:\n"))
-    return(listFilter(mart))
+    return(listFilters(mart))
   }
   
   ## Set up default data to retrieve
@@ -561,7 +554,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   ## Need to dump the 'values' into the anntable list - if no data at the mart,
   ## biomaRt just returns an empty string
   
-  anntable[[match(ann.source, names(anntable))]] <-  gn
+  anntable[[match(links$ann.source, names(anntable))]] <-  gn
   
   testtable <- getBM(attributes = otherann$links, filter = ann.source,
                      values = gn, mart = mart, output = "list",
