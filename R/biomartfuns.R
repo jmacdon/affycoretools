@@ -294,8 +294,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
                      links=links, otherdata=otherdata, ann.source=ann.source,
                      adjust=adjust, number=number, pfilt=pfilt, fldfilt=fldfilt,
                      tstat=tstat, pval=pval, FC=FC, expression=expression,
-                     html=html, save=save, addname=addname, affyid=affyid, mysql=mysql,
-                     affy.attr=affy.attr)
+                     html=html, save=save, addname=addname, affyid=affyid, mysql=mysql)
   }else{
     require(biomaRt, quietly = TRUE)
     mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""),
