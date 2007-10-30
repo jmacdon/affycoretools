@@ -193,10 +193,10 @@ databases don't have gene symbols.
 annBM()
 mart <- useMart("ensembl", 
                 "hsapiens_gene_ensembl")
-annBM(mart)
+annBM(mart, species="hsapiens")
 mart <- useMart("ensembl", 
                 "celegans_gene_ensembl")
-annBM(mart)
+annBM(mart, species="celegans")
 martDisconnect(mart)
 @ 
 

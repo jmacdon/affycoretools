@@ -116,17 +116,6 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
 }
 
 
-getSymbol <- function(mart){
-  attributes <- listAttributes(mart)[,1]
-  symbol <- grep("symbol", attributes, value=TRUE)
-  if(length(symbol) == 0){
-    symbol <- grep("hgnc", attributes, value=TRUE)
-    if(length(symbol) == 0)
-        symbol <- "nosymbolavailable"
-  }
-  symbol
-}
-
   
 
 ## A function to either list out the sort of annotation that is available, but not
@@ -134,23 +123,29 @@ getSymbol <- function(mart){
 ## htmlpage(). As with linksBM(), we also check to ensure a given attribute is
 ## available for the given species.
 
-annBM <- function(mart, annot){
-  choices <- list("Symbol" = "nothingyet",
+annBM <- function(mart, annot, species){
+  if(!missing(species)) symbol <- switch(species,
+                                        "hsapiens" = "hgnc",
+                                        "mmusculus" = "markersymbol",
+                                        "rnorvegicus" = "markersymbol",
+                                        "external_gene_id")
+  else symbol <- "nothingyet"
+  
+  choices <- list("Symbol" = symbol,
                   "Description" = "description",
                   "GO" = "go_description",
                   "GOID" = "go",
                   "Chromosome" = "chromosome_name",
                   "ChromLoc" = "chromosome_location")
+  
   if(missing(mart))
     return(names(choices))
   if(!class(mart) == "Mart")
     stop("The 'mart' argument must be a connection to a Biomart.")
   if(missing(annot)){
-    choices$Symbol <- getSymbol(mart)
     return(names(choices[unlist(choices) %in% listAttributes(mart)[,1]]))
   }
   else{
-    choices$Symbol <- getSymbol(mart)
     notchoice <- !annot %in% names(choices)
     if(any(notchoice))
       stop(paste("'",paste(annot[notchoice], collapse = " and "),
@@ -195,7 +190,7 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
   ## set up data to retrieve
 
   links <- linksBM( mart, links, affyid, ann.source)
-  otherdata <- annBM(mart, otherdata)
+  otherdata <- annBM(mart, otherdata, species)
   
   if (!is.null(foldFilt)) {
     idx <- abs(fit$coefficients) > foldFilt
@@ -304,7 +299,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
  
     ## Set up default data to retrieve
     links <- linksBM(mart, links, affyid, ann.source)
-    otherdata <- annBM(mart, otherdata)
+    otherdata <- annBM(mart, otherdata, species)
     
     tables <- vector("list", dim(contrast)[2])
     for (i in seq(along = colnames(contrast))) {
@@ -440,7 +435,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
   
   ## Set up default data to retrieve
   links <- linksBM(mart, links, affyid, ann.source)
-  otherdata <- annBM(mart, otherdata)
+  otherdata <- annBM(mart, otherdata, species)
   
   tables <- vector("list", dim(contrast)[2])
   for (i in seq(along = colnames(contrast))) {
@@ -541,7 +536,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   
   ## Set up default data to retrieve
   links <- linksBM(mart, links, affyid, ann.source)
-  otherann <- annBM(mart, otherann)
+  otherann <- annBM(mart, otherann, species)
 
   ## get link data
 

@@ -89,6 +89,9 @@ vennSelectFC <- function(eset, x, comps, order.by = "sum", method = "same", text
   }
   comps <- lapply(tmp$comps, function(x) if(is.list(x)) unique(unlist(x)) else x)
   for(i in seq(along = fcList)){
+    ## skip empty cells  
+    if(length(fcList[[i]][[1]]) == 0)
+        next
     tmp <- featureNames(eset)[indices[[i]]][ord[[i]]]
     otherdata <- fcList[[i]]
     probes2table(eset[,comps[[i]]], tmp, annotation(eset), otherdata, html = html,
@@ -112,7 +115,7 @@ makeFCList <- function(x, indices, comps, dat){
   if(length(nam) == 2)
     tmp <- c(as.list(nam), list(nam))
   if(length(nam) == 3)
-    tmp <- c(as.list(nam), as.list(paste(nam[c(1,1,2)], nam[c(2,2,3)])), list(nam))
+    tmp <- c(as.list(nam), list(nam[1:2], nam[c(1,3)], nam[2:3]), list(nam))
   for(i in seq(along = out)) names(out[[i]]) <- tmp[[i]]
   return(list(out = out, comps = comps))
 }

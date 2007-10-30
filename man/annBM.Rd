@@ -14,7 +14,7 @@
   used by other functions for creating HTML pages. This last function
   doesn't have any real utility for the end user.
 }
-\usage{annBM(mart, annot)
+\usage{annBM(mart, annot, species)
 linksBM(mart, annot, affyid = FALSE, ann.source = NULL)
 }
 \arguments{
@@ -25,6 +25,7 @@ linksBM(mart, annot, affyid = FALSE, ann.source = NULL)
   \item{affyid}{Boolean. Are the IDs being annotated Affymetrix IDs?}
   \item{ann.source}{Character. The filter name to use if we are
     annotating Affymetrix IDs.}
+  \item{species}{A species name, of the form e.g., 'hsapiens'}
 }
 \details{
   The purpose of these functions is to either give an example of typical
