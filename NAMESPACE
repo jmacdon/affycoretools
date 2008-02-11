@@ -2,4 +2,4 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma, probes2table,
        affystart, plotDeg, plotHist, plotPCA, convert.back, hyperG2annaffy, vennSelectBM,
        limma2biomaRt, linksBM, annBM, foldFiltBM, probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL)
-import(annaffy, GOstats, biomaRt, tools)
+import(annaffy, GOstats, biomaRt, tools, AnnotationDbi)
