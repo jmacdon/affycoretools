@@ -104,8 +104,8 @@ makeIndices <- function(x, method = "same"){
       
 
 getCols <- function(design, contrast){
-  ## A function to get the correct columns of the exprSet to output based
-  ## on the design and contrasts matrices
+  ## A function to get the correct columns of the ExpressionSet
+  ## to output based on the design and contrasts matrices
   ## This is sort of a kludge and could probably be improved
   ncontrasts <- ncol(contrast)
   ids <- 1:dim(design)[1]
@@ -229,7 +229,7 @@ t.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
 vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
                        stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
                        foldFilt = NULL, save = FALSE, ...){
-  ## eset is exprSet containing data used for comparisons
+  ## eset is an ExpressionSet containing data used for comparisons
   ## design is a design matrix from limma
   ## x is a TestResults object from a call to decideTests()
   ## output is a list containing the probe IDs of genes from each comparison
@@ -279,6 +279,4 @@ vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth
   if(save)
     sapply(indices, sum)
 }
-    
-  
-  
+

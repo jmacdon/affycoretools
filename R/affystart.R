@@ -2,8 +2,8 @@
 ##
 ##  Copyright 2005 James W. MacDonald
 ##
-## affystart - functions to go from celfiles to exprSet
-##             with QC plots
+## affystart - functions to go from celfiles to
+##             ExpressionSet with QC plots
 ##
 ########################################################
 
@@ -144,7 +144,7 @@ outPut <- function(out, addname, meth = c("txt","xls")){
                if(is(out, "data.frame"))
                    write.table(out, nam, quote = FALSE, sep = "\t",
                                col.names = NA)
-               if(is(out, "ExpressionSet") || is(out, "exprSet"))
+               if(is(out, "ExpressionSet"))
                    write.exprs(out, nam, col.names = NA)
            }, ##xls = {
               ## require("xlsReadWrite", quietly = TRUE, character.only = TRUE) ||
@@ -154,7 +154,7 @@ outPut <- function(out, addname, meth = c("txt","xls")){
               ## else nam <- "Expression values.xls"
               ## if(is(out, "data.frame"))
               ##     write.xls(out, nam)
-              ## if(is(out, "ExpressionSet") || is(out, "exprSet"))
+              ## if(is(out, "ExpressionSet"))
               ##     write.xls(exprs(out), nam)
           ## }
            )
@@ -258,7 +258,7 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
 
  
   
-  if(is(eset, "ExpressionSet") || is(eset, "exprSet")){
+  if(is(eset, "ExpressionSet")){
       if(max(pcs) > dim(exprs(eset))[2])
           stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
       if(is.null(groupnames)) groupnames <- sampleNames(eset)
@@ -274,7 +274,7 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
          pca <- prcomp(t(eset))
          len <- dim(eset)[2]
   }else{
-      stop("plotPCA currently only supports exprSet, ExpressionSet and matrices")
+      stop("plotPCA currently only supports ExpressionSet and matrices")
   }
  }
   if(screeplot){
@@ -368,4 +368,3 @@ pca.legend <- function(pca, groupnames, pch, col, x.coord = NULL, y.coord = NULL
   if(saveup)
     return((par("usr")[4] - par("usr")[3])/50)
 }
-

@@ -12,7 +12,7 @@
 
 foldFilt <-function(object, fold = 1, groups, comps, compnames,
                     save = FALSE, text = TRUE, html = TRUE, filterfun = NULL){
-  if(is(object, "exprSet") || is(object, "ExpressionSet"))
+  if(is(object, "ExpressionSet"))
     x  <- exprs(object)
   if(length(unique(groups)) != length(groups)){
     gps <- matrix(NA, nc = length(unique(groups)), nr = dim(x)[1])
@@ -133,8 +133,3 @@ getOrder <- function(fcList, order.by){
                                median = order(abs(apply(data.frame(x), 1, median)),
                                  decreasing = TRUE))})
 }
-
-               
-                             
-
-                                        
