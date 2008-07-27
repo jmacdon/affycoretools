@@ -102,16 +102,16 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
     ## kludge to account for the fact that the filter != attribute
     ## for this particular chip
     ## because of this we also need to output the corrected ann.source
-    an.src <- switch(ann.source,
+    ann.source <- switch(ann.source,
                      affy_hg_u133a_2="affy_hg_u133a_v2",
                      ann.source)
-    tmp <- c(an.src, tmp)
+    tmp <- c(ann.source, tmp)
     annot <- c("Affymetrix ID", annot)
     repository <- c("affy", repository)
   }
   
   out <- list(names = annot, repository = repository, links = tmp,
-              ann.source = an.src)
+              ann.source = ann.source)
   out
 }
 
@@ -125,7 +125,7 @@ linksBM <- function(mart, annot, affyid = FALSE, ann.source = NULL){
 
 annBM <- function(mart, annot, species){
   if(!missing(species)) symbol <- switch(species,
-                                        "hsapiens" = "hgnc",
+                                        "hsapiens" = "hgnc_symbol",
                                         "mmusculus" = "markersymbol",
                                         "rnorvegicus" = "markersymbol",
                                         "external_gene_id")
