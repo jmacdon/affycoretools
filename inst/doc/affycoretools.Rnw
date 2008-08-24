@@ -2,7 +2,7 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{affycoretools Overview}
-% \VignetteDepends{affycoretools, affy, limma, hgfocuscdf, hgfocus}
+% \VignetteDepends{affycoretools, affy, limma, hgfocuscdf, hgfocus.db}
 % \VignetteDepends{genefilter, annaffy,}
 % \VignetteKeywords{Expression Analysis, Postprocessing}
 % \VignettePackage{affycoretools}

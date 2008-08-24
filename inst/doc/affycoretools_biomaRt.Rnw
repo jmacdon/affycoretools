@@ -2,7 +2,7 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{affycoretools biomaRt Integration}
-% \VignetteDepends{affycoretools, affy, limma, hgfocuscdf, hgfocus}
+% \VignetteDepends{affycoretools, affy, limma, hgfocuscdf, hgfocus.db}
 % \VignetteDepends{genefilter, annotate, biomaRt, RMySQL}
 % \VignetteKeywords{Expression Analysis, Postprocessing}
 % \VignettePackage{affycoretools}
