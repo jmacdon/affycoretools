@@ -2,7 +2,7 @@
 % likely to be overwritten.
 %
 % \VignetteIndexEntry{affycoretools Overview}
-% \VignetteDepends{affycoretools, affy, limma, hgfocuscdf, hgfocus.db}
+% \VignetteDepends{affycoretools, affy, limma, hgfocuscdf}
 % \VignetteDepends{genefilter, annaffy,}
 % \VignetteKeywords{Expression Analysis, Postprocessing}
 % \VignettePackage{affycoretools}
@@ -103,7 +103,7 @@ options(width = 70)
 @ 
 
 <<eval = false, width = 6>>=
-library(affycoretools)
+library("affycoretools")
 pd <- new("AnnotatedDataFrame", 
           data = read.table("pdata.txt", header = TRUE, row.names = 1))
 eset <- affystart(groups = rep(1:4, each = 3), 

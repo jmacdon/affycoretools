@@ -10,5 +10,5 @@ Description: Various wrapper functions that have been written to
 Maintainer: James W. MacDonald <jmacdon@med.umich.edu>
 License: Artistic
 Depends: affy, limma, GOstats, biomaRt, gcrma, Biobase, annotate, xtable, annaffy, AnnotationDbi
-Suggests: hgfocus.db, hgfocuscdf
+Suggests: hgfocuscdf
 biocViews: ReportWriting, Microarray, OneChannel, Preprocessing
