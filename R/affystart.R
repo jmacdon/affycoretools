@@ -346,18 +346,18 @@ pca.legend <- function(pca, groupnames, pch, col, x.coord = NULL, y.coord = NULL
   downright <- !any(pca$x[,1] > right & pca$x[,2] < down)
   downleft <- !any(pca$x[,1] < left & pca$x[,2] < down)
   
-  where <- match(TRUE, c(upright, upleft, downleft, downright))
-  if(!is.na(where)){
-    if(where == 1)
-      legend(right, up + y.lab, legend=groupnames, pch=pch, col=col)
-    if(where == 2)
-      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col=col)
-    if(where == 3)
-      legend(left - x.lab, down, legend=groupnames, pch=pch, col=col)
-    if(where == 4)
-      legend(right, down, legend=groupnames, pch=pch, col=col)
-  }else if(!is.null(x.coord) & !is.null(y.coord)){
+  whereto <- match(TRUE, c(upright, upleft, downleft, downright))
+   if(!is.null(x.coord) & !is.null(y.coord)){
     legend(x.coord, y.coord, legend = groupnames, pch = pch, col = col)
+  }else if(!is.na(whereto)){
+    if(whereto == 1)
+      legend(right, up + y.lab, legend=groupnames, pch=pch, col=col)
+    if(whereto == 2)
+      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col=col)
+    if(whereto == 3)
+      legend(left - x.lab, down, legend=groupnames, pch=pch, col=col)
+    if(whereto == 4)
+      legend(right, down, legend=groupnames, pch=pch, col=col)
   }else{
     answer <- readline("Please give the x-coordinate for a legend.")
     x.c <- as.numeric(answer)
