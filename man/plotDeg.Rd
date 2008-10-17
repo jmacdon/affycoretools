@@ -28,9 +28,9 @@ plots. Nothing else is returned.
 \author{James W. MacDonald <jmacdon@med.umich.edu>}
 
 \examples{
-library(affy)
-data(affybatch.example)
-plotDeg(affybatch.example)
-plotHist(affybatch.example)
+library("affy")
+data(Dilution)
+plotDeg(Dilution)
+plotHist(Dilution)
 }
 \keyword{ hplot }% at least one, from doc/KEYWORDS
