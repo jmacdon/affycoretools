@@ -172,9 +172,6 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
                           otherdata = annBM()[1:3], mysql = TRUE, ann.source = "entrezgene",
                           html = TRUE, text = TRUE, affyid = FALSE, ...){
 
-  require("limma", quietly = TRUE)
-  require("annotate", quietly= TRUE)
-  require("biomaRt", quietly = TRUE)
   
   mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = mysql)
 
@@ -284,7 +281,7 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
                      tstat=tstat, pval=pval, FC=FC, expression=expression,
                      html=html, save=save, addname=addname, affyid=affyid, mysql=mysql)
   }else{
-    require(biomaRt, quietly = TRUE)
+
     mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""),
                     mysql = mysql)
 
@@ -422,7 +419,7 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
                               save = FALSE, addname = NULL, affyid = FALSE, mysql = TRUE){
 
 
-  require(biomaRt, quietly = TRUE)
+
   mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = mysql)
 
   ## check to see if ann.source is available
@@ -523,7 +520,7 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
                            links = linksBM()[1:3], otherann = annBM()[1:3],
                            ann.source = "entrezgene", express = TRUE, html = TRUE,
                            text = TRUE, affyid = FALSE, mysql = TRUE){
-  require(biomaRt, quietly = TRUE)
+
   mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""), mysql = mysql)
   
   ## check to see if ann.source is available

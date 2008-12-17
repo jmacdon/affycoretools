@@ -16,7 +16,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
                       express=c("rma", "mas5", "gcrma"), addname=NULL,
                       output = "txt", annotate = FALSE,
                       ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ")){
-  require(affy, quietly=TRUE)
+
   if(is.null(filenames)){
     filenames <- list.files(pattern="\\.[cC][eE][lL]$")
     if(length(filenames) == 0)
@@ -24,7 +24,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
   }
   dat <- ReadAffy(filenames = filenames )
   filenames <- sub("\\.[cC][eE][lL]$", "", filenames)
-  
+
   express <- match.arg(express, c("rma","mas5","gcrma"))
   if(express=="rma"){
     eset <- rma(dat)
@@ -34,7 +34,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
     calls <- mas5calls(dat)
   }
   if(express=="gcrma"){
-    require(gcrma, quietly=TRUE)
+
     eset <- gcrma(dat)
   }
   if(express == "rma" || express == "gcrma"){
@@ -45,7 +45,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
     }else{
         outPut(eset, addname = addname, meth = output)
     }
-    
+
 }
   if(express == "mas5"){
     out <- round(exprs(eset), 2)
@@ -71,7 +71,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
 
 
    ##Plots
-  
+
   if(plot){
     plotHist(dat, filenames)
     saved.hist <- recordPlot()
@@ -131,11 +131,11 @@ addAnnot <- function(eset, ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE",
     row.names(out) <- featureNames(eset)
     out
 }
-    
+
 
 outPut <- function(out, addname, meth = c("txt","xls")){
     meth <- match.arg(meth, c("txt", "xls"))
-    
+
     switch(meth,
            txt = {
                if(!is.null(addname)) nam <- paste("Expression values ",
@@ -159,7 +159,7 @@ outPut <- function(out, addname, meth = c("txt","xls")){
           ## }
            )
 }
-           
+
 
 plotHist <- function(dat, filenames = NULL)
 {
@@ -198,7 +198,7 @@ plotHist <- function(dat, filenames = NULL)
              par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
              legend=filenames, lty=cl, lwd=2, col = 1:length(filenames), cex=cexval)
     }
-    
+
   }
 }
 
@@ -208,7 +208,7 @@ plotDeg <- function(dat, filenames = NULL){
   ## reset things when exiting
   op <- par(no.readonly = TRUE)
   on.exit(par(op))
-  
+
   ## put plot on left, legend on right
   layout(matrix(1:2, nc = 2), c(3,1))
   plotAffyRNAdeg(AffyRNAdeg(dat), col=1:length(filenames))
@@ -216,7 +216,7 @@ plotDeg <- function(dat, filenames = NULL){
   ## fake a plot
   par(mai = c(0,0,1.01,0))
   plot(1:10, type = "n", xaxt = "n", yaxt = "n", xlab = "", ylab = "", bty = "n")
-  
+
   tmp <- legend("topleft", legend=filenames, lty=1, lwd=2,
                 col=1:length(filenames), plot=FALSE)
 
@@ -225,7 +225,7 @@ plotDeg <- function(dat, filenames = NULL){
   ydiff <- par("usr")[4] - par("usr")[3]
   xdiff <- par("usr")[2] - par("usr")[1]
 
-  
+
   ## If legend is too big, shrink to fit
   if(y.ax < ydiff && x.ax < xdiff){
     legend("topleft", legend=filenames, lty=1, lwd=2, col=1:length(filenames))
@@ -256,8 +256,8 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
                     legend = TRUE, ...){
   if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
 
- 
-  
+
+
   if(is(eset, "ExpressionSet")){
       if(max(pcs) > dim(exprs(eset))[2])
           stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
@@ -284,26 +284,22 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
       ylim <- max(abs(range(pca$x[,pcs[1]])))
       ylim <- c(-ylim, ylim)
     }else ylim <- NULL
-    if(!is.null(groups)){
-      if(is.null(pch)) pch <- groups
-      if(is.null(col)) col <- groups
-      plot(pca$x[,pcs], pch = pch, col = col, ylab= paste("PC", pcs[2], sep=""),
-           xlab=paste("PC", pcs[1], sep=""),
-           main="Principal Components Plot", ylim = ylim, ...)
-    }else{
-      if(is.null(pch)) pch <- 0:(len-1)
-      if(is.null(col)) col <- 1:len
-      plot(pca$x[,pcs], pch=pch, col=col,
-           ylab=paste("PC", pcs[2]), xlab=paste("PC", pcs[1]), main="Principal Components Plot", ylim = ylim, ...)
-    }
-    if(is.null(addtext)){
-        if(legend)
-            pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
-    }else{
+    plotstuff <- pcaPCH(len, groups, pch, col)
+    plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
+         ylab= paste("PC", pcs[2], sep=""),
+         xlab=paste("PC", pcs[1], sep=""),
+         main="Principal Components Plot", ylim = ylim, ...)
+
+    if(!is.null(addtext)){
         smidge <-  (par("usr")[4] - par("usr")[3])/50
-        text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext, cex = 0.7)
-        if(legend)
-            pca.legend(pca, groupnames, pch, col, x.coord = x.coord, y.coord = y.coord, ...)
+        text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext,
+             cex = 0.7)
+    }
+    if(legend){
+        if(!is.null(groups))
+            plotstuff <- unique(plotstuff[order(groups),])
+            pca.legend(pca, groups, groupnames, plotstuff$pch, plotstuff$col, x.coord = x.coord,
+                       y.coord = y.coord, ...)
     }
   }
 }
@@ -326,45 +322,92 @@ make.cl <- function(filenames){
   cl
 }
 
-pca.legend <- function(pca, groupnames, pch, col, x.coord = NULL, y.coord = NULL,
+pca.legend <- function(pca, groups, groupnames, pch, col, x.coord = NULL, y.coord = NULL,
                        saveup = FALSE){
   ## A function to try to automagically place legend in a pca plot
-
-  pch <- sort(unique(pch))
-  col <- sort(unique(col))
+  if(is.null(groups))
+       unq <- unique(data.frame(pch, col, stringsAsFactors = FALSE))
+  else
+      unq <- unique(data.frame(pch, col, stringsAsFactors = FALSE)[order(groups),])
+  pch <- unq[,1]
+  col <- unq[,2]
   x.lab <- legend(1, 1, legend = groupnames, pch = pch, plot = FALSE)$rect$w
   y.lab <- legend(1, 1, legend = groupnames, pch = pch, plot = FALSE)$rect$h
-  
+
 
   right <- par("usr")[2] - (par("usr")[2] - par("usr")[1])/100 - x.lab
       left <- par("usr")[1] + (par("usr")[2] - par("usr")[1])/100 + x.lab
   up <- par("usr")[4] - (par("usr")[4] - par("usr")[3])/100 - y.lab
   down <- par("usr")[3] + (par("usr")[4] - par("usr")[3])/100 + y.lab
-  
+
   upright <- !any(pca$x[,1] > right & pca$x[,2] > up)
   upleft <- !any(pca$x[,1] < left & pca$x[,2] > up)
   downright <- !any(pca$x[,1] > right & pca$x[,2] < down)
   downleft <- !any(pca$x[,1] < left & pca$x[,2] < down)
-  
+
   whereto <- match(TRUE, c(upright, upleft, downleft, downright))
    if(!is.null(x.coord) & !is.null(y.coord)){
-    legend(x.coord, y.coord, legend = groupnames, pch = pch, col = col)
+    legend(x.coord, y.coord, legend = groupnames, pch = pch, col = col, pt.bg = col)
   }else if(!is.na(whereto)){
     if(whereto == 1)
-      legend(right, up + y.lab, legend=groupnames, pch=pch, col=col)
+      legend(right, up + y.lab, legend=groupnames, pch=pch, col = col, pt.bg = col)
     if(whereto == 2)
-      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col=col)
+      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col = col, pt.bg = col)
     if(whereto == 3)
-      legend(left - x.lab, down, legend=groupnames, pch=pch, col=col)
+      legend(left - x.lab, down, legend=groupnames, pch=pch, col = col, pt.bg = col)
     if(whereto == 4)
-      legend(right, down, legend=groupnames, pch=pch, col=col)
+      legend(right, down, legend=groupnames, pch=pch, col = col, pt.bg = col)
   }else{
     answer <- readline("Please give the x-coordinate for a legend.")
     x.c <- as.numeric(answer)
     answer <- readline("Please give the y-coordinate for a legend.")
     y.c <- as.numeric(answer)
-    legend(x.c, y.c, legend=groupnames, pch=pch, col=col)
+    legend(x.c, y.c, legend=groupnames, pch=pch, col = col, pt.bg = col)
   }
   if(saveup)
     return((par("usr")[4] - par("usr")[3])/50)
 }
+
+pcaPCH <- function(len, groups, pch, col){
+    ## Function to minimize glyphs/colors used
+    nulls <- is.null(c(pch, col)) || all(!is.null(pch), !is.null(col))
+    if(nulls){
+        if(!is.null(pch)){
+            if(is.null(groups))
+                out <- data.frame(pch, col, stringsAsFactors = FALSE)
+            else
+                out <- data.frame(pch[groups], col[groups], stringsAsFactors = FALSE)
+        }else{
+            if(is.null(groups)){
+                pch <- rep(21:25, times = ceiling(len/5))[1:len]
+                col <- colvec(len)[1:len]
+                out <- data.frame(pch, col, stringsAsFactors = FALSE)
+            }else{
+                lg <- length(unique(groups))
+                pch <- rep(21:25, times = ceiling(lg/5))[1:lg]
+                col <- colvec(lg)[1:lg]
+                out <- data.frame(pch, col, stringsAsFactors = FALSE)[groups,]
+            }
+        }
+    }else{
+        stop("You must either specify both pch and col arguments or neither\n",
+             call. = FALSE)
+    }
+    out
+}
+
+colvec <- function(len){
+    if(len > 64)
+        tmp <- ceiling(sqrt(len))
+    else
+        tmp <- len
+    mat <- matrix(1:tmp, ncol = tmp, nrow = tmp)
+    tfs <- rbind(lower.tri(mat, TRUE), upper.tri(mat))
+    mat <- rbind(mat,mat)
+    out <- rainbow(tmp)[mat[tfs]]
+    out
+}
+
+
+
+

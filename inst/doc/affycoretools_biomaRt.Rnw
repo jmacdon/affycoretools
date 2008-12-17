@@ -190,6 +190,7 @@ BioMart databases contain the same information. For instance, some of the BioMar
 databases don't have gene symbols.
 
 <<>>=
+library(biomaRt)
 annBM()
 mart <- useMart("ensembl", 
                 "hsapiens_gene_ensembl")

@@ -7,7 +7,7 @@
 ##
 ##  Modifications
 ##
-##  5-27-05 Added tableFilt() and removed 
+##  5-27-05 Added tableFilt() and removed
 ##  extraneous fold change calculations
 ##  FC now extracted directly from topTable object
 ##
@@ -18,7 +18,10 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                           pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                           expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
                           addname = NULL, interactive = TRUE){
-  
+  ## if lib isn't a .db package, make it so
+  if(length(grep("\\.db$", lib)) < 1)
+      lib <- paste(lib, "db", sep = ".")
+
   if(!interactive){
     limma2annaffy.na(eset = eset, fit = fit, design = design, contrast = contrast,
                      lib = lib, adjust = adjust, anncols = anncols, number = number,
@@ -26,15 +29,15 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                      FC = FC, expression = expression, html = html, text = text,
                      save = save, addname = addname)
   }else{
-    require(annaffy, quietly = TRUE)
-    
-    
+
+
+
     tables <- vector("list", dim(contrast)[2])
     for(i in seq(along = colnames(contrast))){
       tables[[i]] <- tableFilt(fit, coef = i, number = number, pfilt = pfilt, fldfilt = fldfilt,
                                adjust = adjust)
     }
-    
+
     ##Check to see if the table dimensions are ok for the end user
     ##This part needs some error handling...
     rn <- vector()
@@ -73,7 +76,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           grp2 <- which(rowSums(design[,which(contrast[,i] < 0)]) > 0)
         }
         grps <- c(grp1, grp2)
-        
+
         filename <- colnames(contrast)[i]
         if(!is.null(addname))
           filename <- paste(filename, addname, sep=" ")
@@ -82,7 +85,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           warning(paste("Some illegal characters have been removed from the filename",
                         filename, sep = " "), call. = FALSE)
         filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", filename)
-        
+
         ## Make aafTable object
         probeids <- featureNames(eset)[index]
         anntable <- aafTableAnn(probeids, lib, anncols)
@@ -104,16 +107,16 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
             testtable <- merge(testtable, aafTable("Fold Change" = round(fld, 2)))
           }
         }
-        
+
         if(exists("testtable"))
           anntable <- merge(anntable, testtable)
-        
+
         if(expression)
           exprtable <- aafTableInt(eset[,grps], probeids=probeids)
-        
+
         if(exists("exprtable"))
           anntable <- merge(anntable, exprtable)
-        
+
         if(html)
           saveHTML(anntable, paste(filename,"html", sep="."), filename)
         if(text)
@@ -129,9 +132,9 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                                pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                                expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
                                addname = NULL){
-  require(annaffy, quietly = TRUE)
-  
-  
+
+
+
   tables <- vector("list", dim(contrast)[2])
   for(i in seq(along = colnames(contrast))){
     tables[[i]] <- tableFilt(fit, coef = i,  number = number, pfilt = pfilt, fldfilt = fldfilt,
@@ -153,7 +156,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         grp2 <- which(rowSums(design[,which(contrast[,i] < 0)]) > 0)
       }
       grps <- c(grp1, grp2)
-      
+
       filename <- colnames(contrast)[i]
       if(!is.null(addname))
         filename <- paste(filename, addname, sep=" ")
@@ -162,7 +165,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         warning(paste("Some illegal characters have been removed from the filename",
                       filename, sep = " "), call. = FALSE)
       filename <- gsub("[/|\\|?|*|:|<|>|\"|\\|]", "", filename)
-           
+
       ## Make aafTable object
       probeids <- featureNames(eset)[index]
       anntable <- aafTableAnn(probeids, lib, anncols)
@@ -184,16 +187,16 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           testtable <- merge(testtable, aafTable("Fold Change" = round(fld, 2)))
         }
       }
-      
+
       if(exists("testtable"))
         anntable <- merge(anntable, testtable)
-      
+
       if(expression)
         exprtable <- aafTableInt(eset[,grps], probeids=probeids)
-      
+
       if(exists("exprtable"))
         anntable <- merge(anntable, exprtable)
-      
+
       if(html)
         saveHTML(anntable, paste(filename,"html", sep="."), filename)
       if(text)

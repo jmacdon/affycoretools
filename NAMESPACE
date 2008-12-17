@@ -1,5 +1,28 @@
-export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma, probes2table,
-       affystart, plotDeg, plotHist, plotPCA, convert.back, hyperG2annaffy, vennSelectBM,
-       limma2biomaRt, linksBM, annBM, foldFiltBM, probes2tableBM, vennSelectFC, hyperGoutput,
+export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma,
+       probes2table, affystart, plotDeg, plotHist, plotPCA,
+       convert.back, hyperG2annaffy, vennSelectBM,
+       limma2biomaRt, linksBM, annBM, foldFiltBM,
+       probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL)
-import(annaffy, GOstats, biomaRt, tools, AnnotationDbi)
+
+importFrom(biomaRt, getBM, listAttributes, listFilters,
+           useMart, martDisconnect)
+
+importFrom(limma, topTable, vennCounts,
+           decideTests)
+
+importFrom(GOstats, probeSetSummary)
+
+importFrom(annotate, htmlpage, getEG)
+
+importFrom(genefilter, genefilter, filterfun, kOverA, pOverA, cv)
+
+export(genefilter, filterfun, kOverA, pOverA, cv)
+
+importFrom(gcrma, gcrma)
+
+importFrom(splines, ns)
+
+importFrom(xtable, xtable)
+
+import(annaffy)

@@ -50,4 +50,11 @@ NULL, pcs = c(1,2), legend = TRUE, \dots)
  producing a PCA plot or screeplot.
 }
 \author{James W. MacDonald <jmacdon@med.umich.edu>}
+\examples{
+library("affy")
+data(sample.ExpressionSet)
+plotPCA(sample.ExpressionSet, groups =
+ as.numeric(pData(sample.ExpressionSet)[,2]), groupnames =
+ levels(pData(sample.ExpressionSet)[,2]))
+}
 \keyword{hplot}% at least one, from doc/KEYWORDS

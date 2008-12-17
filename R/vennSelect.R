@@ -18,7 +18,7 @@ vennCounts2 <- function(x, method = "same", fit = NULL,
   ## a call to foldFilt()
   ## fit is an MArrayLM object and foldFilt is a fold change to
   ## filter on. Note that fit is only required if foldFilt != NULL
-  require("limma", quietly = TRUE)
+
   if(!is.null(foldFilt) && is.null(fit))
     stop("If you want to filter by fold change, you must also pass an MArrayLM object\n",
          "that was produced from a call to lmFit() and then eBayes().", call. = FALSE)
@@ -237,7 +237,7 @@ vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth
   if(!stat %in% c("fstat", "tstat")) stop(paste(stat, " is not an acceptable argument for the ",
                                                "'stat' argument.\nPlease use either ",
                                                "'fstat' or 'tstat'.", sep = ""), call. = FALSE)
-  require("limma", quietly = TRUE)
+
   if(!is.null(foldFilt)){
     idx <- abs(fit$coefficients) > foldFilt
     x <- as.matrix(x) * idx

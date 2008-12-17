@@ -14,10 +14,10 @@ probes2table <- function(eset, probids, lib, otherdata = NULL,
                          anncols=aaf.handler()[c(1:3, 6:7, 9:12)], html=TRUE,
                          text=FALSE, express = TRUE, save=FALSE,  filename){
 
-  require(annaffy, quietly=TRUE)
 
- 
-
+  ## test that lib has a .db extension
+  if(length(grep("\\.db$", lib)) < 1)
+      lib <- paste(lib, "db", sep = ".")
   anntable <- aafTableAnn(probids, lib, anncols)
 
   if(!is.null(otherdata)){

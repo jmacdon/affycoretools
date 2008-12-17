@@ -38,6 +38,7 @@ vennCounts2(x, method = "same", fit = NULL, foldFilt = NULL)
 }
 \author{ James W. MacDonald <jmacdon@med.umich.edu>}
 \examples{
+library("limma")
 tstat <- matrix(rt(300,df=10),100,3)
 tstat[1:33,] <- tstat[1:33,]+2
 clas <- classifyTestsF(tstat,df=10,p.value=0.05)
