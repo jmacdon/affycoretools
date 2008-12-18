@@ -296,10 +296,8 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
              cex = 0.7)
     }
     if(legend){
-        if(!is.null(groups))
-            plotstuff <- unique(plotstuff[order(groups),])
-            pca.legend(pca, groups, groupnames, plotstuff$pch, plotstuff$col, x.coord = x.coord,
-                       y.coord = y.coord, ...)
+        pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
+                   y.coord = y.coord, ...)
     }
   }
 }
@@ -322,13 +320,13 @@ make.cl <- function(filenames){
   cl
 }
 
-pca.legend <- function(pca, groups, groupnames, pch, col, x.coord = NULL, y.coord = NULL,
+pca.legend <- function(pca, groups, groupnames, pch.df,  x.coord = NULL, y.coord = NULL,
                        saveup = FALSE){
   ## A function to try to automagically place legend in a pca plot
   if(is.null(groups))
-       unq <- unique(data.frame(pch, col, stringsAsFactors = FALSE))
+       unq <- unique(pch.df)
   else
-      unq <- unique(data.frame(pch, col, stringsAsFactors = FALSE)[order(groups),])
+      unq <- unique(pch.df[order(groups),])
   pch <- unq[,1]
   col <- unq[,2]
   x.lab <- legend(1, 1, legend = groupnames, pch = pch, plot = FALSE)$rect$w
