@@ -28,7 +28,7 @@ plots. Nothing else is returned.
 \author{James W. MacDonald <jmacdon@med.umich.edu>}
 
 \examples{
-library("affy")
+library("affydata")
 data(Dilution)
 plotDeg(Dilution)
 plotHist(Dilution)
