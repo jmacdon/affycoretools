@@ -9,16 +9,16 @@
  by the end user.
 }
 \usage{
-pca.legend(pca, groupnames, pch, col, x.coord = NULL, y.coord = NULL,
+pca.legend(pca, groups, groupnames, pch.df, x.coord = NULL, y.coord = NULL,
 saveup = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{pca}{A 'pca' object }
+  \item{groups}{A vector of numbers indicating group membership}
   \item{groupnames}{A vector of names describing the different groups }
-  \item{pch}{A numeric vector delineating the plotting symbols to use}
-  \item{col}{A numeric or character vector delineating the colors to use
-    for the plotting symbols}
+  \item{pch.df}{A numeric data.frame delineating the plotting symbols
+    (column 1) and colors (column 2) to use}
   \item{x.coord}{X-coordinate for legend. Used if automatic placement
     will fail}
   \item{y.coord}{Y-coordinate for legend. Used if automatic placement

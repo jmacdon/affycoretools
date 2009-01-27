@@ -13,7 +13,7 @@
 vennSelectBM(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
 stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
 foldFilt = NULL, save = FALSE, species, links = linksBM()[1:3],
-otherdata = annBM()[1:3], mysql = TRUE, ann.source = "entrezgene",
+otherdata = annBM()[1:3], ann.source = "entrezgene",
 html = TRUE, text = TRUE, affyid = FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -56,12 +56,6 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
     to online databases. See \code{linksBM} for possible values.}
   \item{otherdata}{A character vector of things to annotate with text
     only (i.e., no hyperlinks). See \code{annBM} for possible values.}
-  \item{mysql}{Boolean. If \code{TRUE}, then \code{biomaRt} will use the
-    \code{RMySQL} package to connect to the Biomart server (note that
-    this requires \code{RMySQL} to be installed). If \code{FALSE},
-    \code{biomaRt} will use the \code{RCurl} interface. WARNING: if you
-    are planning to annotate a large number of genes, you will almost
-    certainly need to use the \code{RMySQL} interface.}
   \item{ann.source}{The annotation source of the IDs that will be used
     to annotate the genes. The default value is "entrezgene". See
     details for other possibilities.}

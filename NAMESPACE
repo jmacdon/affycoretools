@@ -5,8 +5,38 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma,
        probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL)
 
+importMethodsFrom(affy, hist, mas5calls)
+
+importMethodsFrom(annaffy, "colnames<-", saveHTML, saveText)
+
+#importMethodsFrom(AnnotationDbi, Term)
+
+importMethodsFrom(Biobase, annotation, exprs, featureNames,
+                  sampleNames, write.exprs)
+
+importMethodsFrom(genefilter, plot)
+
+importFrom(affy, AffyRNAdeg, mas5, plotAffyRNAdeg, plotDensity,
+           ReadAffy, rma)
+
+importFrom(annaffy, aaf.handler, aafTable, aafTableAnn, aafTableInt)
+
+importFrom(Biobase, addVigs2WinMenu, assayDataElement)
+
+importFrom(graphics, layout, legend, par, text)
+
+importFrom(grDevices, dev.off, rainbow, recordPlot, replayPlot)
+
+#importFrom(methods, is)
+
+importFrom(stats, median, p.adjust, prcomp)
+
+importFrom(utils, write.table)
+
+importFrom(GO.db, GOTERM)
+
 importFrom(biomaRt, getBM, listAttributes, listFilters,
-           useMart, martDisconnect)
+           useMart)
 
 importFrom(limma, topTable, vennCounts,
            decideTests)
@@ -25,4 +55,4 @@ importFrom(splines, ns)
 
 importFrom(xtable, xtable)
 
-import(annaffy)
+#import(annaffy)

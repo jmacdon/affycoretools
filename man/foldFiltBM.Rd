@@ -11,7 +11,7 @@
 \usage{
 foldFiltBM(object, fold = 1, groups, comps, compnames, species, links =
 linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
-"entrezgene", affyid = FALSE, mysql = TRUE, html = TRUE, text = TRUE, save = FALSE)
+"entrezgene", affyid = FALSE, html = TRUE, text = TRUE, save = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -41,10 +41,6 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
     details for other possibilities.}
   \item{affyid}{Boolean. Are the IDs used to annotate these data
    Affymetrix IDs?}
-  \item{mysql}{Boolean. Should \code{biomaRt} use \code{RMySQL} to
-    connect to the Biomart? Default is \code{TRUE} because the
-    \code{RCurl} interface of \code{biomaRt} is very slow for more than
-    a few genes.}
   \item{html}{Boolean. Output HTML tables? Defaults to \code{TRUE}}
   \item{text}{Boolean. Output text tables? Defaults to \code{TRUE}}
   \item{save}{Boolean. If \code{TRUE}, a list will be returned. The

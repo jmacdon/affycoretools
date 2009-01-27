@@ -11,7 +11,7 @@
 \usage{
 probes2tableBM(eset, probids, species, filename, otherdata = NULL,
  links = linksBM()[1:3], otherann = annBM()[1:3], ann.source = "entrezgene",
- express = TRUE, html = TRUE, text = TRUE, affyid = FALSE, mysql = TRUE)
+ express = TRUE, html = TRUE, text = TRUE, affyid = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -40,11 +40,7 @@ probes2tableBM(eset, probids, species, filename, otherdata = NULL,
   \item{text}{Boolean. Output text table? Defaults to \code{TRUE}}
   \item{affyid}{Boolean. Are the IDs used to annotate these data
     Affymetrix IDs?}
-  \item{mysql}{Boolean. Should \code{biomaRt} use \code{RMySQL} to
-    connect to the Biomart? Default is \code{TRUE} because the
-    \code{RCurl} interface of \code{biomaRt} is very slow for more than
-    a few genes.}
-}
+  }
 \details{
   This function is designed to output HTML tables based on a set of
   IDs. This function currently only supports Affymetrix data. It
@@ -59,7 +55,7 @@ probes2tableBM(eset, probids, species, filename, otherdata = NULL,
   Affymetrix IDs. To find out the correct name to use for the ann.source
   argument, one can create a connection to a Biomart database using
   \code{\link[biomaRt]{useMart}} and then get a list of available Affy
-  arrays using \code{\link[biomaRt]{getAffyArrays}}.
+  arrays using \code{\link[biomaRt]{listFilters}}.
 
   If one is using one of the re-mapped CDFs from MBNI at University of
   Michigan, then the IDs to use depend on the mapping used to create the

@@ -15,8 +15,7 @@ limma2biomaRt(eset, fit, design, contrast, species, links = linksBM()[1:3],
 otherdata = annBM()[1:3], ann.source = "entrezgene", adjust = "fdr",
 number = 30, pfilt = NULL, fldfilt = NULL, tstat = TRUE,
 pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE, text = TRUE,
-save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
-= TRUE)
+save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -62,10 +61,6 @@ save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
     \code{TRUE}}
   \item{affyid}{Boolean. Are the IDs used to annotate these data
     Affymetrix IDs?}
-  \item{mysql}{Boolean. Should \code{biomaRt} use \code{RMySQL} to
-    connect to the Biomart? Default is \code{TRUE} because the
-    \code{RCurl} interface of \code{biomaRt} is very slow for more than
-    a few genes.}
 }
 \details{
   This function is designed to automatically output HTML tables,
@@ -89,7 +84,7 @@ save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE, mysql
   Affymetrix IDs. To find out the correct name to use for the ann.source
   argument, one can create a connection to a Biomart database using
   \code{\link[biomaRt]{useMart}} and then get a list of available Affy
-  arrays using \code{\link[biomaRt]{getAffyArrays}}.
+  arrays using \code{\link[biomaRt]{listFilters}}.
 
   If one is using one of the re-mapped CDFs from MBNI at University of
   Michigan, then the IDs to use depend on the mapping used to create the

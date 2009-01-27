@@ -17,7 +17,7 @@ houtSplit(tab, eset, fit, comp, statistics, html, text)
 \arguments{
   \item{tab}{ A \code{data.frame}, resulting from a call to
     \code{\link[GOstats]{probeSetSummary}}}
-  \ietm{eset}{An \code{link[Biobase]{ExpressionSet}} object}
+  \item{eset}{An \code{link[Biobase]{ExpressionSet}} object}
   \item{fit}{An \code{\link[limma]{MArrayLM}} object, resulting from a
     call to \code{\link[limma]{eBayes}}}
   \item{comp}{Numeric vector of length one, designating which comparison
