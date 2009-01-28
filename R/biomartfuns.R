@@ -28,12 +28,26 @@
 ## A function used to convert data.frame output from biomaRt to a list
 ## useful for htmlpage()
 
-dfToList <- function(dataframe, dataToUse){
+dfToList <- function(dataframe, dataToUse, gn){
     width <- dim(dataframe)[2]
     len <- dim(dataframe)[1]
-    out <- lapply(1:width, function(x)
+    tmp <- lapply(1:width, function(x)
                   tapply(1:len, dataframe[,dataToUse],  function(y) dataframe[y,x]))
-    out <- lapply(out, function(x) lapply(x, unique))
+    tmp <- lapply(tmp, function(x) lapply(x, unique))
+    ## biomaRt doesn't have annotation for all input values, so we have to bump
+    ## this out and put &nbsp; in where we have no data. To do this, we always
+    ## query biomaRt for the input values as well, and compare what we sent
+    ## to what we got to figure out what is missing.
+    ind <- match(gn, tmp[[dataToUse]])
+    ind <- ind[!is.na(ind)]
+    ind2 <- gn %in% tmp[[dataToUse]]
+    out <- vector("list",width)
+    for(i in seq_len(width)[-dataToUse]){
+        out[[i]] <- vector("character", length = length(gn))
+        out[[i]][ind2] <- tmp[[i]][ind]
+        out[[dataToUse]] <- gn
+    }
+    out <- lapply(out, function(x) ifelse(x == "", "&nbsp;", x))
     out
 }
                   
@@ -249,14 +263,12 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
       }
       lnks <- dfToList(getBM(attributes = links$links,
                              filter = ann.source, values = gn, mart = mart, 
-                             na.value = "&nbsp;"), which(links$links == ann.source))
-      ## If there isn't any info for a particular gene at the Biomart, an empty string
-      ## is returned, so we need to put the original IDs into the output
-      lnks[[match(links$ann.source, names(lnks))]] <- gn
-      
+                             na.value = "&nbsp;"),
+                       which(links$links == ann.source), gn)
+           
       nam <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
                             filter = ann.source, values = gn, mart = mart, 
-                            na.value = "&nbsp;"), 1)[-1]
+                            na.value = "&nbsp;"), 1, gn)[-1]
       table.head <- c(links$names, otherdata$names)
       if(!is.null(stats)){
         nam <- c(nam, stats$out)
@@ -382,16 +394,12 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
         
         anntable <- dfToList(getBM(attributes = links$links, filter = ann.source,
                                    values = gn, mart = mart,  na.value = "&nbsp;"),
-                             which(links@links == ann.source))
-        ## Need to dump the 'values' into the anntable list - if no data at the mart,
-        ## biomaRt just returns an empty string
+                             which(links@links == ann.source), gn)
         
-        anntable[[which(links$links == ann.source)]] <-  gn
-        
-        testtable <- dfToList(getBM(c(ann.source,attributes = otherdata$links),
+        testtable <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
                                     filter = ann.source,
                                     values = gn, mart = mart, 
-                                    na.value = "&nbsp;"), 1)[-1]
+                                    na.value = "&nbsp;"), 1, gn)[-1]
         
         if (tstat)
           testtable$t.statistic <-  round(tables[[i]][,"t"], 2)
@@ -491,16 +499,12 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
         gn <- sub("_at", "", probeids)
       anntable <- dfToList(getBM(attributes = links$links, filter = ann.source,
                                  values = gn, mart = mart,  na.value = "&nbsp;"),
-                           which(links$links == ann.source))
-      ## Need to dump the 'values' into the anntable list - if no data at the mart,
-      ## biomaRt just returns an empty string
-
-      anntable[[which(links$links == ann.source)]] <-  gn
+                           which(links$links == ann.source), gn)
       
-      testtable <- dfToList(getBM(c(ann.source, attributes = otherdata$links),
+      testtable <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
                                   filter = ann.source,
                                   values = gn, mart = mart, 
-                                  na.value = "&nbsp;"), 1)[-1]
+                                  na.value = "&nbsp;"), 1, gn)[-1]
       
       if (tstat)
         testtable$t.statistic <-  round(tables[[i]][,"t"], 2)
@@ -557,15 +561,12 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
     gn <- sub("_at", "", probids)
   anntable <-  dfToList(getBM(attributes = links$links, filter = ann.source,
                               values = gn, mart = mart,  na.value = "&nbsp;"),
-                        which(links$links == ann.source))
-  ## Need to dump the 'values' into the anntable list - if no data at the mart,
-  ## biomaRt just returns an empty string
+                        which(links$links == ann.source), gn)
   
-  anntable[[which(links$links == ann.source)]] <-  gn
-  
-  testtable <- dfToList(getBM(c(ann.source, attributes = otherann$links),
+  testtable <- dfToList(getBM(attributes = c(ann.source, otherann$links),
                               filter = ann.source,
-                              values = gn, mart = mart, na.value = "&nbsp;"), 1)[-1]
+                              values = gn, mart = mart,
+                              na.value = "&nbsp;"), 1, gn)[-1]
   table.head <- c(links$names, otherann$names, names(otherdata),
                   sampleNames(eset))
   if(!is.null(otherdata))

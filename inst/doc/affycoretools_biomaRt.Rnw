@@ -169,7 +169,7 @@ Now if we want to output tables containing the probesets in each cell of the
 Venn diagram, we can use \Rfunction{vennSelectBM}.
 
 <<eval=false>>=
-vennSelectBM(eset, design, rslt, 
+vennSelectBM(eset, design, dt, 
              contrast, fit2, species = "hsapiens")
 @ 
 
