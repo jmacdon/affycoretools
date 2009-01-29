@@ -43,12 +43,12 @@ to annotate Affymetrix probesets using the annotation packages produced
 by the Biocore data team, in concert with the \Rpackage{annaffy} package.
 This paradigm works quite well for those Affymetrix chips that are
 popular enough to have an annotation package, but if there isn't a
-package for a given chip, one is left to either try to build a 
+package for a given chip, one is left to either try to build a
 package using \Rpackage{AnnBuilder} (which can be a daunting task), or
 to try to annotate their probesets using \Rpackage{biomaRt}.
 
 The \Rpackage{biomaRt} package is getting to be much more user friendly,
-but there still exists a gap between getting the annotation for a 
+but there still exists a gap between getting the annotation for a
 set of probesets and producing a finished product that can be
 presented to someone (e.g., an HTML table). Steffen Durinck (the maintainer
 of \Rpackage{biomaRt}) was kind enough to add functionality to his
@@ -69,8 +69,8 @@ this package are designed to interface with an online BioMart database,
 usually one hosted at \url{http://www.biomart.org}. There are two
 interfaces; the default interface uses the \Rpackage{RCurl} package
 to connect to the database, but there is another interface that uses
-the \Rpackage{RMySQL} package to connect. The default interface is 
-nice for doing interactive annotation of a small number of probesets, 
+the \Rpackage{RMySQL} package to connect. The default interface is
+nice for doing interactive annotation of a small number of probesets,
 but can get \emph{exceedingly} slow for anything more than say, 30 or 40
 probesets. Therefore, I strongly recommend using the \Rpackage{RMySQL}
 interface if at all possible. Note that the kind folks in Seattle usually
@@ -83,9 +83,9 @@ to show how things work is to emulate an analysis. For this, we will
 be using the data in R\_Home/library/affycoretools/examples. We can
 assume that these data are four different samples (which we will call
 A -- D), that were run in triplicate (biological replicates). These
-data come from the Affymetrix HG-focus array, which has a BioC 
+data come from the Affymetrix HG-focus array, which has a BioC
 annotation package. However, instead of using the normal probeset
-mapping provided by Affy, we can use a re-mapped cdf where the 
+mapping provided by Affy, we can use a re-mapped cdf where the
 mappings are based on Entrez Gene. This re-mapped cdf doesn't have
 an annotation package, so we will have to use \Rpackage{biomaRt} to
 annotate.
@@ -95,17 +95,17 @@ First, we compute expression values.
 <<eval = FALSE>>=
 library(affycoretools)
 eset <- justRMA(cdfname = "hsfocushsentrezgcdf")
-@ 
+@
 
 <<echo=false, results=hide>>=
 library(affycoretools)
 load("exprSet2.Rdata")
-@ 
+@
 
 Now we model the data using \Rpackage{limma}. Using a cell means
-model (without an intercept, denoted by the \verb1~01 in the call to 
+model (without an intercept, denoted by the \verb1~01 in the call to
 \Rfunction{model.matrix}) is necessary for most of the functions
-in the \Rpackage{affycoretools} package, as the names for the 
+in the \Rpackage{affycoretools} package, as the names for the
 output are in general extracted from the contrasts matrix.
 
 <<>>=
@@ -116,7 +116,7 @@ contrast <- makeContrasts(A-B, C-D, levels = design)
 fit <- lmFit(eset, design)
 fit2 <- contrasts.fit(fit, contrast)
 fit2 <- eBayes(fit2)
-@ 
+@
 
 Here we are using A-B and C-D as names for the contrasts matrix.
 I usually give more descriptive names that will help somebody not
@@ -125,14 +125,14 @@ fitting the model and computing contrasts, we can output all significant
 probesets with an adjusted $p$-value less than 0.05 using \Rfunction{limma2biomaRt}.
 
 <<eval=false>>=
-limma2biomaRt(eset, fit2, design, contrast, 
+limma2biomaRt(eset, fit2, design, contrast,
               species = "hsapiens", pfilt = 0.05,
               interactive = FALSE)
-@ 
+@
 
 There are many more arguments for this function, but the defaults should be good
 for most uses (I hope). This will create HTML tables for the two comparisons
-we made. 
+we made.
 
 Note that if there is no replication and one is just selecting probesets
 based on fold change, the \Rfunction{foldFiltBM} function can be used.
@@ -147,58 +147,57 @@ in common). We can visualize this using a Venn diagram.
 <<echo = false, results=hide>>=
 dt <- decideTests(fit2, method = "nestedF")
 rslt <- vennCounts2(dt)
-@ 
+@
 
 <<eval=false>>=
 dt <- decideTests(fit2, method = "nestedF")
 rslt <- vennCounts2(dt)
 vennDiagram(rslt)
-@ 
+@
 
 \begin{figure}
 \centering
 <<fig=true, width=6, height=6, echo = false>>=
 vennDiagram(rslt)
-@ 
+@
 \caption{Venn diagram}
 \label{fig:venn}
 \end{figure}
 
-Figure~\ref{fig:venn} shows the Venn diagram. 
+Figure~\ref{fig:venn} shows the Venn diagram.
 Now if we want to output tables containing the probesets in each cell of the
 Venn diagram, we can use \Rfunction{vennSelectBM}.
 
 <<eval=false>>=
-vennSelectBM(eset, design, dt, 
+vennSelectBM(eset, design, dt,
              contrast, fit2, species = "hsapiens")
-@ 
+@
 
 Note that there are two helper functions being used by these functions; \Rfunction{linksBM},
 and \Rfunction{annBM}. These functions have two purposes; first, if called with no
 arguments, they list the type of annotation that is possible to use to create hyperlinks
-(\Rfunction{linksBM}), or that can be used for annotating without hyperlinking 
-(\Rfunction{annBM}). For \Rfunction{linksBM}, this list includes all the annotation 
+(\Rfunction{linksBM}), or that can be used for annotating without hyperlinking
+(\Rfunction{annBM}). For \Rfunction{linksBM}, this list includes all the annotation
 sources that \Rfunction{htmlpage} is able to hyperlink. This list can always be increased,
-and I am open to suggestions for other databases that one might want to link to. For 
+and I am open to suggestions for other databases that one might want to link to. For
 \Rfunction{annBM}, the list is comprised of things that I normally use, and could also
 be extended to other annotation data.
 
 The second purpose for these two functions is to list which of the \emph{possible}
 annotation sources actually exist at a particular BioMart. This is done by passing a
-\Robject{mart} object to either function. This purpose is necessary because not all 
+\Robject{mart} object to either function. This purpose is necessary because not all
 BioMart databases contain the same information. For instance, some of the BioMart
 databases don't have gene symbols.
 
 <<>>=
 library(biomaRt)
 annBM()
-mart <- useMart("ensembl", 
+mart <- useMart("ensembl",
                 "hsapiens_gene_ensembl")
 annBM(mart, species="hsapiens")
-mart <- useMart("ensembl", 
+mart <- useMart("ensembl",
                 "celegans_gene_ensembl")
 annBM(mart, species="celegans")
-martDisconnect(mart)
-@ 
+@
 
 \end{document}
