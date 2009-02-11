@@ -262,13 +262,12 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
           gn <- tmp
       }
       lnks <- dfToList(getBM(attributes = links$links,
-                             filter = ann.source, values = gn, mart = mart, 
-                             na.value = "&nbsp;"),
+                             filter = ann.source, values = gn, mart = mart),
                        which(links$links == ann.source), gn)
            
       nam <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
-                            filter = ann.source, values = gn, mart = mart, 
-                            na.value = "&nbsp;"), 1, gn)[-1]
+                            filter = ann.source, values = gn, mart = mart),
+                      1, gn)[-1]
       table.head <- c(links$names, otherdata$names)
       if(!is.null(stats)){
         nam <- c(nam, stats$out)
@@ -393,13 +392,12 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
           gn <- sub("_at$", "", probeids)
         
         anntable <- dfToList(getBM(attributes = links$links, filter = ann.source,
-                                   values = gn, mart = mart,  na.value = "&nbsp;"),
+                                   values = gn, mart = mart),
                              which(links@links == ann.source), gn)
         
         testtable <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
                                     filter = ann.source,
-                                    values = gn, mart = mart, 
-                                    na.value = "&nbsp;"), 1, gn)[-1]
+                                    values = gn, mart = mart), 1, gn)[-1]
         
         if (tstat)
           testtable$t.statistic <-  round(tables[[i]][,"t"], 2)
@@ -498,13 +496,12 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
       else
         gn <- sub("_at", "", probeids)
       anntable <- dfToList(getBM(attributes = links$links, filter = ann.source,
-                                 values = gn, mart = mart,  na.value = "&nbsp;"),
+                                 values = gn, mart = mart),
                            which(links$links == ann.source), gn)
       
       testtable <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
                                   filter = ann.source,
-                                  values = gn, mart = mart, 
-                                  na.value = "&nbsp;"), 1, gn)[-1]
+                                  values = gn, mart = mart), 1, gn)[-1]
       
       if (tstat)
         testtable$t.statistic <-  round(tables[[i]][,"t"], 2)
@@ -560,13 +557,12 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
   else
     gn <- sub("_at", "", probids)
   anntable <-  dfToList(getBM(attributes = links$links, filter = ann.source,
-                              values = gn, mart = mart,  na.value = "&nbsp;"),
+                              values = gn, mart = mart),
                         which(links$links == ann.source), gn)
   
   testtable <- dfToList(getBM(attributes = c(ann.source, otherann$links),
                               filter = ann.source,
-                              values = gn, mart = mart,
-                              na.value = "&nbsp;"), 1, gn)[-1]
+                              values = gn, mart = mart), 1, gn)[-1]
   table.head <- c(links$names, otherann$names, names(otherdata),
                   sampleNames(eset))
   if(!is.null(otherdata))
