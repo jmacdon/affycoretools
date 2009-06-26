@@ -47,7 +47,7 @@ hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp =
 hyperGoutput <- function(hyptObj, eset, pvalue, categorySize, sigProbesets, fit = NULL,
                          subset = NULL, comp = 1, output = c("significant", "all", "split"),
                          statistics = c("tstat","pval","FC"), html = TRUE, text = TRUE, ...){
-  require(annotation(hyptObj), character.only = TRUE, quietly = TRUE)
+  require(paste(annotation(hyptObj), "db", sep = "."), character.only = TRUE, quietly = TRUE)
   if (!is(hyptObj, "GOHyperGResult")) 
     stop("result must be a GOHyperGResult instance (or subclass)")
   if(!all(output %in% c("significant", "all", "split")))
