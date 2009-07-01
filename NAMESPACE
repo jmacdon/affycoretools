@@ -9,7 +9,7 @@ importMethodsFrom(affy, hist, mas5calls)
 
 importMethodsFrom(annaffy, "colnames<-", saveHTML, saveText)
 
-#importMethodsFrom(AnnotationDbi, Term)
+importMethodsFrom(AnnotationDbi, Term, get)
 
 importMethodsFrom(Biobase, annotation, exprs, featureNames,
                   sampleNames, write.exprs)
