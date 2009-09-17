@@ -25,8 +25,8 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
     call to \code{\link[limma]{decideTests}}.}
   \item{contrast}{A contrasts matrix, produced either by hand, or by a
     call to \code{\link[limma]{makeContrasts}}}
-   \item{fit}{An \code{\link[limma]{MArrayLM}} object, from a call to
-     \code{\link[limma]{eBayes}}.}
+   \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
+     \code{\link[limma:ebayes]{eBayes}}.}
   \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
   \item{adj.meth}{Method to use for adjusting p-values. Default is 'BH',
@@ -92,8 +92,8 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
   \code{TestResults} object, which come from the contrasts matrix, so
   it is important to use something descriptive. Second, the method
   argument is analogous to the \code{include} argument from
-  \code{\link[limma]{vennCounts}} or
-  \code{\link[limma]{vennDiagram}}. Choosing "both" will select genes
+  \code{\link[limma:venn]{vennCounts}} or
+  \code{\link[limma:venn]{vennDiagram}}. Choosing "both" will select genes
   that are differentially expressed in one or more comparisons,
   regardless of direction. Choosing "up" or "down" will select genes
   that are only differentially expressed in one direction. Choosing
@@ -121,7 +121,7 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
   out <- vennSelectBM(eset, fit, design, x, <other arguments>,  save = TRUE)
 
   An alternative would be to use \code{vennCounts2} and
-  \code{\link[limma]{vennDiagram}} to output a Venn diagram, which is
+  \code{\link[limma:venn]{vennDiagram}} to output a Venn diagram, which is
   probably more reasonable since the tables being output are supposed to
   be based on a Venn diagram.
 }

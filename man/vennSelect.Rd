@@ -20,8 +20,8 @@ foldFilt = NULL, save = FALSE, ...)
     call to \code{\link[limma]{decideTests}}.}
   \item{contrast}{A contrasts matrix, produced either by hand, or by a
     call to \code{\link[limma]{makeContrasts}}}
-   \item{fit}{An \code{\link[limma]{MArrayLM}} object, from a call to
-     \code{\link[limma]{eBayes}}.}
+   \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
+     \code{\link[limma:ebayes]{eBayes}}.}
   \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
   \item{adj.meth}{Method to use for adjusting p-values. Default is 'BH',

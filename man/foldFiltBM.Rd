@@ -74,7 +74,7 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
   Affymetrix IDs. To find out the correct name to use for the ann.source
   argument, one can create a connection to a Biomart database using
   \code{\link[biomaRt]{useMart}} and then get a list of available Affy
-  arrays using \code{\link[biomaRt]{getAffyArrays}}.
+  arrays using \code{getAffyArrays}.
 
   If one is using one of the re-mapped CDFs from MBNI at University of
   Michigan, then the IDs to use depend on the mapping used to create the

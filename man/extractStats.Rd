@@ -4,7 +4,7 @@
 \title{Extract Statistics from an MArrayLM object}
 \description{
   This is a utility function that can be used to extract the statistics
-  for a set of probesets from an \code{\link[limma]{MArrayLM}}
+  for a set of probesets from an \code{\link[limma:marraylm]{MArrayLM}}
   object. This may be useful for others, but currently is considered an
   internal function and is not intended to be called by end users.
 }
@@ -14,11 +14,11 @@ extractStats(prbs, fit, comp, statistics)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{prbs}{ A vector of probe IDs}
-  \item{fit}{An \code{\link[limma]{MArrayLM}} object}
+  \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object}
   \item{comp}{Numeric vector of length one, designating which comparison
-    to select from the \code{\link[limma]{MArrayLM}} object}
+    to select from the \code{\link[limma:marraylm]{MArrayLM}} object}
   \item{statistics}{Any or all of 'tstat', 'pval', 'FC', used to control
-    the output of statistics from the \code{\link[limma]{MArrayLM}}
+    the output of statistics from the \code{\link[limma:marraylm]{MArrayLM}}
     object}
 }
 \details{

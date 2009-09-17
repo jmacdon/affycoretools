@@ -96,11 +96,12 @@ save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE)
 }
 \value{
  If \code{save} is \code{TRUE}, a list of tables from
- \code{\link[limma]{topTable}} will be output.
+ \code{\link[limma:toptable]{topTable}} will be output.
 }
 
 \author{ James W. MacDonald <jmacdon@med.umich.edu> }
 
-\seealso{ \code{\link[limma]{topTable}}, \code{\link[annaffy]{aafTableAnn}}}
+\seealso{ \code{\link[limma:toptable]{topTable}},
+  \code{\link[annaffy]{aafTableAnn}}} 
 
 \keyword{ manip }% at least one, from doc/KEYWORDS

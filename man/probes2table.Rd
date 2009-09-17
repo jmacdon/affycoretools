@@ -38,6 +38,7 @@ probes2table(eset, probids, lib, otherdata = NULL,
 }
 \author{ James W. MacDonald <jmacdon@med.umich.edu> }
 
-\seealso{ \code{\link[limma]{topTable}}, \code{\link[annaffy]{aafTableAnn}} }
+\seealso{ \code{\link[limma:toptable]{topTable}},
+  \code{\link[annaffy]{aafTableAnn}} } 
 
 \keyword{ manip }% at least one, from doc/KEYWORDS

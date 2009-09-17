@@ -70,6 +70,6 @@ probes2tableBM(eset, probids, species, filename, otherdata = NULL,
 }
 \author{ James W. MacDonald <jmacdon@med.umich.edu> }
 
-\seealso{ \code{\link[limma]{topTable}}}
+\seealso{ \code{\link[limma:toptable]{topTable}}}
 
 \keyword{ manip }% at least one, from doc/KEYWORDS

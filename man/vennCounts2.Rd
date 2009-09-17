@@ -4,7 +4,7 @@
 \title{Compute Counts for Venn Diagram}
 \description{
   This function is designed to compute counts for a Venn diagram. It is
-  slightly different from \code{\link[limma]{vennCounts}} in the
+  slightly different from \code{\link[limma:venn]{vennCounts}} in the
   additional ability to compute counts for genes that are differentially
   expressed in the same direction.
 }
@@ -17,15 +17,16 @@ vennCounts2(x, method = "same", fit = NULL, foldFilt = NULL)
     call to \code{\link[limma]{decideTests}} or \code{foldFilt}.}
   \item{method}{ One of "same", "both", "up", "down". See details for
     more information.}
-  \item{fit}{An \code{\link[limma]{MArrayLM}} object, produced by a call
-    to \code{\link[limma]{lmFit}} and \code{\link[limma]{eBayes}}. Only
+  \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, produced
+    by a call 
+    to \code{\link[limma]{lmFit}} and \code{\link[limma:ebayes]{eBayes}}. Only
     necessary if 'foldFilt' = \code{TRUE}.}
   \item{foldFilt}{A fold change to filter samples. This is primarily
     here for consistency with the corresponding argument in
     \code{vennSelect}.}
 }
 \details{
-  The function \code{\link[limma]{vennCounts}} will return identical
+  The function \code{\link[limma:venn]{vennCounts}} will return identical
   results except for the "same" method. This will only select those
   genes that both pass the criteria of \code{\link[limma]{decideTests}}
   as well as being differentially expressed in the same direction. Note

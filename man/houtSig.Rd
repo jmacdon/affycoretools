@@ -17,13 +17,15 @@ houtSplit(tab, eset, fit, comp, statistics, html, text)
 \arguments{
   \item{tab}{ A \code{data.frame}, resulting from a call to
     \code{\link[GOstats]{probeSetSummary}}}
-  \item{eset}{An \code{link[Biobase]{ExpressionSet}} object}
-  \item{fit}{An \code{\link[limma]{MArrayLM}} object, resulting from a
-    call to \code{\link[limma]{eBayes}}}
+  \item{eset}{An \code{link[Biobase:class.ExpressionSet]{ExpressionSet}}
+    object} 
+  \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, resulting
+    from a call to \code{\link[limma:ebayes]{eBayes}}}
   \item{comp}{Numeric vector of length one, designating which comparison
-    to select from the \code{\link[limma]{MArrayLM}} object}
+    to select from the \code{\link[limma:marraylm]{MArrayLM}} object}
   \item{statistics}{Any or all of 'tstat', 'pval', 'FC', used to control
-    the output of statistics from the \code{\link[limma]{MArrayLM}} object} 
+    the output of statistics from the
+    \code{\link[limma:marraylm]{MArrayLM}} object} 
   \item{html}{Boolean. Output HTML tables? Defaults to \code{TRUE}}
   \item{text}{Boolean. Output text tables? Defaults to \code{TRUE}}
 }

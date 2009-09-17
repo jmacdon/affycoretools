@@ -14,7 +14,7 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
 
 \arguments{
   \item{hyptObj}{A \code{HyperGResult} object, usually produced by a call to
-    \code{\link[Category]{hyperGtest}}} 
+    \code{\link[Category]{hyperGTest}}} 
   \item{eset}{An \code{ExpressionSet} object}
   \item{pvalue}{The p-value cutoff used for selecting significant GO
     terms. If not specified, it will be extracted from the
@@ -23,13 +23,13 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
     term to be significant. See details for more information}
   \item{sigProbesets}{Vector of probeset IDs that were significant in
     the original analysis.} 
-  \item{fit}{An \code{\link[limma]{MArrayLM}} object, produced from a
-    call to \code{\link[limma]{eBayes}}}
+  \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, produced from a
+    call to \code{\link[limma:ebayes]{eBayes}}}
   \item{subset}{Numeric vector used to select particular tables to
     output. The default is to output tables for all terms. See details
     for more information}
   \item{comp}{Numeric vector of length one, used to indicate which
-    comparison in the \code{\link[limma]{MArrayLM}} object to use for
+    comparison in the \code{\link[limma:marraylm]{MArrayLM}} object to use for
     extracting relevant statistics. See details for more information}
   \item{output}{One of 'selected', 'all', or 'split'. See details for
     more information}
@@ -76,8 +76,10 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
  information about each probeset as well as the expression values. In
  addition, if limma were used to fit the model, the relevant statistics
  (t-statistic, p-value, fold change) can also be output in the table by
- passing the \code{\link[limma]{MArrayLM}} object that resulted from a
- call to \code{\link[limma]{eBayes}}. The \code{statistics} argument can
+ passing the \code{\link[limma:marraylm]{MArrayLM}} object that resulted
+ from a 
+ call to \code{\link[limma:ebayes]{eBayes}}. The \code{statistics}
+ argument can 
  be used to control which statistics are output.
 
  By default \code{hyperGoutput} will output tables for all significant
@@ -122,6 +124,7 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
 \author{ James W. MacDonald <jmacdon@med.umich.edu> }
 
 \seealso{ \code{\link[Category]{hyperGTest}},
-  \code{\link[Category]{htmlReport}}, \code{\link[GOstats]{probeSetSummary}}}
+  \code{\link[Category:HyperGResult-accessors]{htmlReport}},
+  \code{\link[GOstats]{probeSetSummary}}} 
 \keyword{manip }
 

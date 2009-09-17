@@ -19,7 +19,7 @@ getUniqueLL(probes, annot)
 \details{
  Subsetting a set of Affy IDs to unique Entrez Gene IDs is a common
  thing to do prior to doing a hypergeometric test. Functions such as
- \code{\link[Category]{hyperGtest}} can use un-named vectors of Entrez
+ \code{\link[Category]{hyperGTest}} can use un-named vectors of Entrez
  IDs (e.g., unique(getLL(probeIDs, annot))), but there is some
  functionality that requires the Entrez Gene IDs to be in a named
  vector, with the names being the associated Probeset IDs.
