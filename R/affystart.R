@@ -253,7 +253,7 @@ plotDeg <- function(dat, filenames = NULL){
 
 plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
-                    legend = TRUE, ...){
+                    legend = TRUE, main = "Principal Components Plot", ...){
   if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
 
 
@@ -288,7 +288,7 @@ plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.co
     plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
          ylab= paste("PC", pcs[2], sep=""),
          xlab=paste("PC", pcs[1], sep=""),
-         main="Principal Components Plot", ylim = ylim, ...)
+         main = main, ylim = ylim, ...)
 
     if(!is.null(addtext)){
         smidge <-  (par("usr")[4] - par("usr")[3])/50
