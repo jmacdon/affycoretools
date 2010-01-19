@@ -12,5 +12,5 @@ License: Artistic-2.0
 Depends: affy, Biobase, GO.db, KEGG.db
 Imports: biomaRt, limma, GOstats, annotate, annaffy,
 	 genefilter, gcrma, splines, xtable, AnnotationDbi
-Suggests: affydata, hgfocuscdf
+Suggests: affydata, hgfocuscdf, rgl
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression

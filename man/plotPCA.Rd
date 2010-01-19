@@ -6,13 +6,14 @@
  This function makes a PCA plot from an ExpressionSet or matrix
 }
 \usage{
-plotPCA(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
+plotPCA(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
 y.coord = NULL, screeplot = FALSE, squarepca = FALSE, pch = NULL, col =
-NULL, pcs = c(1,2), legend = TRUE, \dots)
+NULL, pcs = c(1,2), legend = TRUE, main = "Principal Components Plot",
+plot3d = FALSE,  \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{An \code{ExpressionSet} or \code{matrix}.}
+  \item{object}{An \code{ExpressionSet}, \code{matrix} or \code{prcomp} object.}
   \item{groups}{A numeric \code{vector} delineating group membership for
     samples. Default is \code{NULL}, in which case default plotting symbols and
     colors will be used.}
@@ -37,10 +38,15 @@ NULL, pcs = c(1,2), legend = TRUE, \dots)
     use for the plotting symbols. Default is \code{NULL} in which case
     default colors will be used. Note that this argument will override
     the 'groups' argument.}
-  \item{pcs}{A character \code{vector} of length two indicating which principal
+  \item{pcs}{A character \code{vector} of length two (or three if plot3d
+    is \code{TRUE}), indicating which principal
     components to plot. Defaults to the first two principal components.}
   \item{legend}{Boolean. Should a legend be added to the plot? Defaults
     to \code{TRUE}.}
+  \item{main}{A character \code{vector} for the plot title.}
+  \item{plot3d}{Boolean. If \code{TRUE}, then the PCA plot will be
+    rendered in 3D using the rgl package. Defaults to \code{FALSE}. Note
+    that the pcs argument should have a length of three in this case.}
   \item{\dots}{Further arguments to be passed to \code{plot}. See the help page
     for \code{plot} for further information.}
 }

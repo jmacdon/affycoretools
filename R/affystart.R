@@ -251,57 +251,74 @@ plotDeg <- function(dat, filenames = NULL){
   }
 }
 
-plotPCA <- function(eset, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
+plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
-                    legend = TRUE, main = "Principal Components Plot", ...){
-  if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
+                    legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, ...){
+  if(length(pcs) != 2 && !plot3d) stop("You can only plot two principal components.\n", call. = FALSE)
+  if(length(pcs) != 3 && plot3d) stop("For 3D plotting, you should specify 3 principal components.\n", call. = FALSE)
 
 
 
-  if(is(eset, "ExpressionSet")){
-      if(max(pcs) > dim(exprs(eset))[2])
-          stop(paste("There are only", dim(exprs(eset))[2], "principal components to plot.\n", call. = FALSE))
-      if(is.null(groupnames)) groupnames <- sampleNames(eset)
+  if(is(object, "ExpressionSet")){
+      if(max(pcs) > dim(exprs(object))[2])
+          stop(paste("There are only", dim(exprs(object))[2], "principal components to plot.\n", call. = FALSE))
+      if(is.null(groupnames)) groupnames <- sampleNames(object)
       if(is.factor(groupnames)) groupnames <- as.character(groupnames)
-      pca <- prcomp(t(exprs(eset)))
-      len <- length(sampleNames(eset))
+      pca <- prcomp(t(exprs(object)))
+      len <- length(sampleNames(object))
  }else{
-     if(class(eset) == "matrix"){
-         if(max(pcs) > dim(eset)[2])
-             stop(paste("There are only", dim(eset)[2], "principal components to plot.\n", call. = FALSE))
-         if(is.null(groupnames)) groupnames <- colnames(eset)
+     if(class(object) == "matrix"){
+         if(max(pcs) > dim(object)[2])
+             stop(paste("There are only", dim(object)[2], "principal components to plot.\n", call. = FALSE))
+         if(is.null(groupnames)) groupnames <- colnames(object)
          if(is.factor(groupnames)) groupnames <- as.character(groupnames)
-         pca <- prcomp(t(eset))
-         len <- dim(eset)[2]
+         pca <- prcomp(t(object))
+         len <- dim(object)[2]
   }else{
-      stop("plotPCA currently only supports ExpressionSet and matrices")
+      if(class(object) == "prcomp"){
+          if(max(pcs) > dim(object$x)[2])
+              stop(paste("There are only", dim(object$x)[2], "principal components to plot.\n", call. = FALSE))
+          if(is.null(groupnames)) groupnames <- row.names(object$x)
+          if(is.factor(groupnames)) groupnames <- as.character(groupnames)
+          pca <- object
+          len <- dim(object$x)[2]
+      }else{
+          stop("plotPCA currently only supports ExpressionSets, matrices and prcomp objects")
+      }
   }
  }
   if(screeplot){
-    plot(pca, main = "Screeplot")
+      plot(pca, main = "Screeplot")
   }else{
-    if(squarepca){
-      ylim <- max(abs(range(pca$x[,pcs[1]])))
-      ylim <- c(-ylim, ylim)
-    }else ylim <- NULL
-    plotstuff <- pcaPCH(len, groups, pch, col)
-    plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
-         ylab= paste("PC", pcs[2], sep=""),
-         xlab=paste("PC", pcs[1], sep=""),
-         main = main, ylim = ylim, ...)
+      if(plot3d){
+          require("rgl", quiet = TRUE) || stop("The rgl package must be installed to do 3D plots.\n", call. = FALSE)
+          plotstuff <- pcaPCH(len, groups, pch, col)
+          plot3d(pca$x[,pcs], type = "s", col = plotstuff$col, size = 2)
+          cat(paste("Sometimes rgl doesn't plot the first time.\nIf there",
+                    "isn't anything in the plotting window, close it and re-run plotPCA().\n"))
+      }else{
+          if(squarepca){
+              ylim <- max(abs(range(pca$x[,pcs[1]])))
+              ylim <- c(-ylim, ylim)
+          }else ylim <- NULL
+          plotstuff <- pcaPCH(len, groups, pch, col)
+          plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
+               ylab= paste("PC", pcs[2], sep=""),
+               xlab=paste("PC", pcs[1], sep=""),
+               main = main, ylim = ylim, ...)
 
-    if(!is.null(addtext)){
-        smidge <-  (par("usr")[4] - par("usr")[3])/50
-        text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext,
-             cex = 0.7)
-    }
-    if(legend){
-        pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
+          if(!is.null(addtext)){
+              smidge <-  (par("usr")[4] - par("usr")[3])/50
+              text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext,
+                   cex = 0.7)
+          }
+          if(legend){
+              pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
                    y.coord = y.coord, ...)
-    }
+          }
+      }
   }
 }
-
 
 make.cl <- function(filenames){
   ## A function to make a classlabel for plotting
