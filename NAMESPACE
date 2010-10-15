@@ -47,7 +47,7 @@ importFrom(annotate, htmlpage, getEG)
 
 importFrom(genefilter, genefilter, filterfun, kOverA, pOverA, cv)
 
-export(genefilter, filterfun, kOverA, pOverA, cv)
+#export(genefilter, filterfun, kOverA, pOverA, cv)
 
 importFrom(gcrma, gcrma)
 
