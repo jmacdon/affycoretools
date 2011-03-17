@@ -100,13 +100,13 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           }
         }
         if(FC){
-          fld <- tables[[i]][,2]
+          fld <- tables[[i]][,"logFC"]
           if(!exists("testtable")){
             testtable <- aafTable("Fold Change" = round(fld, 2))
           }else{
             testtable <- merge(testtable, aafTable("Fold Change" = round(fld, 2)))
           }
-        }
+      }
 
         if(exists("testtable"))
           anntable <- merge(anntable, testtable)
@@ -122,6 +122,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         if(text)
           saveText(anntable, paste(filename, "txt", sep="."), header=TRUE)
       }
+      if(exists("testtable")) rm(testtable)
     }
     if(save) return(tables)
   }
@@ -180,7 +181,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           }
       }
       if(FC){
-        fld <- tables[[i]][,2]
+        fld <- tables[[i]][,"logFC"]
         if(!exists("testtable")){
           testtable <- aafTable("Fold Change" = round(fld, 2))
         }else{
@@ -202,6 +203,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
       if(text)
           saveText(anntable, paste(filename, "txt", sep="."), header=TRUE)
     }
+    if(exists("testtable")) rm(testtable)
   }
   if(save) return(tables)
 }
