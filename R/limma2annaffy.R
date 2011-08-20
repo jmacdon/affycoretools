@@ -218,9 +218,7 @@ tableFilt <- function(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
   }
 ## Filter on p-value
   if(!is.null(pfilt))
-    tab <- switch(adjust,
-                  none = tab[tab[,"P.Value"] < pfilt,],
-                  tab[tab[,"adj.P.Val"] < pfilt,])
+      tab <- tab[tab[,"adj.P.Val"] < pfilt,]
   ## Filter on fold change
   if(!is.null(fldfilt))
     tab <- tab[abs(tab[,"logFC"]) > fldfilt,]
