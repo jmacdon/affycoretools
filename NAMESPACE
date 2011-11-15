@@ -12,7 +12,7 @@ importMethodsFrom(annaffy, "colnames<-", saveHTML, saveText)
 importMethodsFrom(AnnotationDbi, Term, get)
 
 importMethodsFrom(Biobase, annotation, exprs, featureNames,
-                  sampleNames, write.exprs)
+                  sampleNames, write.exprs, addVigs2WinMenu)
 
 importMethodsFrom(genefilter, plot)
 
@@ -56,3 +56,5 @@ importFrom(splines, ns)
 importFrom(xtable, xtable)
 
 #import(annaffy)
+
+importFrom(lattice, xyplot, panel.xyplot, panel.lmline)
