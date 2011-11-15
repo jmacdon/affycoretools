@@ -1,6 +1,6 @@
-export(limma2annaffy, foldFilt, vennSelect, vennCounts2, plotma,
+export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        probes2table, affystart, plotDeg, plotHist, plotPCA,
-       convert.back, hyperG2annaffy, vennSelectBM,
+       hyperG2annaffy, vennSelectBM,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL)
@@ -12,7 +12,7 @@ importMethodsFrom(annaffy, "colnames<-", saveHTML, saveText)
 importMethodsFrom(AnnotationDbi, Term, get)
 
 importMethodsFrom(Biobase, annotation, exprs, featureNames,
-                  sampleNames, write.exprs, addVigs2WinMenu)
+                  sampleNames, write.exprs)
 
 importMethodsFrom(genefilter, plot)
 
@@ -57,4 +57,4 @@ importFrom(xtable, xtable)
 
 #import(annaffy)
 
-importFrom(lattice, xyplot, panel.xyplot, panel.lmline)
+importFrom(lattice, xyplot, panel.xyplot, panel.abline)
