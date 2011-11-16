@@ -7,21 +7,31 @@
 ####################################################
 
 
-maplot <- function(object){
+maplot <- function(object, layout = NULL){
     if(is(object, "ExpressionSet")){
         mat <- exprs(object)
     }else{
         mat <- as.matrix(object)
     }
-    if(ncol(mat) < 10){
-        layout <- c(3,3)
-    }else{
-        if(ncol(mat) < 17){
-            layout <- c(4,4)
+    if(!is.null(layout) && length(layout) !=2)
+        stop("The layout argument should be a numeric vector of length two!\n",
+             call. = FALSE)
+    if(!is.null(layout) && length(unique(layout)) != 1)
+        warning(paste("You will get better results if the layout argument is a vector\n",
+                      "of two equal numbers, usually between 2 and 5.\n"),
+                call. = FALSE, immediate. = TRUE)
+    if(is.null(layout)){
+        if(ncol(mat) < 10){
+            layout <- c(3,3)
         }else{
-            layout <- c(5,5)
+            if(ncol(mat) < 17){
+                layout <- c(4,4)
+            }else{
+                layout <- c(5,5)
+            }
         }
     }
+
     med <- apply(mat, 1, median, na.rm = TRUE)
     M <- mat - med
     A <- (mat + med)/2
