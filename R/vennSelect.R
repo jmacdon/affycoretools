@@ -144,24 +144,39 @@ getStat <- function(stat, ncontrasts, num, fit, contrast, index, adj.meth){
     if(length(tmp[[num]]) == 1){
       out <- list("t-statistic" = fit$t[index,tmp[[num]]])
     }else{
-      out <- as.list(as.data.frame(fit$t[index,tmp[[num]]]))
+      out <- fit$t[index,tmp[[num]]]
+      if(is.matrix(out)){
+          out <- as.list(as.data.frame(out))
+      }else{
+          out <- as.list(out)
+      }
       names(out) <- paste("t-statistic for ", colnames(contrast)[tmp[[num]]], sep = "")
     }
   if(stat == "pval")
     if(length(tmp[[num]]) == 1){
       out <- list("p-value" = p.adjust(fit$p.value[,tmp[[num]]], adj.meth)[index])
     }else{
-      out <- as.list(as.data.frame(fit$p.value[,tmp[[num]]]))
+      out <- fit$p.value[,tmp[[num]]]
+      if(is.matrix(out)){
+          out <- as.list(as.data.frame(out))
+      }else{
+          out <- as.list(out)
+      }
       out <- lapply(out, p.adjust, method = adj.meth)
       out <- lapply(out, function(x) x[index])
       names(out) <- paste("p-value for ", colnames(contrast)[tmp[[num]]], sep = "")
     }
   if(stat == "FC")
     if(length(tmp[[num]]) == 1){
-      out <- list("Fold change" = fit$coefficients[index,tmp[[num]]])
+      out <- list("log2 fold change" = fit$coefficients[index,tmp[[num]]])
     }else{
-      out <- as.list(as.data.frame(fit$coefficients[index,tmp[[num]], drop = FALSE]))
-      names(out) <- paste("Fold change for ", colnames(contrast)[tmp[[num]]], sep = "")
+      out <- fit$coefficients[index,tmp[[num]], drop = FALSE]
+      if(is.matrix(out)){
+          out <- as.list(as.data.frame(out))
+      }else{
+          out <- as.list(out)
+      }
+      names(out) <- paste("log2 fold change for ", colnames(contrast)[tmp[[num]]], sep = "")
     }
   
   out
@@ -193,7 +208,8 @@ f.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
                 fstat = order(f.stat[[1]], decreasing = TRUE),
                 fc = order(fc[[1]], decreasing = TRUE))
   out <- lapply(out, function(x) x[ord])
-  out <- lapply(out, round, 3)
+  out <- lapply(out, function(x)
+                ifelse(abs(x) < 1e-3, sprintf("%0.3e", x), sprintf("%0.3f", x)))
   return(list(out = out, ord = ord))
 }
 
@@ -221,14 +237,15 @@ t.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
                 tstat = order(t.stat[[1]], decreasing = TRUE),
                 fc = order(fc[[1]], decreasing = TRUE))
   out <- lapply(out, function(x) x[ord])
-  out <- lapply(out, round, 3)
+  out <- lapply(out, function(x)
+                ifelse(abs(x) < 1e-3, sprintf("%0.3e", x), sprintf("%0.3f", x)))
   return(list(out = out, ord = ord))
 }
 
 
 vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
                        stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
-                       foldFilt = NULL, save = FALSE, ...){
+                       foldFilt = NULL, save = FALSE, titleadd = NULL, ...){
   ## eset is an ExpressionSet containing data used for comparisons
   ## design is a design matrix from limma
   ## x is a TestResults object from a call to decideTests()
@@ -271,10 +288,14 @@ vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth
       otherdata <- t.stat.dat(fit, indices[[i]], contrast, adj.meth, c(stat, otherstats),
                               order.by, ncontrasts, i)
     if(is.null(stat)) otherdata <- NULL
+    if(!is.null(titleadd))
+        title <- paste(name[i], titleadd)
+    else
+        title <- name[i]
     if(length(tmp) == 0) next
     else
       probes2table(eset[,cols[[i]]], tmp[otherdata$ord], annotation(eset), text = TRUE,
-                   filename = name[i], otherdata = otherdata$out, ...)
+                   filename = name[i], otherdata = otherdata$out, title = title, ...)
   }
   if(save)
     sapply(indices, sum)

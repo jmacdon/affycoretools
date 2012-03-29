@@ -8,7 +8,7 @@
 \usage{
 probes2table(eset, probids, lib, otherdata = NULL,
  anncols = aaf.handler()[c(1:3, 6:7, 9:12)], html = TRUE, text = FALSE,
- express = TRUE, save = FALSE, filename)
+ express = TRUE, save = FALSE, filename, title = NULL)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -30,6 +30,8 @@ probes2table(eset, probids, lib, otherdata = NULL,
   \item{save}{ Should tables be saved as R objects for
     further processing? Defaults to \code{FALSE}. }
   \item{filename}{ Filename of the resulting HTML table.}
+  \item{title}{Title for HTML table. If \code{NULL}, the filename will
+    be used.}
 }
 
 \value{

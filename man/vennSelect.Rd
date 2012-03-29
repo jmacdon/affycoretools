@@ -9,7 +9,7 @@
 \usage{
 vennSelect(eset, design, x, contrast, fit, method = "same", adj.meth =
 "BH", stat = "fstat", otherstats = c("pval","FC"), order.by = "pval",
-foldFilt = NULL, save = FALSE, ...)
+foldFilt = NULL, save = FALSE, titleadd = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -47,7 +47,11 @@ foldFilt = NULL, save = FALSE, ...)
   \item{...}{Used to pass other arguments to \code{probes2table}, in
     particular, to change the argument to \code{anncols} 
     which controls the columns of hyperlinks to online databases (e.g.,
-    Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more information.}
+    Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more
+    information.}
+  \item{titleadd}{Additional text to add to the title of the HTML
+    tables. Default is NULL, in which case the title of the table will
+    be the same as the filename.}
 }
 \details{
   The purpose of this function is to output HTML and text tables with

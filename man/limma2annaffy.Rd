@@ -14,7 +14,7 @@ limma2annaffy(eset, fit, design, contrast, lib, adjust = "fdr",
  anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30, pfilt = NULL,
  fldfilt= NULL,tstat = TRUE, pval = TRUE, FC = TRUE,
  expression = TRUE, html = TRUE, text = FALSE, save = FALSE, addname =
-NULL, interactive = TRUE)
+NULL, addtitle = NULL, interactive = TRUE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -48,6 +48,12 @@ NULL, interactive = TRUE)
   \item{addname}{ A character vector to add to the end of
   the automatically generated output file names. Useful for multiple
   calls to eliminate over-writing of existing HTML or text tables.}
+  \item{addtitle}{A character vector to add to the title for the HTML
+    table. By default the title will be the same as the filename. If the
+    addname argument is not \code{NULL}, then that will be appended to
+    the filename (and will be used as the HTML title). If addtitle is
+    not \code{NULL}, it will be appended to the filename and that will
+    then be used as the HTML table title.}
   \item{interactive}{Boolean: Is this an interactive call, or run as
     part of a script (e.g., in an \code{Sweave} document)? Defaults to \code{TRUE}}
 }

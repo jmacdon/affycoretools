@@ -17,7 +17,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                           anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30,
                           pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                           expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
-                          addname = NULL, interactive = TRUE){
+                          addname = NULL, addtitle = NULL, interactive = TRUE){
   ## if lib isn't a .db package, make it so
   if(length(grep("\\.db$", lib)) < 1)
       lib <- paste(lib, "db", sep = ".")
@@ -27,7 +27,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                      lib = lib, adjust = adjust, anncols = anncols, number = number,
                      pfilt = pfilt, fldfilt = fldfilt, tstat = tstat, pval = pval,
                      FC = FC, expression = expression, html = html, text = text,
-                     save = save, addname = addname)
+                     save = save, addname = addname, addtitle = addtitle)
   }else{
 
 
@@ -80,6 +80,10 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         filename <- colnames(contrast)[i]
         if(!is.null(addname))
           filename <- paste(filename, addname, sep=" ")
+        if(!is.null(addtitle))
+            title <- paste(filename, addtitle)
+        else
+            title <- filename
         ## Remove illegal characters from filename
         if(length(grep("[/|\\|?|*|:|<|>|\"|\\|]", filename)) > 0)
           warning(paste("Some illegal characters have been removed from the filename",
@@ -93,18 +97,22 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           testtable <- aafTable("t-statistic" = round(tables[[i]][,"t"],2))
         if(pval){
           if(!exists("testtable")){
-            testtable <- aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3))
+            testtable <- aafTable("p-value" = ifelse(tables[[i]][,"adj.P.Val"] < 1e-3,
+                                  sprintf("%0.3e", tables[[i]][,"adj.P.Val"]),
+                                  sprintf("%0.3f", tables[[i]][,"adj.P.Val"])))
           }else{
             testtable <- merge(testtable,
-                               aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3)))
+                               aafTable("p-value" = ifelse(tables[[i]][,"adj.P.Val"] < 1e-3,
+                                  sprintf("%0.3e", tables[[i]][,"adj.P.Val"]),
+                                  sprintf("%0.3f", tables[[i]][,"adj.P.Val"]))))
           }
         }
         if(FC){
           fld <- tables[[i]][,"logFC"]
           if(!exists("testtable")){
-            testtable <- aafTable("Fold Change" = round(fld, 2))
+            testtable <- aafTable("log2 fold Change" = round(fld, 2))
           }else{
-            testtable <- merge(testtable, aafTable("Fold Change" = round(fld, 2)))
+            testtable <- merge(testtable, aafTable("log2 fold Change" = round(fld, 2)))
           }
       }
 
@@ -118,7 +126,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           anntable <- merge(anntable, exprtable)
 
         if(html)
-          saveHTML(anntable, paste(filename,"html", sep="."), filename)
+          saveHTML(anntable, paste(filename,"html", sep="."), title)
         if(text)
           saveText(anntable, paste(filename, "txt", sep="."), header=TRUE)
       }
@@ -132,7 +140,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                                anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30,
                                pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                                expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
-                               addname = NULL){
+                               addname = NULL, addtitle = NULL){
 
 
 
@@ -161,6 +169,10 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
       filename <- colnames(contrast)[i]
       if(!is.null(addname))
         filename <- paste(filename, addname, sep=" ")
+      if(!is.null(addtitle))
+          title <- paste(filename, addtitle)
+      else
+          title <- filename
       ## Remove illegal characters from filename
       if(length(grep("[/|\\|?|*|:|<|>|\"|\\|]", filename)) > 0)
         warning(paste("Some illegal characters have been removed from the filename",
@@ -173,19 +185,23 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
       if(tstat)
         testtable <- aafTable("t-statistic" = round(tables[[i]][,"t"],2))
       if(pval){
-        if(!exists("testtable")){
-            testtable <- aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3))
+          if(!exists("testtable")){
+            testtable <- aafTable("p-value" = ifelse(tables[[i]][,"adj.P.Val"] < 1e-3,
+                                  sprintf("%0.3e", tables[[i]][,"adj.P.Val"]),
+                                  sprintf("%0.3f", tables[[i]][,"adj.P.Val"])))
           }else{
             testtable <- merge(testtable,
-                               aafTable("p-value" = round(tables[[i]][,"adj.P.Val"],3)))
+                               aafTable("p-value" = ifelse(tables[[i]][,"adj.P.Val"] < 1e-3,
+                                  sprintf("%0.3e", tables[[i]][,"adj.P.Val"]),
+                                  sprintf("%0.3f", tables[[i]][,"adj.P.Val"]))))
           }
-      }
+        }
       if(FC){
         fld <- tables[[i]][,"logFC"]
         if(!exists("testtable")){
-          testtable <- aafTable("Fold Change" = round(fld, 2))
+          testtable <- aafTable("log2 fold Change" = round(fld, 2))
         }else{
-          testtable <- merge(testtable, aafTable("Fold Change" = round(fld, 2)))
+          testtable <- merge(testtable, aafTable("log2 fold Change" = round(fld, 2)))
         }
       }
 
@@ -199,7 +215,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
         anntable <- merge(anntable, exprtable)
 
       if(html)
-        saveHTML(anntable, paste(filename,"html", sep="."), filename)
+        saveHTML(anntable, paste(filename,"html", sep="."), title)
       if(text)
           saveText(anntable, paste(filename, "txt", sep="."), header=TRUE)
     }
@@ -211,10 +227,10 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
 tableFilt <- function(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
                       adjust = "fdr"){
   if(is.null(fldfilt) && is.null(pfilt)){
-    tab <- topTable(fit, coef = coef, number = number, adjust = adjust)
+    tab <- topTable(fit, coef = coef, number = number, adjust.method = adjust)
   }else{
     tab <- topTable(fit, coef = coef, number = dim(fit$coefficients)[1],
-                    adjust = adjust)
+                    adjust.method = adjust)
   }
 ## Filter on p-value
   if(!is.null(pfilt))

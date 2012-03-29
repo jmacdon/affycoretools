@@ -262,11 +262,11 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
           gn <- tmp
       }
       lnks <- dfToList(getBM(attributes = links$links,
-                             filter = ann.source, values = gn, mart = mart),
+                             filters = ann.source, values = gn, mart = mart),
                        which(links$links == ann.source), gn)
            
       nam <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
-                            filter = ann.source, values = gn, mart = mart),
+                            filters = ann.source, values = gn, mart = mart),
                       1, gn)[-1]
       table.head <- c(links$names, otherdata$names)
       if(!is.null(stats)){
@@ -391,12 +391,12 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
         else
           gn <- sub("_at$", "", probeids)
         
-        anntable <- dfToList(getBM(attributes = links$links, filter = ann.source,
+        anntable <- dfToList(getBM(attributes = links$links, filters = ann.source,
                                    values = gn, mart = mart),
                              which(links@links == ann.source), gn)
         
         testtable <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
-                                    filter = ann.source,
+                                    filters = ann.source,
                                     values = gn, mart = mart), 1, gn)[-1]
         
         if (tstat)
@@ -495,12 +495,12 @@ limma2biomaRt.na <- function (eset, fit, design, contrast, species, links = link
         gn <- probeids
       else
         gn <- sub("_at", "", probeids)
-      anntable <- dfToList(getBM(attributes = links$links, filter = ann.source,
+      anntable <- dfToList(getBM(attributes = links$links, filters = ann.source,
                                  values = gn, mart = mart),
                            which(links$links == ann.source), gn)
       
       testtable <- dfToList(getBM(attributes = c(ann.source, otherdata$links),
-                                  filter = ann.source,
+                                  filters = ann.source,
                                   values = gn, mart = mart), 1, gn)[-1]
       
       if (tstat)
@@ -556,12 +556,12 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
     gn <- probids
   else
     gn <- sub("_at", "", probids)
-  anntable <-  dfToList(getBM(attributes = links$links, filter = ann.source,
+  anntable <-  dfToList(getBM(attributes = links$links, filters = ann.source,
                               values = gn, mart = mart),
                         which(links$links == ann.source), gn)
   
   testtable <- dfToList(getBM(attributes = c(ann.source, otherann$links),
-                              filter = ann.source,
+                              filters = ann.source,
                               values = gn, mart = mart), 1, gn)[-1]
   table.head <- c(links$names, otherann$names, names(otherdata),
                   sampleNames(eset))
@@ -586,7 +586,7 @@ foldFiltBM <- function(object, fold = 1, groups, comps, compnames, species,
   if(is(object, "ExpressionSet"))
     x  <- exprs(object)
   if(length(unique(groups)) != length(groups)){
-    gps <- matrix(NA, nc = length(unique(groups)), nr = dim(x)[1])
+    gps <- matrix(NA, ncol = length(unique(groups)), nrow = dim(x)[1])
     for(i in unique(groups)){
       if(length(groups[which(groups == i)]) != 1)
         gps[,i] <- rowMeans(x[,which(groups == i)])
@@ -618,7 +618,7 @@ foldFiltBM <- function(object, fold = 1, groups, comps, compnames, species,
                      ann.source, TRUE, html, text, affyid)
     }
   }
-  direct <- matrix(NA, nc = length(comps), nr = dim(gps)[1])
+  direct <- matrix(NA, ncol = length(comps), nrow = dim(gps)[1])
   for(i in seq(along = flds)){
     direct[,i] <- sign(flds[[i]] * indices[[i]])
   }

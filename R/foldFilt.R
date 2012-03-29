@@ -15,7 +15,7 @@ foldFilt <-function(object, fold = 1, groups, comps, compnames,
   if(is(object, "ExpressionSet"))
     x  <- exprs(object)
   if(length(unique(groups)) != length(groups)){
-    gps <- matrix(NA, nc = length(unique(groups)), nr = dim(x)[1])
+    gps <- matrix(NA, ncol = length(unique(groups)), nrow = dim(x)[1])
     for(i in unique(groups)){
       if(length(groups[which(groups == i)]) != 1)
         gps[,i] <- rowMeans(x[,which(groups == i)])
@@ -48,7 +48,7 @@ foldFilt <-function(object, fold = 1, groups, comps, compnames,
                      text = text, html = html, filename = compnames[i])
     }
   }
-  direct <- matrix(NA, nc = length(comps), nr = dim(gps)[1],
+  direct <- matrix(NA, ncol = length(comps), nrow = dim(gps)[1],
                    dimnames = list(featureNames(object), compnames))
   for(i in seq(along = flds)){
     direct[,i] <- sign(flds[[i]] * indices[[i]])

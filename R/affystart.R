@@ -111,7 +111,7 @@ affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
 }
 
 addAnnot <- function(eset, ann.vec = c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ")){
-    require(annotation(eset), character.only = TRUE, quiet = TRUE) ||
+    require(annotation(eset), character.only = TRUE, quietly = TRUE) ||
     stop(paste("The", annotation(eset), "package needs to be installed to annotate your data"),
          call. = FALSE)
     make.name <- function(x, y)
@@ -210,8 +210,8 @@ plotDeg <- function(dat, filenames = NULL){
   on.exit(par(op))
 
   ## put plot on left, legend on right
-  layout(matrix(1:2, nc = 2), c(3,1))
-  plotAffyRNAdeg(AffyRNAdeg(dat), col=1:length(filenames))
+  layout(matrix(1:2, ncol = 2), c(3,1))
+  plotAffyRNAdeg(AffyRNAdeg(dat), cols=1:length(filenames))
 
   ## fake a plot
   par(mai = c(0,0,1.01,0))
@@ -254,6 +254,7 @@ plotDeg <- function(dat, filenames = NULL){
 plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
                     legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, ...){
+  if(is.character(groups)) stop("The groups argument should be numeric, not character!\n", call. = FALSE)  
   if(length(pcs) != 2 && !plot3d) stop("You can only plot two principal components.\n", call. = FALSE)
   if(length(pcs) != 3 && plot3d) stop("For 3D plotting, you should specify 3 principal components.\n", call. = FALSE)
 
@@ -291,7 +292,7 @@ plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.
       plot(pca, main = "Screeplot")
   }else{
       if(plot3d){
-          require("rgl", quiet = TRUE) || stop("The rgl package must be installed to do 3D plots.\n", call. = FALSE)
+          require("rgl", quietly = TRUE) || stop("The rgl package must be installed to do 3D plots.\n", call. = FALSE)
           plotstuff <- pcaPCH(len, groups, pch, col)
           plot3d(pca$x[,pcs], type = "s", col = plotstuff$col, size = 2)
           cat(paste("Sometimes rgl doesn't plot the first time.\nIf there",
@@ -423,6 +424,28 @@ colvec <- function(len){
     out
 }
 
-
-
-
+writeFit <- function(fit, annotation = NULL, eset){
+    gt <- function(x) sapply(AnnotationDbi::mget(row.names(fit$t),
+                                                 get(paste(annotation, x, sep = "")), ifnotfound = NA),
+                             function(x) if(length(x) <= 1) x else paste(x, collapse = ";"))
+    if(!is.null(annotation)){
+        out <- data.frame(probeset = row.names(fit$t),
+                          symbol = gt("SYMBOL"), 
+                          description = gt("GENENAME"),
+                          genbank = gt("ACCNUM"),
+                          gene = gt("ENTREZID"),
+                          unigene = gt("UNIGENE"))
+    } else {
+        out <- data.frame(probeset = row.names(fit$t))
+    }
+    nc <- ncol(fit$t)
+    out2 <- lapply(1:nc, function(x) {
+        z <- cbind(fit$coefficients[,x], fit$t[,x], fit$p.value[,x],
+                   p.adjust(fit$p.value[,x], "BH"))
+        colnames(z) <- paste(colnames(fit$t)[x], c("log fold change","t-stat","p-value","adj p-value"))
+        z
+    })
+    out2 <- do.call("cbind", out2)
+    out3 <- if(is(eset, "ExpressionSet")) exprs(eset) else eset
+    return(cbind(out, out2, out3))
+}

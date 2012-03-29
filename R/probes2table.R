@@ -12,7 +12,8 @@
 
 probes2table <- function(eset, probids, lib, otherdata = NULL,
                          anncols=aaf.handler()[c(1:3, 6:7, 9:12)], html=TRUE,
-                         text=FALSE, express = TRUE, save=FALSE,  filename){
+                         text=FALSE, express = TRUE, save=FALSE,  filename,
+                         title = NULL){
 
 
   ## test that lib has a .db extension
@@ -32,9 +33,11 @@ probes2table <- function(eset, probids, lib, otherdata = NULL,
     exprtable <- aafTableInt(eset, probeids=probids)
     anntable <- merge(anntable, exprtable)
   }
+  if(is.null(title))
+      title <- filename
   
   if(html)
-    saveHTML(anntable, paste(filename, "html", sep="."), title=filename)
+    saveHTML(anntable, paste(filename, "html", sep="."), title=title)
   if(text)
     saveText(anntable, paste(filename, "txt", sep="."), header=TRUE)
   if(save)
