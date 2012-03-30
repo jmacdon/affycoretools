@@ -112,10 +112,10 @@ getCols <- function(design, contrast){
   tmp <- function(design, contrast, x){
     a <- design[,contrast[,x] > 0]
     if(is.matrix(a))
-      a <- apply(a, 1, any)
+      a <- rowSums(abs(a)) > 0
     b <- design[,contrast[,x] < 0]
     if(is.matrix(b))
-      b <- apply(b, 1, any)
+      b <- rowSums(abs(b)) > 0
     c(ids[as.logical(a)], ids[as.logical(b)])
   }
   cols <- list()

@@ -36,7 +36,7 @@ foldFilt <-function(object, fold = 1, groups, comps, compnames,
   }
   
   probes <- lapply(indices, function(y) row.names(x)[y])
-  FCs <- vector("list", unique(groups))
+  FCs <- vector("list", length(unique(groups)))
   for(i in seq(along=flds)){
     FCs[[i]] <- flds[[i]][indices[[i]]]
     if(length(FCs[[i]]) > 0){
