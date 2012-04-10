@@ -3,7 +3,7 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        hyperG2annaffy, vennSelectBM,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
-       getUniqueLL,writeFit)
+       getUniqueLL,writeFit,makeHmap,mirna2mrna)
 
 importMethodsFrom(affy, hist, mas5calls)
 
@@ -58,3 +58,5 @@ importFrom(xtable, xtable)
 #import(annaffy)
 
 importFrom(lattice, xyplot, panel.xyplot, panel.abline)
+
+importFrom(gplots, heatmap.2)
