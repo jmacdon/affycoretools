@@ -166,7 +166,7 @@ plotHist <- function(dat, filenames = NULL)
   if(is.null(filenames)) filenames <- sampleNames(dat)
   cl <- make.cl(filenames)
   if(length(filenames) <= 8){
-    if(is(dat, "AffyBatch"))
+    if(is(dat, "AffyBatch") || is(dat, "GeneFeatureSet"))
       hist(dat, lty=1, lwd=2, col=cl)
     if(is(dat, "matrix"))
       plotDensity(log2(dat), lty = 1, lwd = 2, col = cl)
@@ -175,7 +175,7 @@ plotHist <- function(dat, filenames = NULL)
            par("usr")[4] - (par("usr")[4]-par("usr")[3])/100,
            legend=filenames, lty=1, lwd=2, col=cl)
   }else{
-    if(is(dat, "AffyBatch"))
+    if(is(dat, "AffyBatch") || is(dat, "GeneFeatureSet"))
       hist(dat, lty=cl, lwd=2, col=1:length(filenames))
     if(is(dat, "matrix"))
       plotDensity(log2(dat), lty = cl, lwd = 2, col = 1:length(filenames))

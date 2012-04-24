@@ -13,7 +13,7 @@
 
 convertIDs <- function(ids, from = TRUE){
     if(from) {
-        ids <- sapply(strsplit(ids, "_"), function(x) x[grep("mi[rR]", x)])
+        ids <- sapply(strsplit(ids, "_"), function(x) if(length(x) > 2) x[2] else x[1])
         ids <- gsub("-star", "*", ids)
     }else{
         ids <- gsub("\\*", "-star", ids)
@@ -79,6 +79,7 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
     
     mrnaprbs <- lapply(prblst, function(x) dbGetQuery(con, makeSql(x, tab))[,1])
     intprbs <- lapply(mrnaprbs, function(x) mRNAids[mRNAids %in% x])
+    intprbs <- intprbs[sapply(intprbs, length) > 0]
     dbGetQuery(con, "detach orgDB;")
     intprbs
 }
@@ -91,12 +92,9 @@ makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL
     if(is.null(miRNAvec)) miRNAvec <- seq_len(ncol(miRNAdat))
     rn <- unique(do.call("c", mRNAlst))
     cn <- gsub("\\.probe_id", "", names(mRNAlst))
-    if(!all(cn %in% row.names(mRNAdat)))
+    if(!all(rn %in% row.names(mRNAdat)))
         warning(paste("Not all mRNA probes being tested are found in\n",
                       "the row.names of the mRNA data.\n\n", sep = ""), call. = FALSE)
-    if(!all(rn %in% row.names(miRNAdat)))
-        warning(paste("Not all miRNA probes being tested are found in\n",
-                      "the row.names of the miRNA data.\n\n", sep = ""), call. = FALSE)
     
     mat <- matrix(NA, nrow = length(rn), ncol = length(cn))
     row.names(mat) <- rn
@@ -109,7 +107,10 @@ makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL
         for(i in seq(along = bads))
             cn2[ind[i]] <- grep(cn2[ind[i]], row.names(miRNAdat), value = TRUE)
     }
-         
+    if(!all(cn2 %in% row.names(miRNAdat)))
+        warning(paste("Not all miRNA probes being tested are found in\n",
+                      "the row.names of the miRNA data.\n\n", sep = ""), call. = FALSE)
+    
     getCor <- function(miRNA, mRNAlst.itm){
         sapply(seq(along = mRNAlst.itm), function(x) cor(miRNAdat[miRNA,miRNAvec],
                    mRNAdat[mRNAlst.itm[x],mRNAvec]))
@@ -123,7 +124,7 @@ makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL
     row.names(mat) <- rn2
     ## alphabetize matrix
     ord <- order(row.names(mat))
-    mat <- mat[ord,]
+    mat <- mat[ord,,drop = FALSE]
     if(plot){
         heatmap.2(mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none",
                   trace = "none", density.info = "none", lhei = c(0.05, 0.95),
