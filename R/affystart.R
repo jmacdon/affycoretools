@@ -452,8 +452,8 @@ writeFit <- function(fit, annotation = NULL, eset){
 
 
 getMainProbes <- function(pdinfo){
-    require(db, character.only = TRUE)
-    con <- db(get(db))
+    require(pdinfo, character.only = TRUE)
+    con <- db(get(pdinfo))
     types <- dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                    "on featureSet.fsetid=core_mps.fsetid;"))
     ind <- types$type %in% 1
