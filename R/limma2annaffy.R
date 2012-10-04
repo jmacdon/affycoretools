@@ -17,7 +17,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                           anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30,
                           pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                           expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
-                          addname = NULL, addtitle = NULL, interactive = TRUE){
+                          addname = NULL, addtitle = NULL, interactive = TRUE, natFC = FALSE){
   ## if lib isn't a .db package, make it so
   if(length(grep("\\.db$", lib)) < 1)
       lib <- paste(lib, "db", sep = ".")
@@ -27,7 +27,8 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                      lib = lib, adjust = adjust, anncols = anncols, number = number,
                      pfilt = pfilt, fldfilt = fldfilt, tstat = tstat, pval = pval,
                      FC = FC, expression = expression, html = html, text = text,
-                     save = save, addname = addname, addtitle = addtitle)
+                     save = save, addname = addname, addtitle = addtitle,
+                     natFC = natFC)
   }else{
 
 
@@ -56,7 +57,8 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
       limma2annaffy(eset=eset, fit=fit, design=design, contrast=contrast,
                     lib=lib, anncols=anncols, pfilt=pfilt, fldfilt=fldfilt,
                     adjust=adjust, tstat=tstat, pval=pval, FC=FC, expression=expression,
-                    html=html, text=text)
+                    html=html, text=text, save=save, addname=addname, addtitle=addtitle,
+                    natFC=natFC)
       options(show.error.messages = FALSE)
       stop()
     }
@@ -115,7 +117,16 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
             testtable <- merge(testtable, aafTable("log2 fold Change" = round(fld, 2)))
           }
       }
-
+      if(natFC){
+        fld <- tables[[i]][,"logFC"]
+        fld <- ifelse(fld > 0, round(2^fld, 2), -round(2^-fld, 2))
+          if(!exists("testtable")){
+            testtable <- aafTable("Fold change natural scale" = fld)
+          }else{
+            testtable <- merge(testtable, aafTable("Fold change natural scale" = fld))
+          }
+      }  
+        
         if(exists("testtable"))
           anntable <- merge(anntable, testtable)
 
@@ -140,7 +151,7 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                                anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30,
                                pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                                expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
-                               addname = NULL, addtitle = NULL){
+                               addname = NULL, addtitle = NULL, natFC = FALSE){
 
 
 
@@ -204,7 +215,16 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
           testtable <- merge(testtable, aafTable("log2 fold Change" = round(fld, 2)))
         }
       }
-
+       if(natFC){
+        fld <- tables[[i]][,"logFC"]
+        fld <- ifelse(fld > 0, round(2^fld, 2), -round(2^-fld, 2))
+          if(!exists("testtable")){
+            testtable <- aafTable("Fold change natural scale" = fld)
+          }else{
+            testtable <- merge(testtable, aafTable("Fold change natural scale" = fld))
+          }
+      }  
+        
       if(exists("testtable"))
         anntable <- merge(anntable, testtable)
 

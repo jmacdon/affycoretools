@@ -132,6 +132,7 @@ makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL
                   sepcolor = "lightgrey", main = header, margins = c(5,8))
     }
     if(out)
+        mat <- data.frame(mRNA.ID = rn[ord], mat, row.names = NULL)
         return(mat)
 }
 

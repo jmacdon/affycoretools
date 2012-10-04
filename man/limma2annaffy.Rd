@@ -14,7 +14,7 @@ limma2annaffy(eset, fit, design, contrast, lib, adjust = "fdr",
  anncols = aaf.handler()[c(1:3, 6:7, 9:12)], number = 30, pfilt = NULL,
  fldfilt= NULL,tstat = TRUE, pval = TRUE, FC = TRUE,
  expression = TRUE, html = TRUE, text = FALSE, save = FALSE, addname =
-NULL, addtitle = NULL, interactive = TRUE)
+NULL, addtitle = NULL, interactive = TRUE, natFC = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -55,7 +55,13 @@ NULL, addtitle = NULL, interactive = TRUE)
     not \code{NULL}, it will be appended to the filename and that will
     then be used as the HTML table title.}
   \item{interactive}{Boolean: Is this an interactive call, or run as
-    part of a script (e.g., in an \code{Sweave} document)? Defaults to \code{TRUE}}
+    part of a script (e.g., in an \code{Sweave} document)? Defaults to
+    \code{TRUE}}
+  \item{natFC}{Boolean: Add 'unlogged' fold change to output? This is
+  intended for people who don't understand logs or fractions. If the fold change is
+  positive, it is simply exponentiated (e.g., 2^x where x is the log
+  fold change). If negative, we use -2^(-x), so e.g., a log fold change
+  of -2 will result in a -4.}
 }
 \details{
   This function is designed to automatically output HTML or text tables,
