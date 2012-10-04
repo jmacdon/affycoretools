@@ -3,7 +3,7 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        hyperG2annaffy, vennSelectBM,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
-       getUniqueLL,writeFit,makeHmap,mirna2mrna)
+       getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes)
 
 importMethodsFrom(affy, hist, mas5calls)
 
