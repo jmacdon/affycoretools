@@ -20,6 +20,6 @@ make.cl(filenames)
   types}
  
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu> }
+\author{James W. MacDonald <jmacdon@u.washington.edu> }
 
 \keyword{internal }% at least one, from doc/KEYWORDS

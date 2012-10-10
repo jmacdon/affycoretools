@@ -48,6 +48,6 @@ FALSE, ann.vec =  c("SYMBOL","GENENAME","ENTREZID","UNIGENE","REFSEQ"))
 }
 \seealso{\code{plotHist}, \code{plotDeg}, \code{plotPCA}
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{hplot}% at least one, from doc/KEYWORDS
 \keyword{manip}% __ONLY ONE__ keyword per line

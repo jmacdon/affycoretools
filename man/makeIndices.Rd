@@ -20,5 +20,5 @@ makeIndices(x, method = "same")
 \value{
  A list containing \code{TRUE} and \code{FALSE} values, to be used by \code{vennSelect}.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu>}
+\author{ James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{internal }% __ONLY ONE__ keyword per line

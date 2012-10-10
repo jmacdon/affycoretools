@@ -253,7 +253,7 @@ plotDeg <- function(dat, filenames = NULL){
 
 plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
-                    legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, ...){
+                    legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, outside = FALSE, ...){
   if(is.character(groups)) stop("The groups argument should be numeric, not character!\n", call. = FALSE)  
   if(length(pcs) != 2 && !plot3d) stop("You can only plot two principal components.\n", call. = FALSE)
   if(length(pcs) != 3 && plot3d) stop("For 3D plotting, you should specify 3 principal components.\n", call. = FALSE)
@@ -298,6 +298,10 @@ plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.
           cat(paste("Sometimes rgl doesn't plot the first time.\nIf there",
                     "isn't anything in the plotting window, close it and re-run plotPCA().\n"))
       }else{
+          if(legend && outside){
+              opar <- par(no.readonly = TRUE)
+              par(xpd = TRUE, mar = par()$mar + c(0,0,0,5))
+          }
           if(squarepca){
               ylim <- max(abs(range(pca$x[,pcs[1]])))
               ylim <- c(-ylim, ylim)
@@ -314,8 +318,18 @@ plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.
                    cex = 0.7)
           }
           if(legend){
-              pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
-                   y.coord = y.coord, ...)
+              if(outside){
+                  if(is.null(groups))
+                      unq <- unique(plotstuff)
+                  else
+                      unq <- unique(plotstuff[order(groups),])
+                  legend(par("usr")[2], par("usr")[4], groupnames, pch = unq[,1],
+                         col = unq[,2], pt.bg = unq[,2], bty = "n")
+                  par(opar)
+              }else{
+                  pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
+                             y.coord = y.coord, ...)
+              }
           }
       }
   }
@@ -363,22 +377,22 @@ pca.legend <- function(pca, groups, groupnames, pch.df,  x.coord = NULL, y.coord
 
   whereto <- match(TRUE, c(upright, upleft, downleft, downright))
    if(!is.null(x.coord) & !is.null(y.coord)){
-    legend(x.coord, y.coord, legend = groupnames, pch = pch, col = col, pt.bg = col)
+    legend(x.coord, y.coord, legend = groupnames, pch = pch, col = col, pt.bg = col, bty = "n")
   }else if(!is.na(whereto)){
     if(whereto == 1)
-      legend(right, up + y.lab, legend=groupnames, pch=pch, col = col, pt.bg = col)
+      legend(right, up + y.lab, legend=groupnames, pch=pch, col = col, pt.bg = col, bty = "n")
     if(whereto == 2)
-      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col = col, pt.bg = col)
+      legend(left - x.lab, up + y.lab, legend=groupnames, pch=pch, col = col, pt.bg = col, bty = "n")
     if(whereto == 3)
-      legend(left - x.lab, down, legend=groupnames, pch=pch, col = col, pt.bg = col)
+      legend(left - x.lab, down, legend=groupnames, pch=pch, col = col, pt.bg = col, bty = "n")
     if(whereto == 4)
-      legend(right, down, legend=groupnames, pch=pch, col = col, pt.bg = col)
+      legend(right, down, legend=groupnames, pch=pch, col = col, pt.bg = col, bty = "n")
   }else{
     answer <- readline("Please give the x-coordinate for a legend.")
     x.c <- as.numeric(answer)
     answer <- readline("Please give the y-coordinate for a legend.")
     y.c <- as.numeric(answer)
-    legend(x.c, y.c, legend=groupnames, pch=pch, col = col, pt.bg = col)
+    legend(x.c, y.c, legend=groupnames, pch=pch, col = col, pt.bg = col, bty = "n")
   }
   if(saveup)
     return((par("usr")[4] - par("usr")[3])/50)

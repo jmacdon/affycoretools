@@ -94,6 +94,6 @@ linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL, ann.source =
 
   Then add filterfun = filt as an argument to the call to \code{foldFilt}.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu> }
+\author{James W. MacDonald <jmacdon@u.washington.edu> }
 
 \keyword{manip }% __ONLY ONE__ keyword per line

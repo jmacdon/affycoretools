@@ -54,6 +54,6 @@ pvalue = 0.05, min.count = 10)
 \value{
  This function is used only for the side effect of creating HTML tables.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu>}
+\author{ James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{ manip }% __ONLY ONE__ keyword per line
 \keyword{htest}

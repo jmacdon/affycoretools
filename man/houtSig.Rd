@@ -37,6 +37,6 @@ houtSplit(tab, eset, fit, comp, statistics, html, text)
  Nothing is returned. These functions are called solely for their side
  effect, the output of HTML and/or text tables.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu>}
+\author{ James W. MacDonald <jmacdon@u.washington.edu>}
 
 \keyword{internal }% __ONLY ONE__ keyword per line

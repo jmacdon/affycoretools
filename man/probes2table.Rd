@@ -38,7 +38,7 @@ probes2table(eset, probids, lib, otherdata = NULL,
  If \code{save} is \code{TRUE}, a \code{data.frame} is saved containing
  the data.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu> }
+\author{ James W. MacDonald <jmacdon@u.washington.edu> }
 
 \seealso{ \code{\link[limma:toptable]{topTable}},
   \code{\link[annaffy]{aafTableAnn}} } 

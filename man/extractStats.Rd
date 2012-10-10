@@ -29,6 +29,6 @@ extractStats(prbs, fit, comp, statistics)
 \value{
  A named list that can have up to three vectors of statistics.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu> }
+\author{James W. MacDonald <jmacdon@u.washington.edu> }
 
 \keyword{ internal}

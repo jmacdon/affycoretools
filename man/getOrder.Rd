@@ -27,5 +27,5 @@ getOrder(fcList, order.by)
   reasonable to me when I wrote this function. Presumably there are
   other reasonable choices that may need to be included.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{internal}

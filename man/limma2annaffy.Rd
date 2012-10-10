@@ -80,7 +80,7 @@ NULL, addtitle = NULL, interactive = TRUE, natFC = FALSE)
  \code{\link[limma:toptable]{topTable}} will be output.
 }
 
-\author{ James W. MacDonald <jmacdon@med.umich.edu> }
+\author{ James W. MacDonald <jmacdon@u.washington.edu> }
 
 \seealso{ \code{\link[limma:toptable]{topTable}},
   \code{\link[annaffy]{aafTableAnn}}} 

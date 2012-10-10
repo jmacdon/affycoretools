@@ -25,7 +25,7 @@ plotHist(dat, filenames = NULL)
 These functions are called only for the side effect of making the
 plots. Nothing else is returned.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 
 \examples{
 library("affydata")

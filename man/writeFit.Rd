@@ -26,7 +26,7 @@ writeFit(fit, annotation, eset)
 \value{
   A \code{data.frame} is returned.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 \seealso{\code{\link[limma:write.fit]{write.fit}}
 }
 \keyword{manip}

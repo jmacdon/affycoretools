@@ -46,7 +46,7 @@ linksBM(mart, annot, affyid = FALSE, ann.source = NULL)
   annotation sources.
 }
 \author{
-  James W. MacDonald <jmacdon@med.umich.edu>
+  James W. MacDonald <jmacdon@u.washington.edu>
 }
 \examples{
 annBM()

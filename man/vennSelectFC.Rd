@@ -78,5 +78,5 @@ vennSelectFC(eset, x, comps, order.by = "sum", method =
 \value{
   Called only for the side effect of outputting HTML and/or text tables.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{manip}

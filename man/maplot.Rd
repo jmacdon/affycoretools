@@ -22,5 +22,5 @@ maplot(object, layout)
 \value{
  No output. Used only for the side effect of creating MA plots.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu>}
+\author{ James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{hplot }% at least one, from doc/KEYWORDS

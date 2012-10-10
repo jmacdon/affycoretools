@@ -121,7 +121,7 @@ statistics = c("tstat", "pval", "FC"), html = TRUE, text = TRUE, ...)
   This function returns no value, and is called solely for the side
   effect of outputting HTML and/or text tables.}
 
-\author{ James W. MacDonald <jmacdon@med.umich.edu> }
+\author{ James W. MacDonald <jmacdon@u.washington.edu> }
 
 \seealso{ \code{\link[Category]{hyperGTest}},
   \code{\link[Category:HyperGResult-accessors]{htmlReport}},

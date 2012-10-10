@@ -30,6 +30,6 @@ saveup = FALSE)
  This function returns nothing. It is used only for the side effect of
  placing a legend in a plot.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 
 \keyword{internal }% at least one, from doc/KEYWORDS

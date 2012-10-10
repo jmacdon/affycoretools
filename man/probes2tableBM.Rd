@@ -68,7 +68,7 @@ probes2tableBM(eset, probids, species, filename, otherdata = NULL,
 \value{
  This function is only used for the side effect of outputting an HTML table.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu> }
+\author{ James W. MacDonald <jmacdon@u.washington.edu> }
 
 \seealso{ \code{\link[limma:toptable]{topTable}}}
 

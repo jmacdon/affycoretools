@@ -29,5 +29,5 @@ makeFCList(x, indices, comps, dat)
   result in a column of fold change values with a reasonable name when
   output as an HTML or text table using annaffy.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{internal}

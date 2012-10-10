@@ -26,6 +26,6 @@ getpfil()
   in unexpected behaviour.
 }
 
-\author{James W. MacDonald <jmacdon@med.umich.edu> }
+\author{James W. MacDonald <jmacdon@u.washington.edu> }
 
 \keyword{ internal }

@@ -37,7 +37,7 @@ vennCounts2(x, method = "same", fit = NULL, foldFilt = NULL)
 \value{
   A \code{\link[limma:venn]{VennCounts}} object.
 }
-\author{ James W. MacDonald <jmacdon@med.umich.edu>}
+\author{ James W. MacDonald <jmacdon@u.washington.edu>}
 \examples{
 library("limma")
 tstat <- matrix(rt(300,df=10),100,3)

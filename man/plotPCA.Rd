@@ -9,7 +9,7 @@
 plotPCA(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
 y.coord = NULL, screeplot = FALSE, squarepca = FALSE, pch = NULL, col =
 NULL, pcs = c(1,2), legend = TRUE, main = "Principal Components Plot",
-plot3d = FALSE,  \dots)
+plot3d = FALSE, outside = FALSE, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -47,6 +47,8 @@ plot3d = FALSE,  \dots)
   \item{plot3d}{Boolean. If \code{TRUE}, then the PCA plot will be
     rendered in 3D using the rgl package. Defaults to \code{FALSE}. Note
     that the pcs argument should have a length of three in this case.}
+  \item{outside}{Boolean. If \code{TRUE} the legend will be placed
+    outside the plotting region, at the top right of the plot.}
   \item{\dots}{Further arguments to be passed to \code{plot}. See the help page
     for \code{plot} for further information.}
 }
@@ -55,7 +57,7 @@ plot3d = FALSE,  \dots)
  This function returns nothing. It is called only for the side effect of
  producing a PCA plot or screeplot.
 }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 \examples{
 library("affy")
 data(sample.ExpressionSet)

@@ -130,6 +130,6 @@ html = TRUE, text = TRUE, affyid = FALSE, ...)
  tables. However, setting save to \code{TRUE} will output a vector of
  counts that can be used for making Sweave-style reports.
  }
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 
 \keyword{ manip}% at least one, from doc/KEYWORDS

@@ -31,6 +31,6 @@ getUniqueLL(probes, annot)
  A named vector of unique Entrez IDs
 }
 
-\author{James W. MacDonald <jmacdon@med.umich.edu>}
+\author{James W. MacDonald <jmacdon@u.washington.edu>}
 
 \keyword{manip}

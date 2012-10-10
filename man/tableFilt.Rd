@@ -32,6 +32,6 @@ adjust = "fdr")
   Returns a \code{data.frame} containing the selected genes.
 }
 
-\author{James W. MacDonald <jmacdon@med.umich.edu> }
+\author{James W. MacDonald <jmacdon@u.washington.edu> }
 
 \keyword{internal }% __ONLY ONE__ keyword per line

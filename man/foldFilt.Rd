@@ -73,6 +73,6 @@ foldFilt(object, fold = 1, groups, comps, compnames, save = FALSE, text
   each containing sorted genes that have two-fold or greater differences
   between the two samples.
   }
-\author{James W. MacDonald <jmacdon@med.umich.edu> }
+\author{James W. MacDonald <jmacdon@u.washington.edu> }
 
 \keyword{manip }% __ONLY ONE__ keyword per line
