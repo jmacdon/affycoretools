@@ -8,7 +8,8 @@
   text file containing t-statistics, p-values, and fold change data for
   all contrasts.}
 \usage{
-writeFit(fit, annotation, eset)
+writeFit(fit, annotation, eset, touse =
+c("symbol","genename","accnum","entrezid","unigene"))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -17,6 +18,9 @@ writeFit(fit, annotation, eset)
     the analysis.}
   \item{eset}{An \code{ExpressionSet} object containing expression
     values.}
+  \item{touse}{Character vector of BiMaps from annotation package. As an
+    example, if the annotation package is the hgu133plus2.db package,
+    then 'symbol' refers to the hgu133plus2SYMBOL BiMap.}
 }
 \details{
   This function is designed to output annotation data as well as

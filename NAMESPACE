@@ -3,7 +3,8 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        hyperG2annaffy, vennSelectBM,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
-       getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes)
+       getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes,
+       runRomer,outputRomer)
 
 importMethodsFrom(affy, hist, mas5calls)
 
@@ -39,7 +40,7 @@ importFrom(biomaRt, getBM, listAttributes, listFilters,
            useMart)
 
 importFrom(limma, topTable, vennCounts,
-           decideTests)
+           decideTests, romer, symbols2indices)
 
 importFrom(GOstats, probeSetSummary)
 
@@ -59,4 +60,8 @@ importFrom(xtable, xtable)
 
 importFrom(lattice, xyplot, panel.xyplot, panel.abline)
 
-importFrom(gplots, heatmap.2)
+importFrom(gplots, heatmap.2, bluered)
+
+importFrom(R2HTML, HTML, as.title, HTMLInsertGraph, HTMLInitFile)
+
+importFrom(oligoClasses, db)

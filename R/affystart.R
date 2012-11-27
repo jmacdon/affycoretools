@@ -438,17 +438,16 @@ colvec <- function(len){
     out
 }
 
-writeFit <- function(fit, annotation = NULL, eset){
-    gt <- function(x) sapply(AnnotationDbi::mget(row.names(fit$t),
+writeFit <- function(fit, annotation = NULL, eset,
+                     touse = c("symbol","genename","accnum","entrezid","unigene")){
+    gt <- function(x, y) sapply(AnnotationDbi::mget(y,
                                                  get(paste(annotation, x, sep = "")), ifnotfound = NA),
                              function(x) if(length(x) <= 1) x else paste(x, collapse = ";"))
     if(!is.null(annotation)){
-        out <- data.frame(probeset = row.names(fit$t),
-                          symbol = gt("SYMBOL"), 
-                          description = gt("GENENAME"),
-                          genbank = gt("ACCNUM"),
-                          gene = gt("ENTREZID"),
-                          unigene = gt("UNIGENE"))
+        lst <- lapply(toupper(touse), gt, featureNames(eset))
+        names(lst) <- touse
+        out <- data.frame(probeset = featureNames(eset),
+                          do.call("cbind", lst))
     } else {
         out <- data.frame(probeset = row.names(fit$t))
     }
