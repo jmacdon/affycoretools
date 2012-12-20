@@ -13,7 +13,7 @@
 
 convertIDs <- function(ids, from = TRUE){
     if(from) {
-        ids <- sapply(strsplit(ids, "_"), function(x) if(length(x) > 2) x[2] else x[1])
+        ids <- gsub("_st|_x_st|_s_st|_at", "", ids)
         ids <- gsub("-star", "*", ids)
     }else{
         ids <- gsub("\\*", "-star", ids)

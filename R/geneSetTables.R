@@ -98,7 +98,7 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
     genesets <- genesets[ind]
     ind2 <- sapply(genesets, length) > 1
     rslts <- rslts[ind2,]
-    names(rslts) <- paste(names(rslts), c("", rep(" (p-value)", 3), sep = "")) 
+    colnames(rslts) <- paste(colnames(rslts), c("", rep(" (p-value)", 3)))
     genesets <- genesets[ind2]
     fun <- function(x, ...){
         fn <- if(subdir == ".") paste(dir, x, sep = "/") else paste(dir, subdir, x, sep = "/")
@@ -116,8 +116,9 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
     fnames <- lapply(names(genesets), fun)
     links <- paste("<a href=\"", fnames, "\">Data table</a>", sep = "")
     hlinks <- paste("<a href=\"", gsub("\\.html", "_heatmap.html", fnames), "\">Heatmap</a>", sep = "")
-    cat("<script src=\"../sorttable.js\"></script>\n\n", paste(dir, file, sep = "/"))
-    d.f <- data.frame(Genesets = names(genesets), rslts, Data = links, Heatmaps = hlinks)
+    cat("<script src=\"../sorttable.js\"></script>\n\n", file = paste(dir, file, sep = "/"))
+    d.f <- cbind(names(genesets), rslts, links, hlinks)
+    colnames(d.f) <- c("Genesets", colnames(rslts), "Data","Heatmaps")
     print(xtable(d.f, caption = caption, digits = rep(c(0,3,0), c(3,3,2))),
           caption.placement = "top", type = "html", file = paste(dir, file, sep = "/"),
           sanitize.text.function = function(x) x,
