@@ -309,11 +309,7 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
     ## design is a design matrix from limma
     ## contrast is a conrast matrix
     ## output is a list containing the probe IDs of genes from each comparison
-    require("limma", character.only = TRUE, quietly = TRUE)
-    require("lattice", character.only = TRUE, quietly = TRUE)
-    require("ReportingTools", character.only = TRUE, quietly = TRUE)
-    
-    
+        
     lattice.options(default.theme = reporting.theme())  
     ## do this before we subset
     if(is.null(groups))
@@ -369,14 +365,14 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
                           baseUrl = baseUrl,reportDirectory = reportDirectory))
     ## add legend to HTML pages here
    ## browser()
-    lapply(vennout, function(x) hwriter::hwrite("Legend for boxplot colors", p = page(x), 
+    lapply(vennout, function(x) hwrite("Legend for boxplot colors", page = page(x), 
                                                 heading = 2))
     leglst <- lapply(seq(along = indices), function(x) 
                      makeLegend(groups[colind[[x]], drop = TRUE], 
                                 reportDirectory(vennout[[x]]),
                                 paste0("legend", x, ".png")))
-    leglst <- lapply(leglst, function(x) hwriter::hwriteImage(x, links = x))
-    lapply(seq(along = vennout), function(x) hwriter::hwrite(leglst[[x]], page(vennout[[x]]), br = TRUE))
+    leglst <- lapply(leglst, function(x) hwriteImage(x, links = x))
+    lapply(seq(along = vennout), function(x) hwrite(leglst[[x]], page(vennout[[x]]), br = TRUE))
     
     
     venncsv <- lapply(seq(along = indices), function(x) CSVFile(gsub(" ", "_", name[x]), 
@@ -434,13 +430,12 @@ makeVenn <- function(fit, contrast, design, eset, groups = NULL, collist = NULL,
 
 vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
                      baseUrl = ".", reportDirectory = NULL){
-    require("ReportingTools", character.only = TRUE, quietly = TRUE)
     if(is.null(reportDirectory)){
         tmp <- strsplit(reportDirectory(vennlst[[1]]$vennout[[1]]), "/")[[1]]
         reportDirectory <- paste(tmp[-length(tmp)], collapse = "/")
     }
     hpage <- HTMLReport(pagename, pagetitle, baseUrl = baseUrl, reportDirectory = reportDirectory)
-    hwriter::hwrite(paste("The Venn diagrams all contain clickable links. Click on the counts",
+    hwrite(paste("The Venn diagrams all contain clickable links. Click on the counts",
                           "in any cell to see a table of the genes in that cell.",
                           "Also please note that the tables are sortable - simply click",
                           "on any header to sort on that column."), page(hpage),
@@ -453,9 +448,6 @@ vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = F
 }
 
 drawVenn <- function(lst, page, dir, num, cex = 1, shift.title = FALSE){
-    require("ReportingTools", character.only = TRUE, quietly = TRUE)
-    require("limma", character.only = TRUE, quietly = TRUE)
-    require("hwriter", character.only = TRUE, quietly = TRUE)
     nam <- paste0(dir, "/venn", num, ".png")
     nam2 <- paste0("venn", num, ".png")
     mapname <- paste0("#venn", num)

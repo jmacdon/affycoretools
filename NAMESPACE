@@ -40,7 +40,7 @@ importFrom(biomaRt, getBM, listAttributes, listFilters,
            useMart)
 
 importFrom(limma, topTable, vennCounts,
-           decideTests, romer, symbols2indices)
+           decideTests, romer, symbols2indices, vennDiagram)
 
 importFrom(GOstats, probeSetSummary)
 
@@ -58,10 +58,14 @@ importFrom(xtable, xtable)
 
 #import(annaffy)
 
-importFrom(lattice, xyplot, panel.xyplot, panel.abline)
+importFrom(lattice, xyplot, panel.xyplot, panel.abline, lattice.options)
 
 importFrom(gplots, heatmap.2, bluered)
 
 importFrom(R2HTML, HTML, as.title, HTMLInsertGraph, HTMLInitFile)
 
 importFrom(oligoClasses, db)
+
+importFrom(ReportingTools, HTMLReport, CSVFile, publish, finish, reporting.theme, filename)
+
+importFrom(hwriter, hwrite, hwriteImage, hmakeTag)

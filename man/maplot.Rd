@@ -9,7 +9,7 @@
  baseline array.
 }
 \usage{
-maplot(object, layout, ...)
+maplot(object, layout = NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -18,7 +18,7 @@ maplot(object, layout, ...)
   \item{layout}{A numeric vector, length two. Best results will be
     obtained if both values are the same, and between 2 and 5 (e.g.,
     c(3,3))}
-  \item{dots}{Other arguments that will be passed down to the
+  \item{...}{Other arguments that will be passed down to the
     \code{xyplot} function from the lattice package.}
 }
 

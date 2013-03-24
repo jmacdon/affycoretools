@@ -1,49 +1,47 @@
-\name{vennSelect}
-\alias{vennSelect}
+\name{vennSelect2}
+\alias{vennSelect2}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Select and Output Genelists Based on Venn Diagrams }
 \description{
   This function is designed to output text and/or HTML tables based on
-  the results of a call to \code{\link[limma]{decideTests}}.
+  the results of a call to \code{\link[limma]{decideTests}}, using the
+  ReportingTools package.
 }
 \usage{
-vennSelect(eset, design, x, contrast, fit, method = "same", adj.meth =
-"BH", stat = "fstat", otherstats = c("pval","FC"), order.by = "pval",
- foldFilt = NULL, save = FALSE, titleadd = NULL, ...)
+vennSelect2(fit, contrast, design, eset, groups = NULL, cols = NULL,
+p.value = 0.05, lfc = 0, method = "same", adj.meth =
+"BH", titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory =
+"./venns", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{An \code{ExpressionSet} object.}
-  \item{design}{A design matrix.}
-  \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
-    call to \code{\link[limma]{decideTests}}.}
-  \item{contrast}{A contrasts matrix, produced either by hand, or by a
-    call to \code{\link[limma]{makeContrasts}}}
    \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
      \code{\link[limma:ebayes]{eBayes}}.}
-   \item{method}{ One of "same", "both", "up", "down", "sameup", or
+   \item{contrast}{A contrasts matrix, produced either by hand, or by a
+    call to \code{\link[limma]{makeContrasts}}}
+  \item{design}{A design matrix.}
+  \item{eset}{An \code{ExpressionSet} object.}
+  \item{groups}{This argument is used when creating a legend for the
+    resulting HTML pages. If NULL, the groups will be generated using
+    the column names of the design matrix.}
+  \item{cols}{A numeric vector indicating which columns of the fit,
+    contrast and design matrix to use. If \code{NULL}, all columns will be used.}
+  \item{p.value}{A p-value to filter the results by.}
+  \item{lfc}{A log fold change to filter the results by.}
+  \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
   \item{adj.meth}{Method to use for adjusting p-values. Default is 'BH',
     which corresponds to 'fdr'. Ideally one would set this value to be
     the same as was used for \code{\link[limma]{decideTests}}.}
-  \item{stat}{The statistic to report in the resulting HTML
-    tables. Choices are 'fstat', 'tstat', and \code{NULL}. Ideally, the
-    statistic chosen would correspond to the method used in
-    \code{\link[limma]{decideTests}}. In other words, if one used
-    methods such as 'separate' or 'hierarchical', which are based on a
-    t-statistic, one should choose 'tstat', however, if one used
-    'nestedF', the logical choice would be 'fstat'.}
-  \item{otherstats}{Other statistics to be included in the HTML
-    tables. Choices include 'pval' and 'FC'.}
-  \item{order.by}{Which statistic should be used to order the probesets?
-    Choices include 'fstat', 'tstat', 'pval', and 'FC'. Note that if
-    'FC' is chosen and there are more than one set of fold changes, the
-    first will be used.}
-  \item{foldFilt}{A log fold change to filter results.}
-  \item{save}{Boolean. Save the results for further processing?}
   \item{titleadd}{Additional text to add to the title of the HTML
     tables. Default is NULL, in which case the title of the table will
     be the same as the filename.}
+  \item{fileadd}{Additional text to add to the name of the HTML and CSV
+    tables. Default is NULL.}
+  \item{baseUrl}{A character string giving the location of the page in
+    terms of HTML locations. Defaults to "."}
+  \item{reportDirectory}{A character string giving the location that the
+    results will be written. Defaults to "./venns"}
   \item{...}{Used to pass other arguments to \code{probes2table}, in
     particular, to change the argument to \code{anncols} 
     which controls the columns of hyperlinks to online databases (e.g.,
@@ -80,27 +78,17 @@ vennSelect(eset, design, x, contrast, fit, method = "same", adj.meth =
   and it will be listed in the union (e.g., not selected) if "same" is
   chosen.
 
-  Calling the function normally will result in the output of HTML and
-  text tables:
-
-  vennSelect(eset, fit, design, x)
-
-  Calling the function with save set to \code{TRUE} will output both
-  HTML and text tables as well as a vector of counts for each
-  comparison. This is useful when using the function programmatically
-  (e.g., when making reports using Sweave).
-
-  out <- vennSelect(eset, fit, design, x, save = TRUE)
-
-  An alternative would be to use \code{vennCounts2} and
-  \code{\link[limma:venn]{vennDiagram}} to output a Venn diagram, which is
-  probably more reasonable since the tables being output are supposed to
-  be based on a Venn diagram.
+  Unlike \code{vennSelect}, this function automatically creates both
+  HTML and CSV output files.
 }
 \value{
- Normally called only for the side effect of producing HTML and text
- tables. However, setting save to \code{TRUE} will output a vector of
- counts that can be used for making Sweave-style reports.
+  A list with two items. First, a list of \code{HTMLReport} objects from
+  the ReportingTools package, which can be used to create an index page
+  with links to the HTML pages created by this function. See the help
+  page for HTMLReport in ReportingTools as well as the vignettes for
+  more information. The second item is a \code{vennCounts} object from
+  limma, which can be used to create a Venn diagram, e.g., in a report
+  if this function is called within a Sweave or knitR pipeline.
  }
 \author{James W. MacDonald <jmacdon@u.washington.edu>}
 

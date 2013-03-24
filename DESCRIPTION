@@ -12,6 +12,6 @@ License: Artistic-2.0
 Depends: affy, Biobase, GO.db, KEGG.db
 Imports: biomaRt, limma, GOstats, annotate, annaffy,
 	 genefilter, gcrma, splines, xtable, AnnotationDbi, lattice,
-	 gplots, R2HTML, oligoClasses
+	 gplots, R2HTML, oligoClasses, ReportingTools, hwriter
 Suggests: affydata, hgfocuscdf, rgl
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression
