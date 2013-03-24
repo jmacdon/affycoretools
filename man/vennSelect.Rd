@@ -1,27 +1,28 @@
-\name{vennSelect}
-\alias{vennSelect}
+\name{vennSelect2}
+\alias{vennSelect2}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{Select and Output Genelists Based on Venn Diagrams }
 \description{
   This function is designed to output text and/or HTML tables based on
-  the results of a call to \code{\link[limma]{decideTests}}.
+  the results of a call to \code{\link[limma]{decideTests}}, using the
+  ReportingTools package.
 }
 \usage{
-vennSelect(eset, design, x, contrast, fit, method = "same", adj.meth =
+vennSelect(dtmat, contrast, fit, cols = NULL,  method = "same", adj.meth =
 "BH", stat = "fstat", otherstats = c("pval","FC"), order.by = "pval",
-foldFilt = NULL, save = FALSE, titleadd = NULL, ...)
+ titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory =
+"./venns", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{ A \code{\link[Biobase:class.ExpressionSet]{ExpressionSet}} object.}
-  \item{design}{ A \code{design} matrix, usually from a call to
-    \code{model.matrix}. See details for more information.}
-  \item{x}{A \code{\link[limma]{TestResults}} object, usually from a
+  \item{dtmat}{A \code{\link[limma]{TestResults}} object, usually from a
     call to \code{\link[limma]{decideTests}}.}
   \item{contrast}{A contrasts matrix, produced either by hand, or by a
     call to \code{\link[limma]{makeContrasts}}}
    \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
      \code{\link[limma:ebayes]{eBayes}}.}
+  \item{cols}{A numeric vector indicating which columns of the above
+    three items to use. If \code{NULL}, all columns will be used.}
   \item{method}{ One of "same", "both", "up", "down", "sameup", or
     "samedown". See details for more information.}
   \item{adj.meth}{Method to use for adjusting p-values. Default is 'BH',
@@ -40,18 +41,21 @@ foldFilt = NULL, save = FALSE, titleadd = NULL, ...)
     Choices include 'fstat', 'tstat', 'pval', and 'FC'. Note that if
     'FC' is chosen and there are more than one set of fold changes, the
     first will be used.}
-  \item{foldFilt}{A fold change to use for filtering. Default is \code{NULL},
-    meaning no filtering will be done.}
-  \item{save}{Boolean - If \code{TRUE}, output a count of genes that
-    fulfill the criteria. Useful for e.g., Sweave-type reports.}
+  \item{titleadd}{Additional text to add to the title of the HTML
+    tables. Default is NULL, in which case the title of the table will
+    be the same as the filename.}
+  \item{fileadd}{Additional text to add to the name of the HTML and CSV
+    tables. Default is NULL.}
+  \item{baseURL}{A character string giving the location of the page in
+    terms of HTML locations. Defaults to "."}
+  \item{reportDirectory}{A character string giving the location that the
+    results will be written. Defaults to "./venns"}
   \item{...}{Used to pass other arguments to \code{probes2table}, in
     particular, to change the argument to \code{anncols} 
     which controls the columns of hyperlinks to online databases (e.g.,
     Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more
     information.}
-  \item{titleadd}{Additional text to add to the title of the HTML
-    tables. Default is NULL, in which case the title of the table will
-    be the same as the filename.}
+  
 }
 \details{
   The purpose of this function is to output HTML and text tables with

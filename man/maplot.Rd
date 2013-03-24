@@ -9,14 +9,17 @@
  baseline array.
 }
 \usage{
-maplot(object, layout)
+maplot(object, layout, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{An ExpressionSet or matrix containing log-transformed
     array data.}
   \item{layout}{A numeric vector, length two. Best results will be
-    obtained if both values are the same, and between 2 and 5 (e.g., c(3,3))}
+    obtained if both values are the same, and between 2 and 5 (e.g.,
+    c(3,3))}
+  \item{dots}{Other arguments that will be passed down to the
+    \code{xyplot} function from the lattice package.}
 }
 
 \value{

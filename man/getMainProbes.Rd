@@ -7,20 +7,19 @@
   probesets from the Gene ST array types.
 }
 \usage{
-getMainProbes(pdinfo)
+getMainProbes(input)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-\item{pdinfo}{Character. The name of a pdinfo package, used by oligo to summarize
-  probesets. This will generally be of the form e.g.,
-  pd.hugene.1.0.st.v1}
+\item{input}{Either a character string (e.g., "pd.hugene.1.0.st.v1") or
+  a FeatureSet object.}
  }
 
-\value{
-  Returns a boolean vector that can be used to subset e.g., an
-  ExpressionSet of Gene ST data, or an MArrayLM object created from Gene
-  ST data.
-}
+\value{ If the argument is a character string, returns a boolean vector
+  that can be used to subset e.g., an ExpressionSet of Gene ST data, or
+  an MArrayLM object created from Gene ST data. If the argument is a
+  FeatureSet object, it returns a FeatureSet object with only main
+  probes remaining.}
 
 \author{James W. MacDonald <jmacdon@u.washington.edu>}
 \keyword{manip}% __ONLY ONE__ keyword per line

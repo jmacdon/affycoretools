@@ -4,7 +4,7 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes,
-       runRomer,outputRomer)
+       runRomer,outputRomer,makeVenn,vennSelect2, vennPage)
 
 importMethodsFrom(affy, hist, mas5calls)
 

@@ -7,7 +7,7 @@
 ####################################################
 
 
-maplot <- function(object, layout = NULL){
+maplot <- function(object, layout = NULL, ...){
     if(is(object, "ExpressionSet")){
         mat <- exprs(object)
     }else{
@@ -39,5 +39,5 @@ maplot <- function(object, layout = NULL){
                      Id = colnames(mat)[col(mat)])
     print(xyplot(M~A|Id, df, panel = function(x, y, ...){panel.xyplot(x,y,...)
                                                          panel.abline(h = 0, lty = 2)},
-                 layout = layout, pch = "."))
+                 layout = layout, pch = ".", ...))
 }
