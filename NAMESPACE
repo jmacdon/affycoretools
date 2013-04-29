@@ -4,7 +4,7 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes,
-       runRomer,outputRomer,makeVenn,vennSelect2, vennPage)
+       runRomer,outputRomer,makeVenn,vennSelect2, vennPage, affyLinks, entrezLinks)
 
 importMethodsFrom(affy, hist, mas5calls)
 
@@ -66,6 +66,6 @@ importFrom(R2HTML, HTML, as.title, HTMLInsertGraph, HTMLInitFile)
 
 importFrom(oligoClasses, db)
 
-importFrom(ReportingTools, HTMLReport, CSVFile, publish, finish, reporting.theme, filename)
+importFrom(ReportingTools, HTMLReport, CSVFile, publish, finish, reporting.theme, filename, path)
 
-importFrom(hwriter, hwrite, hwriteImage, hmakeTag)
+importFrom(hwriter, hwrite, hwriteImage, hmakeTag, closePage)

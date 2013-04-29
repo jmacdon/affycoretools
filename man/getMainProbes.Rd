@@ -15,9 +15,12 @@ getMainProbes(input)
   a FeatureSet object.}
  }
 
-\value{ If the argument is a character string, returns a boolean vector
+\value{ If the argument is a character string, returns a data.frame
+  containing probeset IDs along with the probeset type, 
   that can be used to subset e.g., an ExpressionSet of Gene ST data, or
-  an MArrayLM object created from Gene ST data. If the argument is a
+  an MArrayLM object created from Gene ST data. Note that the order of
+  the probesets is not guaranteed to match the order in your
+  ExpressionSet or MArrayLM object, so that should be checked first. If the argument is a
   FeatureSet object, it returns a FeatureSet object with only main
   probes remaining.}
 

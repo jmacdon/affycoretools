@@ -484,11 +484,12 @@ getMainProbes <- function(input){
     con <- db(get(pdinfo))
     types <- dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                    "on featureSet.fsetid=core_mps.fsetid;"))
-    ind <- types$type %in% 1
     dbDisconnect(con)
-    if(is(input, "ExpressionSet"))
+    if(is(input, "ExpressionSet")){
+        types <- types[match(featureNames(eset), types[,1]),]
+        ind <- types[,2] %in% 1
         return(input[ind,])
-    else
-        return(ind)
+    } else 
+        return(types)
 }
   
