@@ -12,7 +12,7 @@
 }
 \usage{
 vennPage(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
-                     baseUrl = ".", reportDirectory = NULL)
+                     baseUrl = ".", reportDirectory = NULL, ...)
 
 }
 %- maybe also 'usage' for other objects documented here.
@@ -33,6 +33,8 @@ vennPage(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
     page. The default of "." is usually optimal.}
   \item{reportDirectory}{If \code{NULL}, the reportDirectory will be
     extracted from the vennlst. This is usually what one should do.}
+  \item{...}{To allow passing other arguments to lower level
+    functions. Currently not used.}
 }
 
 \details{

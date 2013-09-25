@@ -4,7 +4,7 @@ export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
        limma2biomaRt, linksBM, annBM, foldFiltBM,
        probes2tableBM, vennSelectFC, hyperGoutput,
        getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes,
-       runRomer,outputRomer,makeVenn,vennSelect2, vennPage, affyLinks, entrezLinks)
+       runRomer,outputRomer,makeVenn,vennSelect2, vennPage, affyLinks, entrezLinks, goLinks)
 
 importMethodsFrom(affy, hist, mas5calls)
 
@@ -60,7 +60,7 @@ importFrom(xtable, xtable)
 
 importFrom(lattice, xyplot, panel.xyplot, panel.abline, lattice.options)
 
-importFrom(gplots, heatmap.2, bluered)
+importFrom(gplots, heatmap.2, bluered, venn, plot.venn)
 
 importFrom(R2HTML, HTML, as.title, HTMLInsertGraph, HTMLInitFile)
 
