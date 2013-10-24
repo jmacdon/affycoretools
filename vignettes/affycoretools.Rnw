@@ -18,7 +18,7 @@ knitr::opts_chunk$set(tidy=FALSE)
 BiocStyle::latex()
 @ 
 
-%% \usepackage[authoryear,round]{natbib}
+\usepackage[authoryear,round]{natbib}
 %% \usepackage{hyperref}
 %% \usepackage{times}
 %% \usepackage{comment}
@@ -364,7 +364,7 @@ analyses.
 
 \section{Session information}
 The version of R and packages loaded when creating this vignette were:
-<<sessioninfo, echo=FALSE, results="asis">>=
+<<sessioninfo, echo=FALSE, results="markup", comment=NA>>=
 sessionInfo()
 @ 
 
