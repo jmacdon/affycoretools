@@ -15,10 +15,10 @@ knitr::opts_chunk$set(tidy=FALSE)
 \documentclass[11pt]{article}
 
 <<style, eval=TRUE, echo=FALSE, results="asis">>=
-BiocStyle::latex(bibstyle=NA)
+BiocStyle::latex()
 @ 
 
-\usepackage[authoryear,round]{natbib}
+%% \usepackage[authoryear,round]{natbib}
 %% \usepackage{hyperref}
 %% \usepackage{times}
 %% \usepackage{comment}
@@ -30,7 +30,7 @@ BiocStyle::latex(bibstyle=NA)
 %% \newcommand{\Rpackage}[1]{{\textit{#1}}}
 \newcommand{\Rfunarg}[1]{\textit{#1}}
 
-\bibliographystyle{plainnat}
+% \bibliographystyle{plainnat}
 
 
 \begin{document}
@@ -59,7 +59,7 @@ For most analyses, I follow the precepts of \textit{Literate Statistical practic
 \cite{dsc:Rossini:2001}. The basic idea being that the document 
  used to present an analysis is also what is used to \textit{do} the
 analysis. To do this, I use Emacs/ESS (\textit{Emacs speaks statistics}) 
-\citet{ESS} and an \Rfunction{Sweave} document \cite{Leisch:2002}.
+\cite{ESS} and an \Rfunction{Sweave} document \cite{Leisch:2002}.
 
 An \Rfunction{Sweave} document is a file (with an .Rnw extension) that
 contains text and \LaTeX{} markup that will be used
