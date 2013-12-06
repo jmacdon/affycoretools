@@ -1,80 +1,74 @@
 \name{gsHeatmap}
 \alias{gsHeatmap}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{
-  A function to create a simple heatmap and key.
-}
-\description{
-  This is an internal function called by \code{runRomer} and is not
-  intended to be used directly. It is documented here only because
-  arguments may be passed down via the \code{dots} argument.
-}
+\title{A function to create a simple heatmap and key.}
 \usage{
-gsHeatmap(eset, ind, filename, columns = NULL, colnames = NULL, col =
-NULL, annot = NULL, nam = NULL, scale.row = FALSE, key = TRUE, bline
-= NULL)
+  gsHeatmap(eset, ind, filename, columns = NULL,
+    colnames = NULL, col = NULL, annot = NULL, nam = NULL,
+    scale.row = FALSE, key = TRUE, bline = NULL)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{eset}{
-    An \code{\link{ExpressionSet}} containing normalized, summarized
-    gene expression data.
-}
-  \item{ind}{
-   Numeric vector indicating which rows of the
-    \code{\link{ExpressionSet}} to use.
-}
-  \item{filename}{
-    The filename for the heatmap and associated key.
-}
-  \item{columns}{
-    Numeric vector indicating which columns of the
-    \code{\link{ExpressionSet}} to use. If \code{NULL}, all columns
-    will be used.
-}
-  \item{colnames}{
-    Character. Substitute column names for the heatmap. If \code{NULL},
-    the sampleNames will be used.
-}
-  \item{col}{
-    A vector of colors to use for the heatmap. If \code{NULL}, the
-    \code{\link{bluered}} function will be used.
-}
-  \item{annot}{
-    Character. The name of the array annotation package to use to
-    convert probeset IDs to gene symbols. If \code{NULL}, either the
-    probeset IDs will be used, or the input from the 'nam' argument
-    below will be used.
-}
-  \item{nam}{
-    Character. A vector of row.names to use for the heatmap. If
-    \code{NULL}, and the above 'annot' argument is \code{NULL} as well,
-    probeset IDs will be used.
-}
-  \item{scale.row}{
-    Boolean. Should the data be scaled by row? Defaults to \code{FALSE}.
-}
-  \item{key}{
-    Boolean. Should a key be produced that shows the numeric range for
-    the colors of the heatmap? Defaults to \code{TRUE}.
-  }
-  \item{bline}{A numeric vector, usually extracted from a contrast
-    matrix, used to \sQuote{sweep} the mean baseline sample means from
-    the heatmap data. The end result will be a heatmap in which the
-    colors correspond to log fold changes from the baseline samples.
-    }
-}
-\details{
-  As noted above, this is only intended to be called indirectly by
-  \code{runRomer}. However, certain arguments such as scale.row, or col,
-  etc, can be passed down to this function via the \code{dots} argument,
-  allowing the end user to have more control over the finished product.
+  \item{eset}{An \code{\link{ExpressionSet}} containing
+  normalized, summarized gene expression data.}
+
+  \item{ind}{Numeric vector indicating which rows of the
+  \code{\link{ExpressionSet}} to use.}
+
+  \item{filename}{The filename for the heatmap and
+  associated key.}
+
+  \item{columns}{Numeric vector indicating which columns of
+  the \code{\link{ExpressionSet}} to use. If \code{NULL},
+  all columns will be used.}
+
+  \item{colnames}{Character. Substitute column names for
+  the heatmap. If \code{NULL}, the sampleNames will be
+  used.}
+
+  \item{col}{A vector of colors to use for the heatmap. If
+  \code{NULL}, the \code{\link{bluered}} function will be
+  used.}
+
+  \item{annot}{Character. The name of the array annotation
+  package to use to convert probeset IDs to gene symbols.
+  If \code{NULL}, either the probeset IDs will be used, or
+  the input from the 'nam' argument below will be used.}
+
+  \item{nam}{Character. A vector of row.names to use for
+  the heatmap. If \code{NULL}, and the above 'annot'
+  argument is \code{NULL} as well, probeset IDs will be
+  used.}
+
+  \item{scale.row}{Boolean. Should the data be scaled by
+  row? Defaults to \code{FALSE}.}
+
+  \item{key}{Boolean. Should a key be produced that shows
+  the numeric range for the colors of the heatmap? Defaults
+  to \code{TRUE}.}
+
+  \item{bline}{A numeric vector, usually extracted from a
+  contrast matrix, used to \sQuote{sweep} the mean baseline
+  sample means from the heatmap data. The end result will
+  be a heatmap in which the colors correspond to log fold
+  changes from the baseline samples.}
 }
 \value{
-  Nothing is returned. Called only for the side effect of creating
-  heatmaps in 'png' format.
+  Nothing is returned. Called only for the side effect of
+  creating heatmaps in 'png' format.
 }
-
+\description{
+  This is an internal function called by \code{runRomer}
+  and is not intended to be used directly. It is documented
+  here only because arguments may be passed down via the
+  \code{dots} argument.
+}
+\details{
+  As noted above, this is only intended to be called
+  indirectly by \code{runRomer}. However, certain arguments
+  such as scale.row, or col, etc, can be passed down to
+  this function via the \code{dots} argument, allowing the
+  end user to have more control over the finished product.
+}
 \author{
   James W. MacDonald <jmacdon@u.washington.edu>
 }
+

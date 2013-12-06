@@ -1,71 +1,121 @@
-export(limma2annaffy, foldFilt, vennSelect, vennCounts2, maplot,
-       probes2table, affystart, plotDeg, plotHist, plotPCA,
-       hyperG2annaffy, vennSelectBM,
-       limma2biomaRt, linksBM, annBM, foldFiltBM,
-       probes2tableBM, vennSelectFC, hyperGoutput,
-       getUniqueLL,writeFit,makeHmap,mirna2mrna,getMainProbes,
-       runRomer,outputRomer,makeVenn,vennSelect2, vennPage, affyLinks, entrezLinks, goLinks)
-
-importMethodsFrom(affy, hist, mas5calls)
-
-importMethodsFrom(annaffy, "colnames<-", saveHTML, saveText)
-
-importMethodsFrom(AnnotationDbi, Term, get)
-
-importMethodsFrom(Biobase, annotation, exprs, featureNames,
-                  sampleNames, write.exprs)
-
-importMethodsFrom(genefilter, plot)
-
-importFrom(affy, AffyRNAdeg, mas5, plotAffyRNAdeg, plotDensity,
-           ReadAffy, rma)
-
-importFrom(annaffy, aaf.handler, aafTable, aafTableAnn, aafTableInt)
-
-importFrom(Biobase, addVigs2WinMenu, assayDataElement)
-
-importFrom(graphics, layout, legend, par, text)
-
-importFrom(grDevices, dev.off, rainbow, recordPlot, replayPlot)
-
-#importFrom(methods, is)
-
-importFrom(stats, median, p.adjust, prcomp)
-
-importFrom(utils, write.table)
-
-importFrom(GO.db, GOTERM)
-
-importFrom(biomaRt, getBM, listAttributes, listFilters,
-           useMart)
-
-importFrom(limma, topTable, vennCounts,
-           decideTests, romer, symbols2indices, vennDiagram)
-
-importFrom(GOstats, probeSetSummary)
-
-importFrom(annotate, htmlpage, getEG)
-
-importFrom(genefilter, genefilter, filterfun, kOverA, pOverA, cv)
-
-#export(genefilter, filterfun, kOverA, pOverA, cv)
-
-importFrom(gcrma, gcrma)
-
-importFrom(splines, ns)
-
-importFrom(xtable, xtable)
-
-#import(annaffy)
-
-importFrom(lattice, xyplot, panel.xyplot, panel.abline, lattice.options)
-
-importFrom(gplots, heatmap.2, bluered, venn, plot.venn)
-
-importFrom(R2HTML, HTML, as.title, HTMLInsertGraph, HTMLInitFile)
-
-importFrom(oligoClasses, db)
-
-importFrom(ReportingTools, HTMLReport, CSVFile, publish, finish, reporting.theme, filename, path)
-
-importFrom(hwriter, hwrite, hwriteImage, hmakeTag, closePage)
+export(affyLinks)
+export(affystart)
+export(annBM)
+export(entrezLinks)
+export(foldFilt)
+export(foldFiltBM)
+export(getMainProbes)
+export(getUniqueLL)
+export(goLinks)
+export(hyperG2annaffy)
+export(hyperGoutput)
+export(limma2annaffy)
+export(limma2biomaRt)
+export(makeHmap)
+export(makeVenn)
+export(maplot)
+export(mirna2mrna)
+export(outputRomer)
+export(plotDeg)
+export(plotHist)
+export(plotPCA)
+export(probes2table)
+export(probes2tableBM)
+export(runRomer)
+export(vennCounts2)
+export(vennPage)
+export(vennSelect)
+export(vennSelect2)
+export(vennSelectBM)
+export(vennSelectFC)
+export(writeFit)
+importFrom(affy,AffyRNAdeg)
+importFrom(affy,mas5)
+importFrom(affy,plotAffyRNAdeg)
+importFrom(affy,plotDensity)
+importFrom(affy,ReadAffy)
+importFrom(affy,rma)
+importFrom(annaffy,aaf.handler)
+importFrom(annaffy,aafTable)
+importFrom(annaffy,aafTableAnn)
+importFrom(annaffy,aafTableInt)
+importFrom(annotate,getEG)
+importFrom(annotate,htmlpage)
+importFrom(Biobase,addVigs2WinMenu)
+importFrom(Biobase,assayDataElement)
+importFrom(biomaRt,getBM)
+importFrom(biomaRt,listAttributes)
+importFrom(biomaRt,listFilters)
+importFrom(biomaRt,useMart)
+importFrom(gcrma,gcrma)
+importFrom(genefilter,cv)
+importFrom(genefilter,filterfun)
+importFrom(genefilter,genefilter)
+importFrom(genefilter,kOverA)
+importFrom(genefilter,pOverA)
+importFrom(GO.db,GOTERM)
+importFrom(GOstats,probeSetSummary)
+importFrom(gplots,bluered)
+importFrom(gplots,heatmap.2)
+importFrom(gplots,plot.venn)
+importFrom(gplots,venn)
+importFrom(graphics,layout)
+importFrom(graphics,legend)
+importFrom(graphics,par)
+importFrom(graphics,text)
+importFrom(grDevices,dev.off)
+importFrom(grDevices,rainbow)
+importFrom(grDevices,recordPlot)
+importFrom(grDevices,replayPlot)
+importFrom(grid,grid.newpage)
+importFrom(grid,pushViewport)
+importFrom(grid,unit)
+importFrom(grid,upViewport)
+importFrom(grid,viewport)
+importFrom(hwriter,closePage)
+importFrom(hwriter,hmakeTag)
+importFrom(hwriter,hwrite)
+importFrom(hwriter,hwriteImage)
+importFrom(hwriter,openPage)
+importFrom(lattice,dotplot)
+importFrom(lattice,lattice.options)
+importFrom(lattice,panel.abline)
+importFrom(lattice,panel.xyplot)
+importFrom(lattice,xyplot)
+importFrom(limma,decideTests)
+importFrom(limma,romer)
+importFrom(limma,symbols2indices)
+importFrom(limma,topTable)
+importFrom(limma,vennCounts)
+importFrom(limma,vennDiagram)
+importFrom(oligoClasses,db)
+importFrom(R2HTML,as.title)
+importFrom(R2HTML,HTML)
+importFrom(R2HTML,HTMLInitFile)
+importFrom(R2HTML,HTMLInsertGraph)
+importFrom(ReportingTools,CSVFile)
+importFrom(ReportingTools,filename)
+importFrom(ReportingTools,finish)
+importFrom(ReportingTools,HTMLReport)
+importFrom(ReportingTools,path)
+importFrom(ReportingTools,publish)
+importFrom(ReportingTools,reporting.theme)
+importFrom(splines,ns)
+importFrom(stats,median)
+importFrom(stats,p.adjust)
+importFrom(stats,prcomp)
+importFrom(utils,write.table)
+importFrom(xtable,xtable)
+importMethodsFrom(affy,hist)
+importMethodsFrom(affy,mas5calls)
+importMethodsFrom(annaffy,"colnames<-")
+importMethodsFrom(annaffy,saveHTML)
+importMethodsFrom(annaffy,saveText)
+importMethodsFrom(AnnotationDbi,get)
+importMethodsFrom(AnnotationDbi,Term)
+importMethodsFrom(Biobase,annotation)
+importMethodsFrom(Biobase,exprs)
+importMethodsFrom(Biobase,featureNames)
+importMethodsFrom(Biobase,sampleNames)
+importMethodsFrom(Biobase,write.exprs)
+importMethodsFrom(genefilter,plot)

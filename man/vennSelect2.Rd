@@ -1,95 +1,122 @@
 \name{vennSelect2}
 \alias{vennSelect2}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{Select and Output Genelists Based on Venn Diagrams }
-\description{
-  This function is designed to output text and/or HTML tables based on
-  the results of a call to \code{\link[limma]{decideTests}}, using the
-  ReportingTools package.
-}
+\title{Select and Output Genelists Based on Venn Diagrams}
 \usage{
-vennSelect2(fit, contrast, design, eset, groups = NULL, cols = NULL,
-p.value = 0.05, lfc = 0, method = "same", adj.meth =
-"BH", titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory =
-"./venns", ...)
+  vennSelect2(fit, contrast, design, eset, groups = NULL,
+    cols = NULL, p.value = 0.05, lfc = 0, method = "same",
+    adj.meth = "BH", titleadd = NULL, fileadd = NULL,
+    baseUrl = ".", reportDirectory = "./venns", ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-   \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
-     \code{\link[limma:ebayes]{eBayes}}.}
-   \item{contrast}{A contrasts matrix, produced either by hand, or by a
-    call to \code{\link[limma]{makeContrasts}}}
+  \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}}
+  object, from a call to
+  \code{\link[limma:ebayes]{eBayes}}.}
+
+  \item{contrast}{A contrasts matrix, produced either by
+  hand, or by a call to \code{\link[limma]{makeContrasts}}}
+
   \item{design}{A design matrix.}
+
   \item{eset}{An \code{ExpressionSet} object.}
-  \item{groups}{This argument is used when creating a legend for the
-    resulting HTML pages. If NULL, the groups will be generated using
-    the column names of the design matrix.}
-  \item{cols}{A numeric vector indicating which columns of the fit,
-    contrast and design matrix to use. If \code{NULL}, all columns will be used.}
+
+  \item{groups}{This argument is used when creating a
+  legend for the resulting HTML pages. If NULL, the groups
+  will be generated using the column names of the design
+  matrix.}
+
+  \item{cols}{A numeric vector indicating which columns of
+  the fit, contrast and design matrix to use. If
+  \code{NULL}, all columns will be used.}
+
   \item{p.value}{A p-value to filter the results by.}
+
   \item{lfc}{A log fold change to filter the results by.}
-  \item{method}{ One of "same", "both", "up", "down", "sameup", or
-    "samedown". See details for more information.}
-  \item{adj.meth}{Method to use for adjusting p-values. Default is 'BH',
-    which corresponds to 'fdr'. Ideally one would set this value to be
-    the same as was used for \code{\link[limma]{decideTests}}.}
-  \item{titleadd}{Additional text to add to the title of the HTML
-    tables. Default is NULL, in which case the title of the table will
-    be the same as the filename.}
-  \item{fileadd}{Additional text to add to the name of the HTML and CSV
-    tables. Default is NULL.}
-  \item{baseUrl}{A character string giving the location of the page in
-    terms of HTML locations. Defaults to "."}
-  \item{reportDirectory}{A character string giving the location that the
-    results will be written. Defaults to "./venns"}
-  \item{...}{Used to pass other arguments to \code{probes2table}, in
-    particular, to change the argument to \code{anncols} 
-    which controls the columns of hyperlinks to online databases (e.g.,
-    Entrez Gene, etc.). See \code{\link[annaffy]{aaf.handler}} for more
-    information.}
-  
-}
-\details{
-  The purpose of this function is to output HTML and text tables with
-  lists of genes that fulfill the criteria of a call to
-  \code{\link[limma]{decideTests}} as well as the direction of
-  differential expression.
 
-  Some important things to note: First, the names of the HTML and text
-  tables are extracted from the \code{colnames} of the
-  \code{TestResults} object, which come from the contrasts matrix, so
-  it is important to use something descriptive. Second, the method
-  argument is analogous to the \code{include} argument from
-  \code{\link[limma:venn]{vennCounts}} or
-  \code{\link[limma:venn]{vennDiagram}}. Choosing "both" will select genes
-  that are differentially expressed in one or more comparisons,
-  regardless of direction. Choosing "up" or "down" will select genes
-  that are only differentially expressed in one direction. Choosing
-  "same" will select genes that are differentially expressed in the same
-  direction. Choosing "sameup" or "samedown" will select genes that are
-  differentially expressed in the same direction as well as 'up' or
-  'down'.
+  \item{method}{One of "same", "both", "up", "down",
+  "sameup", or "samedown". See details for more
+  information.}
 
-  Note that this is different than sequentially choosing "up"
-  and then "down". For instance, a gene that is upregulated in one
-  comparison and downregulated in another comparison will be listed in
-  the intersection of those two comparisons if "both" is chosen, it will
-  be listed in only one comparison for both the "up" and "down" methods,
-  and it will be listed in the union (e.g., not selected) if "same" is
-  chosen.
+  \item{adj.meth}{Method to use for adjusting p-values.
+  Default is 'BH', which corresponds to 'fdr'. Ideally one
+  would set this value to be the same as was used for
+  \code{\link[limma]{decideTests}}.}
 
-  Unlike \code{vennSelect}, this function automatically creates both
-  HTML and CSV output files.
+  \item{titleadd}{Additional text to add to the title of
+  the HTML tables. Default is NULL, in which case the title
+  of the table will be the same as the filename.}
+
+  \item{fileadd}{Additional text to add to the name of the
+  HTML and CSV tables. Default is NULL.}
+
+  \item{baseUrl}{A character string giving the location of
+  the page in terms of HTML locations. Defaults to "."}
+
+  \item{reportDirectory}{A character string giving the
+  location that the results will be written. Defaults to
+  "./venns"}
+
+  \item{...}{Used to pass other arguments to
+  \code{probes2table}, in particular, to change the
+  argument to \code{anncols} which controls the columns of
+  hyperlinks to online databases (e.g., Entrez Gene, etc.).
+  See \code{\link[annaffy]{aaf.handler}} for more
+  information.}
 }
 \value{
-  A list with two items. First, a list of \code{HTMLReport} objects from
-  the ReportingTools package, which can be used to create an index page
-  with links to the HTML pages created by this function. See the help
-  page for HTMLReport in ReportingTools as well as the vignettes for
-  more information. The second item is a \code{vennCounts} object from
-  limma, which can be used to create a Venn diagram, e.g., in a report
-  if this function is called within a Sweave or knitR pipeline.
- }
-\author{James W. MacDonald <jmacdon@u.washington.edu>}
+  A list with two items. First, a list of \code{HTMLReport}
+  objects from the ReportingTools package, which can be
+  used to create an index page with links to the HTML pages
+  created by this function. See the help page for
+  HTMLReport in ReportingTools as well as the vignettes for
+  more information. The second item is a \code{vennCounts}
+  object from limma, which can be used to create a Venn
+  diagram, e.g., in a report if this function is called
+  within a Sweave or knitR pipeline.
+}
+\description{
+  This function is designed to output text and/or HTML
+  tables based on the results of a call to
+  \code{\link[limma]{decideTests}}, using the
+  ReportingTools package.
+}
+\details{
+  The purpose of this function is to output HTML and text
+  tables with lists of genes that fulfill the criteria of a
+  call to \code{\link[limma]{decideTests}} as well as the
+  direction of differential expression.
 
-\keyword{ manip}% at least one, from doc/KEYWORDS
+  Some important things to note: First, the names of the
+  HTML and text tables are extracted from the
+  \code{colnames} of the \code{TestResults} object, which
+  come from the contrasts matrix, so it is important to use
+  something descriptive. Second, the method argument is
+  analogous to the \code{include} argument from
+  \code{\link[limma:venn]{vennCounts}} or
+  \code{\link[limma:venn]{vennDiagram}}. Choosing "both"
+  will select genes that are differentially expressed in
+  one or more comparisons, regardless of direction.
+  Choosing "up" or "down" will select genes that are only
+  differentially expressed in one direction. Choosing
+  "same" will select genes that are differentially
+  expressed in the same direction. Choosing "sameup" or
+  "samedown" will select genes that are differentially
+  expressed in the same direction as well as 'up' or
+  'down'.
+
+  Note that this is different than sequentially choosing
+  "up" and then "down". For instance, a gene that is
+  upregulated in one comparison and downregulated in
+  another comparison will be listed in the intersection of
+  those two comparisons if "both" is chosen, it will be
+  listed in only one comparison for both the "up" and
+  "down" methods, and it will be listed in the union (e.g.,
+  not selected) if "same" is chosen.
+
+  Unlike \code{vennSelect}, this function automatically
+  creates both HTML and CSV output files.
+}
+\author{
+  James W. MacDonald \email{jmacdon@u.washington.edu}
+}
+\keyword{manip}
+

@@ -1,35 +1,44 @@
 \name{pca.legend}
 \alias{pca.legend}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{A Function to Automagically Place a Legend in a PCA Plot }
-\description{
- This function places a legend in a PCA plot depending on which corner
- is available. If there are no available corners, user intervention will
- be required. This is an internal function and not intended to be called
- by the end user.
-}
+\title{A Function to Automagically Place a Legend in a PCA Plot}
 \usage{
-pca.legend(pca, groups, groupnames, pch.df, x.coord = NULL, y.coord = NULL,
-saveup = FALSE)
+  pca.legend(pca, groups, groupnames, pch.df,
+    x.coord = NULL, y.coord = NULL, saveup = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{pca}{A 'pca' object }
-  \item{groups}{A vector of numbers indicating group membership}
-  \item{groupnames}{A vector of names describing the different groups }
-  \item{pch.df}{A numeric data.frame delineating the plotting symbols
-    (column 1) and colors (column 2) to use}
-  \item{x.coord}{X-coordinate for legend. Used if automatic placement
-    will fail}
-  \item{y.coord}{Y-coordinate for legend. Used if automatic placement
-    will fail}
-  \item{saveup}{Boolean: Save a small value for plotting additional text?}
-}
+  \item{pca}{A 'pca' object}
 
+  \item{groups}{A vector of numbers indicating group
+  membership}
+
+  \item{groupnames}{A vector of names describing the
+  different groups}
+
+  \item{pch.df}{A numeric data.frame delineating the
+  plotting symbols (column 1) and colors (column 2) to use}
+
+  \item{x.coord}{X-coordinate for legend. Used if automatic
+  placement will fail}
+
+  \item{y.coord}{Y-coordinate for legend. Used if automatic
+  placement will fail}
+
+  \item{saveup}{Boolean: Save a small value for plotting
+  additional text?}
+}
 \value{
- This function returns nothing. It is used only for the side effect of
- placing a legend in a plot.
+  This function returns nothing. It is used only for the
+  side effect of placing a legend in a plot.
 }
-\author{James W. MacDonald <jmacdon@u.washington.edu>}
+\description{
+  This function places a legend in a PCA plot depending on
+  which corner is available. If there are no available
+  corners, user intervention will be required. This is an
+  internal function and not intended to be called by the
+  end user.
+}
+\author{
+  James W. MacDonald <jmacdon@u.washington.edu>
+}
+\keyword{internal}
 
-\keyword{internal }% at least one, from doc/KEYWORDS

@@ -7,6 +7,25 @@
 ####################################################
 
 
+
+
+#' A Function to make MA plots from all arrays.
+#' 
+#' This function creates an MA plot for all arrays in either an ExpressionSet
+#' or a matrix. A 'baseline' array is created using the median expression for
+#' each gene, and each array is then compared to the baseline array.
+#' 
+#' 
+#' @param object An ExpressionSet or matrix containing log-transformed array
+#' data.
+#' @param layout A numeric vector, length two. Best results will be obtained if
+#' both values are the same, and between 2 and 5 (e.g., c(3,3))
+#' @param ... Other arguments that will be passed down to the \code{xyplot}
+#' function from the lattice package.
+#' @return No output. Used only for the side effect of creating MA plots.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords hplot
+#' @export maplot
 maplot <- function(object, layout = NULL, ...){
     if(is(object, "ExpressionSet")){
         mat <- exprs(object)

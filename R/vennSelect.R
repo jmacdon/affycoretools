@@ -9,6 +9,48 @@
 ################################################
 
 
+
+
+#' Compute Counts for Venn Diagram
+#' 
+#' This function is designed to compute counts for a Venn diagram. It is
+#' slightly different from \code{\link[limma:venn]{vennCounts}} in the
+#' additional ability to compute counts for genes that are differentially
+#' expressed in the same direction.
+#' 
+#' The function \code{\link[limma:venn]{vennCounts}} will return identical
+#' results except for the "same" method. This will only select those genes that
+#' both pass the criteria of \code{\link[limma]{decideTests}} as well as being
+#' differentially expressed in the same direction. Note that this is different
+#' from the "both" method, which simply requires that a given gene be
+#' differentially expressed in e.g., two different comparisons without any
+#' requirement that the direction be the same.
+#' 
+#' @param x A \code{\link[limma]{TestResults}} object, produced by a call to
+#' \code{\link[limma]{decideTests}} or \code{foldFilt}.
+#' @param method One of "same", "both", "up", "down". See details for more
+#' information.
+#' @param fit An \code{\link[limma:marraylm]{MArrayLM}} object, produced by a
+#' call
+#' 
+#' to \code{\link[limma]{lmFit}} and \code{\link[limma:ebayes]{eBayes}}. Only
+#' necessary if 'foldFilt' = \code{TRUE}.
+#' @param foldFilt A fold change to filter samples. This is primarily here for
+#' consistency with the corresponding argument in \code{vennSelect}.
+#' @return A \code{\link[limma:venn]{VennCounts}} object.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords manip hplot
+#' @examples
+#' 
+#' library("limma")
+#' tstat <- matrix(rt(300,df=10),100,3)
+#' tstat[1:33,] <- tstat[1:33,]+2
+#' clas <- classifyTestsF(tstat,df=10,p.value=0.05)
+#' a <- vennCounts2(clas)
+#' print(a)
+#' vennDiagram(a)
+#' 
+#' @export vennCounts2
 vennCounts2 <- function(x, method = "same", fit = NULL,
                         foldFilt = NULL){
 
@@ -37,6 +79,19 @@ vennCounts2 <- function(x, method = "same", fit = NULL,
   tmp
 }
 
+
+
+#' Create Names for Venn Diagram Intersections
+#' 
+#' This function is designed to create the names for all the intersections of a
+#' Venn diagram based on the names of all the single comparisons. This is an
+#' internal function and is not intended to be called by the end user.
+#' 
+#' 
+#' @param x A \code{TestResults} object from a call to \code{decideTests}.
+#' @return A vector of names.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords internal
 intNames <- function(x){
   tmp <- colnames(x)
   if(is.null(dim(x)) || dim(x)[2] > 3)
@@ -48,6 +103,23 @@ intNames <- function(x){
     return(paste(c(tmp[1], tmp[1], tmp[2]), "and", c(tmp[2], tmp[3], tmp[3])))
 }
 
+
+
+#' Create Indices for Venn Diagrams
+#' 
+#' This function is used to create indices for making Venn diagrams or
+#' \code{vennCounts} objects. This is an internal method and is not intended to
+#' be called by the end user.
+#' 
+#' 
+#' @param x A \code{TestResults} object from a call to \code{decideTests}.
+#' @param method One of "same", "up", "down", "both", indicating direction of
+#' differential expression. See details of \code{vennSelect} for more
+#' information.
+#' @return A list containing \code{TRUE} and \code{FALSE} values, to be used by
+#' \code{vennSelect}.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords internal
 makeIndices <- function(x, method = "same"){
   method <- match.arg(method, c("same", "up", "down", "both", "sameup", "samedown"))
   indices <- list()
@@ -103,6 +175,22 @@ makeIndices <- function(x, method = "same"){
 }
       
 
+
+
+#' Correct Ordering of Contrasts
+#' 
+#' A function to determine the correct ordering of contrasts for
+#' \code{vennSelect}. This is an internal function and should not be called by
+#' the end user
+#' 
+#' 
+#' @param design A design matrix, usually produced by a call to
+#' \code{model.matrix}.
+#' @param contrast A contrasts matrix, either produced by hand or as a result
+#' of a call to \code{\link[limma]{makeContrasts}}
+#' @return This function returns the correct order for the contrasts.
+#' @author James W. MacDonald
+#' @keywords internal
 getCols <- function(design, contrast){
   ## A function to get the correct columns of the ExpressionSet
   ## to output based on the design and contrasts matrices
@@ -243,6 +331,95 @@ t.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
 }
 
 
+
+
+#' Select and Output Genelists Based on Venn Diagrams
+#' 
+#' This function is designed to output text and/or HTML tables based on the
+#' results of a call to \code{\link[limma]{decideTests}}.
+#' 
+#' The purpose of this function is to output HTML and text tables with lists of
+#' genes that fulfill the criteria of a call to
+#' \code{\link[limma]{decideTests}} as well as the direction of differential
+#' expression.
+#' 
+#' Some important things to note: First, the names of the HTML and text tables
+#' are extracted from the \code{colnames} of the \code{TestResults} object,
+#' which come from the contrasts matrix, so it is important to use something
+#' descriptive. Second, the method argument is analogous to the \code{include}
+#' argument from \code{\link[limma:venn]{vennCounts}} or
+#' \code{\link[limma:venn]{vennDiagram}}. Choosing "both" will select genes
+#' that are differentially expressed in one or more comparisons, regardless of
+#' direction. Choosing "up" or "down" will select genes that are only
+#' differentially expressed in one direction. Choosing "same" will select genes
+#' that are differentially expressed in the same direction. Choosing "sameup"
+#' or "samedown" will select genes that are differentially expressed in the
+#' same direction as well as 'up' or 'down'.
+#' 
+#' Note that this is different than sequentially choosing "up" and then "down".
+#' For instance, a gene that is upregulated in one comparison and downregulated
+#' in another comparison will be listed in the intersection of those two
+#' comparisons if "both" is chosen, it will be listed in only one comparison
+#' for both the "up" and "down" methods, and it will be listed in the union
+#' (e.g., not selected) if "same" is chosen.
+#' 
+#' Calling the function normally will result in the output of HTML and text
+#' tables:
+#' 
+#' vennSelect(eset, fit, design, x)
+#' 
+#' Calling the function with save set to \code{TRUE} will output both HTML and
+#' text tables as well as a vector of counts for each comparison. This is
+#' useful when using the function programmatically (e.g., when making reports
+#' using Sweave).
+#' 
+#' out <- vennSelect(eset, fit, design, x, save = TRUE)
+#' 
+#' An alternative would be to use \code{vennCounts2} and
+#' \code{\link[limma:venn]{vennDiagram}} to output a Venn diagram, which is
+#' probably more reasonable since the tables being output are supposed to be
+#' based on a Venn diagram.
+#' 
+#' @param eset An \code{ExpressionSet} object.
+#' @param design A design matrix.
+#' @param x A \code{\link[limma]{TestResults}} object, usually from a call to
+#' \code{\link[limma]{decideTests}}.
+#' @param contrast A contrasts matrix, produced either by hand, or by a call to
+#' \code{\link[limma]{makeContrasts}}
+#' @param fit An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
+#' \code{\link[limma:ebayes]{eBayes}}.
+#' @param method One of "same", "both", "up", "down", "sameup", or "samedown".
+#' See details for more information.
+#' @param adj.meth Method to use for adjusting p-values. Default is 'BH', which
+#' corresponds to 'fdr'. Ideally one would set this value to be the same as was
+#' used for \code{\link[limma]{decideTests}}.
+#' @param stat The statistic to report in the resulting HTML tables. Choices
+#' are 'fstat', 'tstat', and \code{NULL}. Ideally, the statistic chosen would
+#' correspond to the method used in \code{\link[limma]{decideTests}}. In other
+#' words, if one used methods such as 'separate' or 'hierarchical', which are
+#' based on a t-statistic, one should choose 'tstat', however, if one used
+#' 'nestedF', the logical choice would be 'fstat'.
+#' @param otherstats Other statistics to be included in the HTML tables.
+#' Choices include 'pval' and 'FC'.
+#' @param order.by Which statistic should be used to order the probesets?
+#' Choices include 'fstat', 'tstat', 'pval', and 'FC'. Note that if 'FC' is
+#' chosen and there are more than one set of fold changes, the first will be
+#' used.
+#' @param foldFilt A log fold change to filter results.
+#' @param save Boolean. Save the results for further processing?
+#' @param titleadd Additional text to add to the title of the HTML tables.
+#' Default is NULL, in which case the title of the table will be the same as
+#' the filename.
+#' @param ... Used to pass other arguments to \code{probes2table}, in
+#' particular, to change the argument to \code{anncols} which controls the
+#' columns of hyperlinks to online databases (e.g., Entrez Gene, etc.). See
+#' \code{\link[annaffy]{aaf.handler}} for more information.
+#' @return Normally called only for the side effect of producing HTML and text
+#' tables. However, setting save to \code{TRUE} will output a vector of counts
+#' that can be used for making Sweave-style reports.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords manip
+#' @export vennSelect
 vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
                        stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
                        foldFilt = NULL, save = FALSE, titleadd = NULL, ...){

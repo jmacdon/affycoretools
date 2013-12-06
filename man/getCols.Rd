@@ -1,26 +1,28 @@
 \name{getCols}
 \alias{getCols}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Correct Ordering of Contrasts}
-\description{
- A function to determine the correct ordering of contrasts for
- \code{vennSelect}. This is an internal function and should not be
- called by the end user
-}
+\title{Correct Ordering of Contrasts}
 \usage{
-getCols(design, contrast)
+  getCols(design, contrast)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{design}{A design matrix, usually produced by a call to
-    \code{model.matrix}.}
-  \item{contrast}{A contrasts matrix, either produced by hand or as a
-    result of a call to \code{\link[limma]{makeContrasts}}}
-}
+  \item{design}{A design matrix, usually produced by a call
+  to \code{model.matrix}.}
 
+  \item{contrast}{A contrasts matrix, either produced by
+  hand or as a result of a call to
+  \code{\link[limma]{makeContrasts}}}
+}
 \value{
- This function returns the correct order for the contrasts.
+  This function returns the correct order for the
+  contrasts.
 }
+\description{
+  A function to determine the correct ordering of contrasts
+  for \code{vennSelect}. This is an internal function and
+  should not be called by the end user
+}
+\author{
+  James W. MacDonald
+}
+\keyword{internal}
 
-\author{James W. MacDonald}
-\keyword{ internal }% __ONLY ONE__ keyword per line

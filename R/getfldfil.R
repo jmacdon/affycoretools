@@ -16,6 +16,24 @@ getfldfil <- function(){
   return(fldfilt)
 }
 
+
+
+#' Interactive Functions for limma2anaffy
+#' 
+#' These are internal functions used to filter the number of genes for
+#' \code{limma2annaffy} as well as to automagically get required annotation
+#' packages for \code{annaffy}.
+#' 
+#' These functions were added primarily for the error checking they afford. Now
+#' the end user can filter the number of genes based on p-value and fold
+#' change, and incorrect values entered will not result in unexpected
+#' behaviour.
+#' 
+#' @aliases getans2 getfldfil getpfil
+#' @param msg A character string to pass to the end user.
+#' @param allowed A character vector of acceptable responses.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords internal
 getans2 <- function(msg, allowed = c("a","c")){
   repeat{
     out <- paste("[", paste(allowed, collapse = "/"),

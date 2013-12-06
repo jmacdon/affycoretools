@@ -1,37 +1,44 @@
 \name{writeFit}
 \alias{writeFit}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{ Function to output annotated fit data from limma}
-\description{
-  This function is designed to take an \code{ExpressionSet} an
-  annotation package and an \code{lmFit} object, and output an annotated
-  text file containing t-statistics, p-values, and fold change data for
-  all contrasts.}
+\title{Function to output annotated fit data from limma}
 \usage{
-writeFit(fit, annotation, eset, touse =
-c("symbol","genename","accnum","entrezid","unigene"))
+  writeFit(fit, annotation = NULL, eset,
+    touse = c("symbol", "genename", "accnum", "entrezid", "unigene"))
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{fit}{A \code{lmFit} object, created by the limma package.}
-  \item{annotation}{An annotation package, specific for the chip used in
-    the analysis.}
-  \item{eset}{An \code{ExpressionSet} object containing expression
-    values.}
-  \item{touse}{Character vector of BiMaps from annotation package. As an
-    example, if the annotation package is the hgu133plus2.db package,
-    then 'symbol' refers to the hgu133plus2SYMBOL BiMap.}
-}
-\details{
-  This function is designed to output annotation data as well as
-  statistics (p-values, fold change, t-statistics) for all probes on a
-  chip.
+  \item{fit}{A \code{lmFit} object, created by the limma
+  package.}
+
+  \item{annotation}{An annotation package, specific for the
+  chip used in the analysis.}
+
+  \item{eset}{An \code{ExpressionSet} object containing
+  expression values.}
+
+  \item{touse}{Character vector of BiMaps from annotation
+  package. As an example, if the annotation package is the
+  hgu133plus2.db package, then 'symbol' refers to the
+  hgu133plus2SYMBOL BiMap.}
 }
 \value{
   A \code{data.frame} is returned.
 }
-\author{James W. MacDonald <jmacdon@u.washington.edu>}
-\seealso{\code{\link[limma:write.fit]{write.fit}}
+\description{
+  This function is designed to take an \code{ExpressionSet}
+  an annotation package and an \code{lmFit} object, and
+  output an annotated text file containing t-statistics,
+  p-values, and fold change data for all contrasts.
+}
+\details{
+  This function is designed to output annotation data as
+  well as statistics (p-values, fold change, t-statistics)
+  for all probes on a chip.
+}
+\author{
+  James W. MacDonald <jmacdon@u.washington.edu>
+}
+\seealso{
+  \code{\link[limma:write.fit]{write.fit}}
 }
 \keyword{manip}
 

@@ -1,56 +1,66 @@
 \name{vennPage}
 \alias{vennPage}
-%- Also NEED an '\alias' for EACH other topic documented here.
-\title{High-level function for making Venn diagrams with clickable links
-  to HTML pages with the underlying genes.}
-\description{
-  This function is designed to be used in conjunction with the
-  \code{makeVenn} function, to first create a set of HTML pages
-  containing the genes that are represented by the cells of a Venn
-  diagram, and then create an HTML page with the same Venn diagrams,
-  with clickable links that will point the end user to the HTML pages.
-}
+\title{High-level function for making Venn diagrams with clickable links to HTML
+pages with the underlying genes.}
 \usage{
-vennPage(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
-                     baseUrl = ".", reportDirectory = NULL, ...)
-
+  vennPage(vennlst, pagename, pagetitle, cex.venn = 1,
+    shift.title = FALSE, baseUrl = ".",
+    reportDirectory = NULL, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{vennlst}{The output from \code{makeVenn}.}
-  \item{pagename}{Character. The file name for the resulting HTML
-    page. Something like 'venns' is reasonable. Note that the .html will
-  automatically be appended.}
-  \item{pagetitle}{Character. The heading for the HTML page.}
-  \item{cex.venn}{Numeric. Adjusts the size of the font in the Venn
-    diagram. Usually the default is OK.}
-  \item{shift.title}{Boolean. Should the right contrast name of the Venn diagram
-    be shifted down? Useful for long contrast names. If a two-way Venn
-    diagram, this will shift the right name down so they don't
-    overlap. If a three-way Venn diagram, this will shift the top right
-    name down.}
-  \item{baseUrl}{Character. The base URL for the resulting HTML
-    page. The default of "." is usually optimal.}
-  \item{reportDirectory}{If \code{NULL}, the reportDirectory will be
-    extracted from the vennlst. This is usually what one should do.}
-  \item{...}{To allow passing other arguments to lower level
-    functions. Currently not used.}
-}
 
-\details{
-  This function is intended to be used as part of a pipeline, by first
-  calling \code{makeVenn} and then using the output from that function
-  as input to this function to create the HTML page with clickable links.
+  \item{pagename}{Character. The file name for the
+  resulting HTML page. Something like 'venns' is
+  reasonable. Note that the .html will automatically be
+  appended.}
+
+  \item{pagetitle}{Character. The heading for the HTML
+  page.}
+
+  \item{cex.venn}{Numeric. Adjusts the size of the font in
+  the Venn diagram. Usually the default is OK.}
+
+  \item{shift.title}{Boolean. Should the right contrast
+  name of the Venn diagram be shifted down? Useful for long
+  contrast names. If a two-way Venn diagram, this will
+  shift the right name down so they don't overlap. If a
+  three-way Venn diagram, this will shift the top right
+  name down.}
+
+  \item{baseUrl}{Character. The base URL for the resulting
+  HTML page. The default of "." is usually optimal.}
+
+  \item{reportDirectory}{If \code{NULL}, the
+  reportDirectory will be extracted from the vennlst. This
+  is usually what one should do.}
+
+  \item{...}{To allow passing other arguments to lower
+  level functions. Currently not used.}
 }
 \value{
-  An HTMLReport object. If used as input to the ReportingTools
-  \code{publish} function, this will create a link on an index page to
-  the Venn diagram HTML page. See e.g., the microarray analysis vignette
-  for ReportingTools for more information.
+  An HTMLReport object. If used as input to the
+  ReportingTools \code{publish} function, this will create
+  a link on an index page to the Venn diagram HTML page.
+  See e.g., the microarray analysis vignette for
+  ReportingTools for more information.
 }
-\author{James W. MacDonald <jmacdon@u.washington.edu>}
+\description{
+  This function is designed to be used in conjunction with
+  the \code{makeVenn} function, to first create a set of
+  HTML pages containing the genes that are represented by
+  the cells of a Venn diagram, and then create an HTML page
+  with the same Venn diagrams, with clickable links that
+  will point the end user to the HTML pages.
+}
+\details{
+  This function is intended to be used as part of a
+  pipeline, by first calling \code{makeVenn} and then using
+  the output from that function as input to this function
+  to create the HTML page with clickable links.
+}
 \examples{
-  \dontrun{
+\dontrun{
     mat <- matrix(rnorm(1e6), ncol = 20)
     design <- model.matrix(~factor(1:4, each=5))
     colnames(design) <- LETTERS[1:4]
@@ -72,7 +82,8 @@ vennPage(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
     finish(indexPage)
     }
 }
+\author{
+  James W. MacDonald \email{jmacdon@u.washington.edu}
+}
+\keyword{manip}
 
-\keyword{ manip}% at least one, from doc/KEYWORDS
-
-  

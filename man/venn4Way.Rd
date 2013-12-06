@@ -1,0 +1,56 @@
+\name{venn4Way}
+\alias{venn4Way}
+\title{4-way Venn Diagrams}
+\usage{
+  venn4Way(fit, contrast, p.value, lfc, adj.meth,
+    baseUrl = ".", reportDirectory = "./venns", ...)
+}
+\arguments{
+  \item{fit}{An \code{MArrayLM} object, created by the
+  limma package.}
+
+  \item{contrast}{A contrasts matrix, used by limma to
+  generate the comparisons made.}
+
+  \item{p.value}{A p-value cutoff for significance}
+
+  \item{lfc}{A log fold change cutoff}
+
+  \item{adj.meth}{The method used to adjust for multiple
+  comparisons.}
+
+  \item{baseUrl}{The base directory for the tables
+  generated. Defaults to ".", meaning the current
+  directory.}
+
+  \item{reportDirectory}{The directory in which to put the
+  results. Defaults to a "venns" subdirectory.}
+
+  \item{...}{Allows arbitrary arguments to be passed to
+  lower level functions}
+}
+\value{
+  Returns a list. The first item is a (list of)
+  HTMLReportRef objects that can be used by ReportingTools
+  to create HTML links. The second item is the output from
+  the \code{venn} function in gtools, and the third item is
+  the name of the contrasts used to generate the Venn
+  diagram.
+}
+\description{
+  A function to create a 4-way Venn diagram
+}
+\details{
+  This function is an internal function and not really
+  intended to be called by the end user. It is generally
+  called by the \code{vennPage} function. The goal is to
+  create a 4-way Venn diagram in an HTML page with
+  clickable links to tables of the genes found in a given
+  cell. In addition, the numbers in each cell are
+  underlined with colored bars that help end users tell
+  what contrasts are captured by that cell.
+}
+\author{
+  James W. MacDonald \email{jmacdon@u.washington.edu}
+}
+

@@ -1,91 +1,90 @@
 \name{makeHmap}
 \alias{makeHmap}
-
-\title{
-  A function to create a heatmap-like object or matrix of correlations
-  between miRNA and mRNA data.
-}
-\description{
-  This function is intended for use when both miRNA and mRNA data are
-  available for the same samples. In this situation it may be
-  advantageous to compute correlations between the two RNA types, in
-  order to detect mRNA transcripts that are targeted by miRNA.
-}
+\title{A function to create a heatmap-like object or matrix of correlations between
+miRNA and mRNA data.}
 \usage{
-makeHmap(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL, chipPkg, header, plot = TRUE, out = TRUE)
+  makeHmap(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL,
+    miRNAvec = NULL, chipPkg, header, plot = TRUE,
+    out = TRUE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{mRNAdat}{
-    An \code{ExpressionSet}, \code{data.frame} or \code{matrix} of mRNA
-  expression values. The row.names for these data should correspond to
-  the manufacturer's probe ID. Currently, the only manufacturer
-  supported is Affymetrix.
-}
-  \item{miRNAdat}{
-    An \code{ExpressionSet}, \code{data.frame} or \code{matrix} of mRNA
-  expression values. The row.names for these data should correspond to
-  the manufacturer's probe ID. Currently, the only manufacturer
-  supported is Affymetrix.
-}
-  \item{mRNAlst}{
-    A \code{list} of mRNA probe IDs where the names of each list item
-  are mirBase miRNA IDs. Usually this will be the output from \code{\link{mirna2mrna}}.
-}
-  \item{mRNAvec}{
-    A numeric vector used to subset or reorder the mRNA data, by column. If
-  \code{NULL}, this will simply be 1:ncol(mRNAdat).
-}
-  \item{miRNAvec}{
-    A numeric vector used to subset or reorder the miRNA data, by
-  column. If \code{NULL}, this will simply be 1:ncol(miRNAdat).
-}
-  \item{chipPkg}{
-    Character. The name of the chip-specific annotation package (e.g., "hgu133plus2.db").
-}
-  \item{header}{
-    Character. The plot title if a heatmap is output.
-}
-  \item{plot}{
-    Boolean. Should a heatmap be generated?
-}
-  \item{out}{
-    Boolean. Should the matrix of correlation coefficients be output?
-}
-}
-\details{
-  As noted above, this function is intended to generate output from
-  simultaneous analyses of miRNA and mRNA data for the same samples, the
-  goal being either a heatmap like plot of correlations, or the data (or
-  both).
+  \item{mRNAdat}{An \code{ExpressionSet}, \code{data.frame}
+  or \code{matrix} of mRNA expression values. The row.names
+  for these data should correspond to the manufacturer's
+  probe ID. Currently, the only manufacturer supported is
+  Affymetrix.}
 
-  If creating a plot, note that if the number of significant mRNA probes
-  is large, the resulting heatmap will have many rows and will not plot
-  correctly on the usual graphics device within R. In order to
-  visualize, it is almost always better to output as a pdf. In addition,
-  the dimensions of this pdf will have to be adjusted so the row names
-  for the heatmap will be legible. As an example, a heatmap with 10
-  miRNA transcripts and 100 mRNA transcripts will likely need a pdf with
-  a width argument of 6 and a height argument of 25 or 30. It may
-  require some experimentation to get the correct arguments to the
-  \code{pdf} function.
+  \item{miRNAdat}{An \code{ExpressionSet},
+  \code{data.frame} or \code{matrix} of mRNA expression
+  values. The row.names for these data should correspond to
+  the manufacturer's probe ID. Currently, the only
+  manufacturer supported is Affymetrix.}
 
-  Also please note that this function by necessity outputs rectangular
-  data. However, there will be many instances in which a given miRNA
-  isn't thought to target a particular mRNA. Whenever this occurs, the
-  heatmap will have a white cell, and the output data for that
-  combination will be NA.
+  \item{mRNAlst}{A \code{list} of mRNA probe IDs where the
+  names of each list item are mirBase miRNA IDs. Usually
+  this will be the output from \code{\link{mirna2mrna}}.}
+
+  \item{mRNAvec}{A numeric vector used to subset or reorder
+  the mRNA data, by column. If \code{NULL}, this will
+  simply be 1:ncol(mRNAdat).}
+
+  \item{miRNAvec}{A numeric vector used to subset or
+  reorder the miRNA data, by column. If \code{NULL}, this
+  will simply be 1:ncol(miRNAdat).}
+
+  \item{chipPkg}{Character. The name of the chip-specific
+  annotation package (e.g., "hgu133plus2.db").}
+
+  \item{header}{Character. The plot title if a heatmap is
+  output.}
+
+  \item{plot}{Boolean. Should a heatmap be generated?}
+
+  \item{out}{Boolean. Should the matrix of correlation
+  coefficients be output?}
 }
 \value{
-  This function will output a numeric matrix if the 'out' argument is \code{TRUE}.
+  This function will output a numeric matrix if the 'out'
+  argument is \code{TRUE}.
 }
+\description{
+  This function is intended for use when both miRNA and
+  mRNA data are available for the same samples. In this
+  situation it may be advantageous to compute correlations
+  between the two RNA types, in order to detect mRNA
+  transcripts that are targeted by miRNA.
+}
+\details{
+  As noted above, this function is intended to generate
+  output from simultaneous analyses of miRNA and mRNA data
+  for the same samples, the goal being either a heatmap
+  like plot of correlations, or the data (or both).
 
+  If creating a plot, note that if the number of
+  significant mRNA probes is large, the resulting heatmap
+  will have many rows and will not plot correctly on the
+  usual graphics device within R. In order to visualize, it
+  is almost always better to output as a pdf. In addition,
+  the dimensions of this pdf will have to be adjusted so
+  the row names for the heatmap will be legible. As an
+  example, a heatmap with 10 miRNA transcripts and 100 mRNA
+  transcripts will likely need a pdf with a width argument
+  of 6 and a height argument of 25 or 30. It may require
+  some experimentation to get the correct arguments to the
+  \code{pdf} function.
+
+  Also please note that this function by necessity outputs
+  rectangular data. However, there will be many instances
+  in which a given miRNA isn't thought to target a
+  particular mRNA. Whenever this occurs, the heatmap will
+  have a white cell, and the output data for that
+  combination will be NA.
+}
 \author{
   James W. MacDonald
 }
-
 \seealso{
   mirna2mrna
 }
+\keyword{manip}
 
-\keyword{ manip}

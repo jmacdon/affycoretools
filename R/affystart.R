@@ -11,6 +11,45 @@
 
 
 
+
+
+#' Pre-processing for Affymetrix Data
+#' 
+#' This function is designed to automatically read in all cel files in a
+#' directory, make all pre-processing QC plots and compute expression measures.
+#' 
+#' 
+#' @param \dots Requires that all variables be named.
+#' @param filenames If not all cel files in a directory will be used, pass a
+#' vector of filenames.
+#' @param groups An integer \code{vector} indicating the group assignments for
+#' the PCA plot.
+#' @param groupnames A character \code{vector} with group names for PCA legend.
+#' @param plottype What type of plot to save. Can be "pdf","postscript",
+#' "png","jpeg", or "bmp". Defaults to "pdf". Note that "png" and "jpeg" may
+#' not be available on a given computer. See the help page for
+#' \code{capabilities} and \code{png} for more information.
+#' @param plot Should density and degradation plots be made? Defaults to
+#' \code{TRUE}.
+#' @param pca Should a PCA plot be made? Defaults to \code{TRUE}.
+#' @param squarepca Should the y-axis of the PCA plot be made comparable to the
+#' x-axis? This may aid in interpretation of the PCA plot.  Defaults to
+#' \code{FALSE}.
+#' @param express One of either rma, mas5, gcrma. Defaults to rma.  Partial
+#' matching OK.
+#' @param addname Used to append something to the name of the pca plot and the
+#' expression values output file (e.g., if function is run twice using
+#' different methods to compute expression values).
+#' @param output What format to use for the output of expression values.
+#' Currently only supports text format.
+#' @param annotate Boolean. Add annotation data to the output file?
+#' @param ann.vec A character \code{vector} of annotation data to add to the
+#' output file.
+#' @return Returns an \code{ExpressionSet}.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @seealso \code{plotHist}, \code{plotDeg}, \code{plotPCA}
+#' @keywords hplot manip
+#' @export affystart
 affystart <- function(..., filenames = NULL, groups=NULL, groupnames=NULL,
                       plot=TRUE, pca=TRUE, squarepca = FALSE, plottype="pdf",
                       express=c("rma", "mas5", "gcrma"), addname=NULL,
@@ -202,6 +241,33 @@ plotHist <- function(dat, filenames = NULL)
   }
 }
 
+
+
+#' Functions to Plot Density and RNA Degradation Plots
+#' 
+#' These functions make density and RNA degradation plots with automatic
+#' placement of legends.
+#' 
+#' 
+#' @aliases plotDeg plotHist
+#' @param dat An \code{AffyBatch} object, or in the case of \code{plotHist}, a
+#' matrix (e.g., from a call to \code{read.probematrix}. Note that
+#' \code{plotDeg} requires an \code{AffyBatch} object to work correctly.
+#' @param filenames Filenames that will be used in the legend of the resulting
+#' plot. If \code{NULL} (the default), these names will be extracted from the
+#' sampleNames slot of the \code{AffyBatch} object.
+#' @return These functions are called only for the side effect of making the
+#' plots. Nothing else is returned.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords hplot
+#' @examples
+#' 
+#' library("affydata")
+#' data(Dilution)
+#' plotDeg(Dilution)
+#' plotHist(Dilution)
+#' 
+#' @export plotDeg plotHist
 plotDeg <- function(dat, filenames = NULL){
   if(is.null(filenames)) filenames <- sampleNames(dat)
 
@@ -251,6 +317,63 @@ plotDeg <- function(dat, filenames = NULL){
   }
 }
 
+
+
+#' A Function to Make a PCA Plot from an ExpressionSet
+#' 
+#' This function makes a PCA plot from an ExpressionSet or matrix
+#' 
+#' 
+#' @param object An \code{ExpressionSet}, \code{matrix} or \code{prcomp}
+#' object.
+#' @param groups A numeric \code{vector} delineating group membership for
+#' samples. Default is \code{NULL}, in which case default plotting symbols and
+#' colors will be used.
+#' @param groupnames A character \code{vector} describing the different groups.
+#' Default is \code{NULL}, in which case the sample names will be used.
+#' @param addtext A character \code{vector} of additional text to be placed
+#' just above the plotting symbol for each sample. This is helpful if there are
+#' a lot of samples for identifying e.g., outliers.
+#' @param x.coord Pass an x-coordinate if automatic legend placement fails
+#' @param y.coord Pass a y-coordinate if automatic legend placement fails.
+#' @param screeplot Boolean: Plot a \code{\link[stats]{screeplot}} instead of a
+#' PCA plot? Defaults to \code{FALSE}.
+#' @param squarepca Should the y-axis of the PCA plot be made comparable to the
+#' x-axis? This may aid in interpretation of the PCA plot. Defaults to
+#' \code{FALSE}.
+#' @param pch A numeric \code{vector} indicating what plotting symbols to use.
+#' Default is \code{NULL}, in which case default plotting symbols will be used.
+#' Note that this argument will override the 'groups' argument.
+#' @param col A numeric or character \code{vector} indicating what color(s) to
+#' use for the plotting symbols. Default is \code{NULL} in which case default
+#' colors will be used. Note that this argument will override the 'groups'
+#' argument.
+#' @param pcs A character \code{vector} of length two (or three if plot3d is
+#' \code{TRUE}), indicating which principal components to plot. Defaults to the
+#' first two principal components.
+#' @param legend Boolean. Should a legend be added to the plot? Defaults to
+#' \code{TRUE}.
+#' @param main A character \code{vector} for the plot title.
+#' @param plot3d Boolean. If \code{TRUE}, then the PCA plot will be rendered in
+#' 3D using the rgl package. Defaults to \code{FALSE}. Note that the pcs
+#' argument should have a length of three in this case.
+#' @param outside Boolean. If \code{TRUE} the legend will be placed outside the
+#' plotting region, at the top right of the plot.
+#' @param \dots Further arguments to be passed to \code{plot}. See the help
+#' page for \code{plot} for further information.
+#' @return This function returns nothing. It is called only for the side effect
+#' of producing a PCA plot or screeplot.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords hplot
+#' @examples
+#' 
+#' library("affy")
+#' data(sample.ExpressionSet)
+#' plotPCA(sample.ExpressionSet, groups =
+#'  as.numeric(pData(sample.ExpressionSet)[,2]), groupnames =
+#'  levels(pData(sample.ExpressionSet)[,2]))
+#' 
+#' @export plotPCA
 plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
                     legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, outside = FALSE, ...){
@@ -335,6 +458,20 @@ plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.
   }
 }
 
+
+
+#' A Function to Make a Classlabel Vector for Plotting
+#' 
+#' This function takes a vector of filenames and makes a classlabel vector for
+#' plotting functions of \code{affystart}. This is an internal function and is
+#' not intended to be called by the end user.
+#' 
+#' 
+#' @param filenames A vector of .cel filenames
+#' @return A vector of numbers to be used for plotting colors and line
+#' types
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords internal
 make.cl <- function(filenames){
   ## A function to make a classlabel for plotting
   ## Check for number of files
@@ -352,6 +489,30 @@ make.cl <- function(filenames){
   cl
 }
 
+
+
+#' A Function to Automagically Place a Legend in a PCA Plot
+#' 
+#' This function places a legend in a PCA plot depending on which corner is
+#' available. If there are no available corners, user intervention will be
+#' required. This is an internal function and not intended to be called by the
+#' end user.
+#' 
+#' 
+#' @param pca A 'pca' object
+#' @param groups A vector of numbers indicating group membership
+#' @param groupnames A vector of names describing the different groups
+#' @param pch.df A numeric data.frame delineating the plotting symbols (column
+#' 1) and colors (column 2) to use
+#' @param x.coord X-coordinate for legend. Used if automatic placement will
+#' fail
+#' @param y.coord Y-coordinate for legend. Used if automatic placement will
+#' fail
+#' @param saveup Boolean: Save a small value for plotting additional text?
+#' @return This function returns nothing. It is used only for the side effect
+#' of placing a legend in a plot.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords internal
 pca.legend <- function(pca, groups, groupnames, pch.df,  x.coord = NULL, y.coord = NULL,
                        saveup = FALSE){
   ## A function to try to automagically place legend in a pca plot
@@ -438,15 +599,39 @@ colvec <- function(len){
     out
 }
 
+
+
+#' Function to output annotated fit data from limma
+#' 
+#' This function is designed to take an \code{ExpressionSet} an annotation
+#' package and an \code{lmFit} object, and output an annotated text file
+#' containing t-statistics, p-values, and fold change data for all contrasts.
+#' 
+#' This function is designed to output annotation data as well as statistics
+#' (p-values, fold change, t-statistics) for all probes on a chip.
+#' 
+#' @param fit A \code{lmFit} object, created by the limma package.
+#' @param annotation An annotation package, specific for the chip used in the
+#' analysis.
+#' @param eset An \code{ExpressionSet} object containing expression values.
+#' @param touse Character vector of BiMaps from annotation package. As an
+#' example, if the annotation package is the hgu133plus2.db package, then
+#' 'symbol' refers to the hgu133plus2SYMBOL BiMap.
+#' @return A \code{data.frame} is returned.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @seealso \code{\link[limma:write.fit]{write.fit}}
+#' @keywords manip
+#' @export writeFit
 writeFit <- function(fit, annotation = NULL, eset,
                      touse = c("symbol","genename","accnum","entrezid","unigene")){
     gt <- function(x, y) sapply(AnnotationDbi::mget(y,
                                                  get(paste(annotation, x, sep = "")), ifnotfound = NA),
                              function(x) if(length(x) <= 1) x else paste(x, collapse = ";"))
     if(!is.null(annotation)){
-        lst <- lapply(toupper(touse), gt, featureNames(eset))
+        fn <- if(is(eset, "ExpressionSet")) featureNames(eset) else row.names(eset)
+        lst <- lapply(toupper(touse), gt, fn)
         names(lst) <- touse
-        out <- data.frame(probeset = featureNames(eset),
+        out <- data.frame(probeset = fn,
                           do.call("cbind", lst))
     } else {
         out <- data.frame(probeset = row.names(fit$t))
@@ -464,6 +649,26 @@ writeFit <- function(fit, annotation = NULL, eset,
 }
 
 
+
+
+#' Remove control probesets from ST arrays
+#' 
+#' This function is designed to remove all but the 'main' type of probesets
+#' from the Gene ST array types.
+#' 
+#' 
+#' @param input Either a character string (e.g., "pd.hugene.1.0.st.v1") or a
+#' FeatureSet object.
+#' @return If the argument is a character string, returns a data.frame
+#' containing probeset IDs along with the probeset type, that can be used to
+#' subset e.g., an ExpressionSet of Gene ST data, or an MArrayLM object created
+#' from Gene ST data. Note that the order of the probesets is not guaranteed to
+#' match the order in your ExpressionSet or MArrayLM object, so that should be
+#' checked first. If the argument is a FeatureSet object, it returns a
+#' FeatureSet object with only main probes remaining.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords manip
+#' @export getMainProbes
 getMainProbes <- function(input){
     if(is(input, "ExpressionSet")){
         pdinfo <- annotation(input)
@@ -486,7 +691,7 @@ getMainProbes <- function(input){
                                    "on featureSet.fsetid=core_mps.fsetid;"))
     dbDisconnect(con)
     if(is(input, "ExpressionSet")){
-        types <- types[match(featureNames(eset), types[,1]),]
+        types <- types[match(featureNames(input), types[,1]),]
         ind <- types[,2] %in% 1
         return(input[ind,])
     } else 

@@ -1,77 +1,74 @@
 \name{mirna2mrna}
 \alias{mirna2mrna}
-\title{
-  A function to map miRNA to mRNA.
-}
-\description{
-  This function is intended use when there are miRNA and mRNA data for
-  the same subjects, and the goal is to detect mRNAs that appear to be
-  targeted by the miRNA.
-}
+\title{A function to map miRNA to mRNA.}
 \usage{
-mirna2mrna(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger =
-TRUE, miRNAcol = NULL, mRNAcol = NULL, transType = "ensembl")
+  mirna2mrna(miRNAids, miRNAannot, mRNAids, orgPkg,
+    chipPkg, sanger = TRUE, miRNAcol = NULL,
+    mRNAcol = NULL, transType = "ensembl")
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{miRNAids}{
-    A character vector of miRNA IDs. Currently only supports Affymetrix platform.   
-}
-  \item{miRNAannot}{
-    Character. The filename (including path if not in working directory)
-    for the file containing miRNA to mRNA mappings. 
-}
-  \item{mRNAids}{
-    A character vector of mRNA IDs. Currently only supports Affymetrix platform.
-}
-  \item{orgPkg}{
-    Character. The Bioconductor organism package (e.g.,
-    org.Hs.eg.db) to be used for mapping.
-}
-  \item{chipPkg}{
-    Character. The Bioconductor chip-specific package (e.g.,
-    hgu133plus2.db) to be used for mapping.
-}
-  \item{sanger}{
-    Boolean. Is the miRNAannot file a Sanger miRBase targets file? These
-    can be downloaded from http://www.ebi.ac.uk/enright-srv/microcosm/cgi-bin/targets/v5/download.pl
-}
-  \item{miRNAcol}{
-    Numeric. If using a Sanger miRBase targets file, leave
-    \code{NULL}. Otherwise, use this to indicate which column of the
-    miRNAannot file contains miRNA IDs.
-}
-  \item{mRNAcol}{
-    Numeric. If using Sanger miRBase targets file, leave
-    \code{NULL}. Otherwise, use this to indicate which column of the
-    miRNAannot file contains mRNA IDs.
-}
-  \item{transType}{
-    Character. Designates the type of transcript ID for mRNA supplied by
-    the miRNAannot file. If using the Sanger miRBase files, this is
-    ensembl. Other choices include refseq and accnum.
-}
-}
-\details{
-  This function is intended to take a vector of miRNA IDs that are
-  significantly differentially expressed in a given experiment and then
-  map those IDs to putative mRNA transcripts that the miRNAs are
-  supposed to target. The mRNA transcript IDs are then mapped to
-  chip-specific probeset IDs, which are then subsetted to only include
-  those probesets that were also significantly differentially expressed.
+  \item{miRNAids}{A character vector of miRNA IDs.
+  Currently only supports Affymetrix platform.}
 
-  The output from this function is intended as input for \code{\link{makeHmap}}.
+  \item{miRNAannot}{Character. The filename (including path
+  if not in working directory) for the file containing
+  miRNA to mRNA mappings.}
+
+  \item{mRNAids}{A character vector of mRNA IDs. Currently
+  only supports Affymetrix platform.}
+
+  \item{orgPkg}{Character. The Bioconductor organism
+  package (e.g., org.Hs.eg.db) to be used for mapping.}
+
+  \item{chipPkg}{Character. The Bioconductor chip-specific
+  package (e.g., hgu133plus2.db) to be used for mapping.}
+
+  \item{sanger}{Boolean. Is the miRNAannot file a Sanger
+  miRBase targets file? These can be downloaded from
+  http://www.ebi.ac.uk/enright-srv/microcosm/cgi-bin/targets/v5/download.pl}
+
+  \item{miRNAcol}{Numeric. If using a Sanger miRBase
+  targets file, leave \code{NULL}. Otherwise, use this to
+  indicate which column of the miRNAannot file contains
+  miRNA IDs.}
+
+  \item{mRNAcol}{Numeric. If using Sanger miRBase targets
+  file, leave \code{NULL}. Otherwise, use this to indicate
+  which column of the miRNAannot file contains mRNA IDs.}
+
+  \item{transType}{Character. Designates the type of
+  transcript ID for mRNA supplied by the miRNAannot file.
+  If using the Sanger miRBase files, this is ensembl. Other
+  choices include refseq and accnum.}
 }
 \value{
-  A list with names that correspond to each significant miRNA, and the
-  mRNA probeset IDs that are targeted by that miRNA.
+  A list with names that correspond to each significant
+  miRNA, and the mRNA probeset IDs that are targeted by
+  that miRNA.
 }
+\description{
+  This function is intended use when there are miRNA and
+  mRNA data for the same subjects, and the goal is to
+  detect mRNAs that appear to be targeted by the miRNA.
+}
+\details{
+  This function is intended to take a vector of miRNA IDs
+  that are significantly differentially expressed in a
+  given experiment and then map those IDs to putative mRNA
+  transcripts that the miRNAs are supposed to target. The
+  mRNA transcript IDs are then mapped to chip-specific
+  probeset IDs, which are then subsetted to only include
+  those probesets that were also significantly
+  differentially expressed.
 
+  The output from this function is intended as input for
+  \code{\link{makeHmap}}.
+}
 \author{
   James W. MacDonald
 }
-
 \seealso{
   makeHmap
 }
-\keyword{manip }
+\keyword{manip}
+

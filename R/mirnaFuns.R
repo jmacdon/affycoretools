@@ -39,6 +39,52 @@ allToMat <- function(object){
     }
 }
 
+
+
+#' A function to map miRNA to mRNA.
+#' 
+#' This function is intended use when there are miRNA and mRNA data for the
+#' same subjects, and the goal is to detect mRNAs that appear to be targeted by
+#' the miRNA.
+#' 
+#' This function is intended to take a vector of miRNA IDs that are
+#' significantly differentially expressed in a given experiment and then map
+#' those IDs to putative mRNA transcripts that the miRNAs are supposed to
+#' target. The mRNA transcript IDs are then mapped to chip-specific probeset
+#' IDs, which are then subsetted to only include those probesets that were also
+#' significantly differentially expressed.
+#' 
+#' The output from this function is intended as input for
+#' \code{\link{makeHmap}}.
+#' 
+#' @param miRNAids A character vector of miRNA IDs. Currently only supports
+#' Affymetrix platform.
+#' @param miRNAannot Character. The filename (including path if not in working
+#' directory) for the file containing miRNA to mRNA mappings.
+#' @param mRNAids A character vector of mRNA IDs. Currently only supports
+#' Affymetrix platform.
+#' @param orgPkg Character. The Bioconductor organism package (e.g.,
+#' org.Hs.eg.db) to be used for mapping.
+#' @param chipPkg Character. The Bioconductor chip-specific package (e.g.,
+#' hgu133plus2.db) to be used for mapping.
+#' @param sanger Boolean. Is the miRNAannot file a Sanger miRBase targets file?
+#' These can be downloaded from
+#' http://www.ebi.ac.uk/enright-srv/microcosm/cgi-bin/targets/v5/download.pl
+#' @param miRNAcol Numeric. If using a Sanger miRBase targets file, leave
+#' \code{NULL}. Otherwise, use this to indicate which column of the miRNAannot
+#' file contains miRNA IDs.
+#' @param mRNAcol Numeric. If using Sanger miRBase targets file, leave
+#' \code{NULL}. Otherwise, use this to indicate which column of the miRNAannot
+#' file contains mRNA IDs.
+#' @param transType Character. Designates the type of transcript ID for mRNA
+#' supplied by the miRNAannot file. If using the Sanger miRBase files, this is
+#' ensembl. Other choices include refseq and accnum.
+#' @return A list with names that correspond to each significant miRNA, and the
+#' mRNA probeset IDs that are targeted by that miRNA.
+#' @author James W. MacDonald
+#' @seealso makeHmap
+#' @keywords manip
+#' @export mirna2mrna
 mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = TRUE,
                        miRNAcol = NULL, mRNAcol = NULL, transType = "ensembl"){
     transType <- match.arg(transType, c("ensembl","refseq","accnum"))
@@ -84,6 +130,61 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
     intprbs
 }
 
+
+
+#' A function to create a heatmap-like object or matrix of correlations between
+#' miRNA and mRNA data.
+#' 
+#' This function is intended for use when both miRNA and mRNA data are
+#' available for the same samples. In this situation it may be advantageous to
+#' compute correlations between the two RNA types, in order to detect mRNA
+#' transcripts that are targeted by miRNA.
+#' 
+#' As noted above, this function is intended to generate output from
+#' simultaneous analyses of miRNA and mRNA data for the same samples, the goal
+#' being either a heatmap like plot of correlations, or the data (or both).
+#' 
+#' If creating a plot, note that if the number of significant mRNA probes is
+#' large, the resulting heatmap will have many rows and will not plot correctly
+#' on the usual graphics device within R. In order to visualize, it is almost
+#' always better to output as a pdf. In addition, the dimensions of this pdf
+#' will have to be adjusted so the row names for the heatmap will be legible.
+#' As an example, a heatmap with 10 miRNA transcripts and 100 mRNA transcripts
+#' will likely need a pdf with a width argument of 6 and a height argument of
+#' 25 or 30. It may require some experimentation to get the correct arguments
+#' to the \code{pdf} function.
+#' 
+#' Also please note that this function by necessity outputs rectangular data.
+#' However, there will be many instances in which a given miRNA isn't thought
+#' to target a particular mRNA. Whenever this occurs, the heatmap will have a
+#' white cell, and the output data for that combination will be NA.
+#' 
+#' @param mRNAdat An \code{ExpressionSet}, \code{data.frame} or \code{matrix}
+#' of mRNA expression values. The row.names for these data should correspond to
+#' the manufacturer's probe ID. Currently, the only manufacturer supported is
+#' Affymetrix.
+#' @param miRNAdat An \code{ExpressionSet}, \code{data.frame} or \code{matrix}
+#' of mRNA expression values. The row.names for these data should correspond to
+#' the manufacturer's probe ID. Currently, the only manufacturer supported is
+#' Affymetrix.
+#' @param mRNAlst A \code{list} of mRNA probe IDs where the names of each list
+#' item are mirBase miRNA IDs. Usually this will be the output from
+#' \code{\link{mirna2mrna}}.
+#' @param mRNAvec A numeric vector used to subset or reorder the mRNA data, by
+#' column. If \code{NULL}, this will simply be 1:ncol(mRNAdat).
+#' @param miRNAvec A numeric vector used to subset or reorder the miRNA data,
+#' by column. If \code{NULL}, this will simply be 1:ncol(miRNAdat).
+#' @param chipPkg Character. The name of the chip-specific annotation package
+#' (e.g., "hgu133plus2.db").
+#' @param header Character. The plot title if a heatmap is output.
+#' @param plot Boolean. Should a heatmap be generated?
+#' @param out Boolean. Should the matrix of correlation coefficients be output?
+#' @return This function will output a numeric matrix if the 'out' argument is
+#' \code{TRUE}.
+#' @author James W. MacDonald
+#' @seealso mirna2mrna
+#' @keywords manip
+#' @export makeHmap
 makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL, chipPkg,
                      header, plot = TRUE, out = TRUE){
     mRNAdat <- allToMat(mRNAdat)

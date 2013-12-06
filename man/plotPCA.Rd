@@ -1,63 +1,89 @@
 \name{plotPCA}
 \alias{plotPCA}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{A Function to Make a PCA Plot from an ExpressionSet}
-\description{
- This function makes a PCA plot from an ExpressionSet or matrix
-}
 \usage{
-plotPCA(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL,
-y.coord = NULL, screeplot = FALSE, squarepca = FALSE, pch = NULL, col =
-NULL, pcs = c(1,2), legend = TRUE, main = "Principal Components Plot",
-plot3d = FALSE, outside = FALSE, \dots)
+  plotPCA(object, groups = NULL, groupnames = NULL,
+    addtext = NULL, x.coord = NULL, y.coord = NULL,
+    screeplot = FALSE, squarepca = FALSE, pch = NULL,
+    col = NULL, pcs = c(1, 2), legend = TRUE,
+    main = "Principal Components Plot", plot3d = FALSE,
+    outside = FALSE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{An \code{ExpressionSet}, \code{matrix} or \code{prcomp} object.}
-  \item{groups}{A numeric \code{vector} delineating group membership for
-    samples. Default is \code{NULL}, in which case default plotting symbols and
-    colors will be used.}
-  \item{groupnames}{A character \code{vector} describing the different
-    groups. Default is \code{NULL}, in which case the sample names will
-    be used.}
-  \item{addtext}{A character \code{vector} of additional text to be placed just
-    above the plotting symbol for each sample. This is helpful if there
-    are a lot of samples for identifying e.g., outliers.}
-  \item{x.coord}{Pass an x-coordinate if automatic legend placement fails}
-  \item{y.coord}{Pass a y-coordinate if automatic legend placement fails.}
-  \item{screeplot}{Boolean: Plot a \code{\link[stats]{screeplot}}
-    instead of a PCA plot? Defaults to \code{FALSE}.}
-  \item{squarepca}{Should the y-axis of the PCA plot be made comparable
-    to the x-axis? This may aid in interpretation of the PCA
-    plot. Defaults to \code{FALSE}.}
-  \item{pch}{A numeric \code{vector} indicating what plotting symbols to
-    use. Default is \code{NULL}, in which case default plotting symbols
-    will be used. Note that this argument will override the 'groups'
-    argument.}
-  \item{col}{A numeric or character \code{vector} indicating what color(s) to
-    use for the plotting symbols. Default is \code{NULL} in which case
-    default colors will be used. Note that this argument will override
-    the 'groups' argument.}
-  \item{pcs}{A character \code{vector} of length two (or three if plot3d
-    is \code{TRUE}), indicating which principal
-    components to plot. Defaults to the first two principal components.}
-  \item{legend}{Boolean. Should a legend be added to the plot? Defaults
-    to \code{TRUE}.}
-  \item{main}{A character \code{vector} for the plot title.}
-  \item{plot3d}{Boolean. If \code{TRUE}, then the PCA plot will be
-    rendered in 3D using the rgl package. Defaults to \code{FALSE}. Note
-    that the pcs argument should have a length of three in this case.}
-  \item{outside}{Boolean. If \code{TRUE} the legend will be placed
-    outside the plotting region, at the top right of the plot.}
-  \item{\dots}{Further arguments to be passed to \code{plot}. See the help page
-    for \code{plot} for further information.}
-}
+  \item{object}{An \code{ExpressionSet}, \code{matrix} or
+  \code{prcomp} object.}
 
-\value{
- This function returns nothing. It is called only for the side effect of
- producing a PCA plot or screeplot.
+  \item{groups}{A numeric \code{vector} delineating group
+  membership for samples. Default is \code{NULL}, in which
+  case default plotting symbols and colors will be used.}
+
+  \item{groupnames}{A character \code{vector} describing
+  the different groups. Default is \code{NULL}, in which
+  case the sample names will be used.}
+
+  \item{addtext}{A character \code{vector} of additional
+  text to be placed just above the plotting symbol for each
+  sample. This is helpful if there are a lot of samples for
+  identifying e.g., outliers.}
+
+  \item{x.coord}{Pass an x-coordinate if automatic legend
+  placement fails}
+
+  \item{y.coord}{Pass a y-coordinate if automatic legend
+  placement fails.}
+
+  \item{screeplot}{Boolean: Plot a
+  \code{\link[stats]{screeplot}} instead of a PCA plot?
+  Defaults to \code{FALSE}.}
+
+  \item{squarepca}{Should the y-axis of the PCA plot be
+  made comparable to the x-axis? This may aid in
+  interpretation of the PCA plot. Defaults to
+  \code{FALSE}.}
+
+  \item{pch}{A numeric \code{vector} indicating what
+  plotting symbols to use. Default is \code{NULL}, in which
+  case default plotting symbols will be used. Note that
+  this argument will override the 'groups' argument.}
+
+  \item{col}{A numeric or character \code{vector}
+  indicating what color(s) to use for the plotting symbols.
+  Default is \code{NULL} in which case default colors will
+  be used. Note that this argument will override the
+  'groups' argument.}
+
+  \item{pcs}{A character \code{vector} of length two (or
+  three if plot3d is \code{TRUE}), indicating which
+  principal components to plot. Defaults to the first two
+  principal components.}
+
+  \item{legend}{Boolean. Should a legend be added to the
+  plot? Defaults to \code{TRUE}.}
+
+  \item{main}{A character \code{vector} for the plot
+  title.}
+
+  \item{plot3d}{Boolean. If \code{TRUE}, then the PCA plot
+  will be rendered in 3D using the rgl package. Defaults to
+  \code{FALSE}. Note that the pcs argument should have a
+  length of three in this case.}
+
+  \item{outside}{Boolean. If \code{TRUE} the legend will be
+  placed outside the plotting region, at the top right of
+  the plot.}
+
+  \item{\dots}{Further arguments to be passed to
+  \code{plot}. See the help page for \code{plot} for
+  further information.}
 }
-\author{James W. MacDonald <jmacdon@u.washington.edu>}
+\value{
+  This function returns nothing. It is called only for the
+  side effect of producing a PCA plot or screeplot.
+}
+\description{
+  This function makes a PCA plot from an ExpressionSet or
+  matrix
+}
 \examples{
 library("affy")
 data(sample.ExpressionSet)
@@ -65,4 +91,8 @@ plotPCA(sample.ExpressionSet, groups =
  as.numeric(pData(sample.ExpressionSet)[,2]), groupnames =
  levels(pData(sample.ExpressionSet)[,2]))
 }
-\keyword{hplot}% at least one, from doc/KEYWORDS
+\author{
+  James W. MacDonald <jmacdon@u.washington.edu>
+}
+\keyword{hplot}
+
