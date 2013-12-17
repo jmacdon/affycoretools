@@ -605,6 +605,7 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 ##' useful for those who are using e.g., knitr or Sweave and want to be able to automatically insert an example dotplot
 ##' in the document to show clients what to expect.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
+##' @export makeImages
 makeImages <- function(df, eset, grp.factor, design, contrast, colind, repdir = "./reports", extraname = NULL){
     ## check that this is going to work
     eclass <- class(eset)[1]
