@@ -214,7 +214,7 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
     
     annotlst <- lapply(indices, function(x) if(sum(x) > 0) AnnotationDbi::select(get(annotation(eset)), as.character(featureNames(eset)[x]),
                                                                   c("ENTREZID","SYMBOL","GENENAME")) else NULL)
-    annotlst <- lapply(annotlst, function(x) x[!duplicated(x[,1]),]
+    annotlst <- lapply(annotlst, function(x) x[!duplicated(x[,1]),])
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
     
     
