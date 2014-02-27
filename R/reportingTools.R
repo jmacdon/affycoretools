@@ -214,6 +214,7 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
     
     annotlst <- lapply(indices, function(x) if(sum(x) > 0) AnnotationDbi::select(get(annotation(eset)), as.character(featureNames(eset)[x]),
                                                                   c("ENTREZID","SYMBOL","GENENAME")) else NULL)
+    annotlst <- lapply(annotlst, function(x) x[!duplicated(x[,1]),]
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
     
     
@@ -695,4 +696,73 @@ remove.axis.and.padding <- function(plot) {
     plot$ylab <- NULL
     return(plot)
 }
+##' A function to create an HTML table showing genes that gave rise to a significant GO term
+##'
+##' This is an internal function, not intended to be called by the end user. Documentation here for clarity.
+##' After running a GO analysis, it is advantageous to output a table listing those
+##' genes that gave rise to a significant GO term. This function creates the table, along with links to Netaffx
+##' (if the data are Affymetrix) and to the NCBI Gene database (if there are Entrez Gene IDs).
+##' @title Make Gene table from GO analysis results
+##' @param fit.table The output from \link[limma]{topTable}
+##' @param probe.sum.table The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats]{GOHyperGResults} object.
+##' @param go.id The GO ID of interest
+##' @param cont.name The contrast name.
+##' @param base.dir Character. Where should the HTML tables be generated? Defaults to NULL. 
+##' @param extraname Character. An extra name that can be used if the contrast name isn't descriptive enough.
+##' @param probecol The column name in the topTable object that contains probe IDs. Defaults to PROBEID.
+##' @param affy Boolean. Are the arrays from Affymetrix?
+##' @return Returns an \link[ReportingTools]{HTMLReportRef} object.
+##' @author Jim MacDonald
+makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.dir = NULL, extraname = NULL, 
+                        probecol = "PROBEID", affy = TRUE){
+    prbs <- probe.sum.table$ProbeSetID[as.logical(probe.sum.table$selected)]
+    out <- fit.table[fit.table[,probecol] %in% prbs, , drop = FALSE]
+    rep.dir <- gsub(" ", "_", cont.name)
+    if(!is.null(extraname)) rep.dir <- paste0(rep.dir, "/", gsub(" ", "_", extraname))
+    any.entrez <- grep("entrez", names(fit.table), ignore.case = TRUE)
+    if(length(any.entrez) > 0) names(fit.table)[any.entrez] <- "ENTREZID"
+    mdf <- c(if(affy) list(affyLinks), if(length(any.entrez) > 0) list(entrezLinks))
+    htab <- HTMLReport(go.id, paste0("Genes responsible for significance of ", go.id, " in contrast ", cont.name,
+                                         if(!is.null(extraname)) paste(",", extraname)),
+                       reportDirectory = rep.dir, basePath = base.dir)
+    publish(out, htab, if(length(mdf) > 0) .modifyDF = mdf)
+    finish(htab)
+    htab
+}
 
+
+##' This function is used to create HTML tables to present the results from a Gene Ontology (GO) analysis.
+##'
+##' After running a GO analysis, it is often useful to first present a table showing the set of significant GO terms
+##' for a given comparison, and then have links to a sub-table for each GO term that shows the genes that were responsible
+##' for the significance of that term. The first table can be generated using the \code{\link{GOstats::summary}} function, but
+##' it will not contain the links to the sub-table. The ReportingTools package has functionality to make these tables and sub-tables
+##' automatically, but the default is to include extra glyphs in the main table that are not that useful. 
+##' @title Create HTML tables for Gene Ontology (GO) analyses
+##' @param fit.table The output from \link[limma]{topTable}
+##' @param go.summary The output from running \link[GOstats]{summary} on a \link[GOstats]{GOHyperGResults}} object.
+##' @param probe.summary The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats]{GOHyperGResults} object.
+##' @param cont.name The contrast name.
+##' @param base.dir Character. Where should the HTML tables be generated? Defaults to GO_results.
+##' @param extraname Character. An extra name that can be used if the contrast name isn't descriptive enough.
+##' @param probecol  The column name in the topTable object that contains probe IDs. Defaults to PROBEID.
+##' @param affy Boolean. Are the arrays from Affymetrix?
+##' @return Returns an \link[ReportingTools]{HTMLReportRef} object, which can be used when creating an index page to link
+##' to the results.
+##' @export
+##' @author Jim MacDonald
+makeGoTable <- function(fit.table, go.summary, probe.summary, cont.name, base.dir = "GO_results",
+                        extraname = NULL, probecol = "PROBEID", affy = TRUE){
+    htablst <- lapply(seq_len(nrow(go.summary)), function(x) makeGoGeneTable(fit.table, probe.summary[[x]],
+                                                                             as.character(go.summary[x,1]),
+                                                                             cont.name, base.dir, extraname,
+                                                                             probecol, affy))
+    go.summary[,1] <- hwrite(as.character(go.summary[,1]), 
+                             link = sapply(htablst, function(x) gsub(paste0(base.dir, "/"), "", path(x))), table = FALSE)
+    short.name <- paste0(gsub(" ", "_", cont.name), if(!is.null(extraname)) paste0("_", gsub(" ", "_", extraname)))
+    long.name <- paste0(cont.name, if(!is.null(extraname)) paste(",", extraname))
+    htab <- HTMLReport(short.name, long.name, reportDirectory = base.dir, baseDir = ".")
+    publish(go.summary, htab, .modifyDF = goLinks)
+    finish(htab)
+    htab
+}
