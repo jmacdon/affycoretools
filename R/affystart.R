@@ -687,8 +687,8 @@ getMainProbes <- function(input){
     }
     require(pdinfo, character.only = TRUE)
     con <- db(get(pdinfo))
-    types <- dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
-                                   "on featureSet.fsetid=core_mps.fsetid;"))
+    types <- dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
+                                   "using(fsetid);"))
     dbDisconnect(con)
     if(is(input, "ExpressionSet")){
         types <- types[match(featureNames(input), types[,1]),]
