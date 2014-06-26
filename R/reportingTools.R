@@ -55,8 +55,8 @@ affyLinks <- function(df, ...){
 
 goLinks <- function(df, ...){
     df$Term <- hwrite(as.character(df$Term),
-                      link = paste0("http://www.godatabase.org/cgi-bin/amigo/go.cgi?view=details&search_constraint=terms&depth=0&query=",
-                      as.character(df$Term)), table = FALSE)
+                      link = paste0("http://amigo.geneontology.org/amigo/term/",
+                      as.character(df[,1])), table = FALSE)
     return(df)
 }
 
@@ -103,7 +103,6 @@ goLinks <- function(df, ...){
 #' @param contrast A contrasts matrix, produced either by hand, or by a call to
 #' \code{\link[limma]{makeContrasts}}
 #' @param design A design matrix.
-#' @param eset An \code{ExpressionSet} object.
 #' @param groups This argument is used when creating a legend for the resulting
 #' HTML pages. If NULL, the groups will be generated using the column names of
 #' the design matrix.
@@ -125,6 +124,11 @@ goLinks <- function(df, ...){
 #' of HTML locations. Defaults to "."
 #' @param reportDirectory A character string giving the location that the
 #' results will be written. Defaults to "./venns"
+#' @param affy Boolean; are these Affymetrix arrays, and do you want hyperlinks
+#' for each probeset to the Affy website to be generated for the resulting HTML tables?
+#' @param probecol If the "affy" argument is \code{TRUE}, what is the column header
+#' for the Affymetrix probeset IDs? Defaults to "PROBEID", which is the default if
+#' the data are annotated using a Bioconductor annotation package.
 #' @param ... Used to pass other arguments to \code{probes2table}, in
 #' particular, to change the argument to \code{anncols} which controls the
 #' columns of hyperlinks to online databases (e.g., Entrez Gene, etc.). See
@@ -139,9 +143,9 @@ goLinks <- function(df, ...){
 #' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
 #' @keywords manip
 #' @export vennSelect2
-vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL, p.value = 0.05,
+vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.value = 0.05,
                         lfc = 0, method = "same", adj.meth = "BH", titleadd = NULL, fileadd = NULL, 
-                        baseUrl = ".",  reportDirectory = "./venns", ...){
+                        baseUrl = ".",  reportDirectory = "./venns", affy = TRUE, probecol = "PROBEID", ...){
 
     ## design is a design matrix from limma
     ## contrast is a conrast matrix
@@ -204,21 +208,34 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
     
     vennout <- lapply(seq(along = indices), function(x) HTMLReport(gsub(" ", "_", name[x]), titles[x],
                           baseUrl = baseUrl,reportDirectory = reportDirectory))
-    require(annotation(eset), character.only = TRUE, quietly = TRUE)
+    ## require(annotation(eset), character.only = TRUE, quietly = TRUE)
     ps <- apply(fit$p.value, 2, p.adjust, method = adj.meth)
     colnames(ps) <- paste0(colnames(ps), ".p.value")
     coefs <- fit$coefficients
     colnames(coefs) <- paste0(colnames(coefs), ".logFC")
     csvlst <- lapply(seq(along = indices), function(x) cbind(coefs[indices[[x]], coefind[[x]], drop = FALSE],
                          ps[indices[[x]], coefind[[x]], drop = FALSE]))
-    
-    annotlst <- lapply(indices, function(x) if(sum(x) > 0) AnnotationDbi::select(get(annotation(eset)), as.character(featureNames(eset)[x]),
-                                                                  c("ENTREZID","SYMBOL","GENENAME")) else NULL)
-    annotlst <- lapply(annotlst, function(x) x[!duplicated(x[,1]),])
+    ## previously we used the ExpressionSet only to figure out the annotation source.
+    ## instead of that, we now rely upon the MArrayLM object containing the annotations we want to use
+    rn <- row.names(fit$coef)
+    if(is.null(rn)) rn <- seq_len(nrow(fit$coef))
+    if(is.null(fit$genes)){
+        warning(paste("\nThere are no annotations in the MArrayLM object, using",
+                      if(is.null(row.names(fit$coef))) "row indices" else "row names",
+                      "from the MArrayLM object instead"))
+        annotlst <- lapply(indices, function(x) if(sum(x) > 0) data.frame(ID = rn[x]))
+    } else {
+        annotlst <- lapply(indices, function(x) if(sum(x) > 0) fit$genes[x,])
+    }
+                       
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
+    mdf <- lapply(csvlst, fixHeaderAndGo, affy = affy, probecol = probecol)[[1]]
     
+    if(length(mdf) > 0)
+        lapply(ind, function(x) publish(csvlst[[x]], vennout[[x]],  .modifyDF = mdf))
+    else
+        lapply(ind, function(x) publish(csvlst[[x]], vennout[[x]]))
     
-    lapply(ind, function(x) publish(csvlst[[x]], vennout[[x]], .modifyDF = list(entrezLinks, affyLinks)))
     vennpaths <- gsub("html$", "txt", sapply(vennout, path))
     lapply(ind, function(x) write.table(csvlst[[x]], vennpaths[x],
                                         sep = "\t", quote = FALSE, row.names = FALSE, na = ""))
@@ -286,13 +303,16 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
 #' 
 #' Unlike \code{vennSelect}, this function automatically creates both HTML and
 #' CSV output files.
+#'
+#' Also please note that this function relys on annotation information contained in
+#' the "genes" slot of the "fit" object. If there are no annotation data, then
+#' just statistics will be output in the resulting HTML tables.
 #' 
 #' @param fit An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
 #' \code{\link[limma:ebayes]{eBayes}}.
 #' @param contrast A contrasts matrix, produced either by hand, or by a call to
 #' \code{\link[limma]{makeContrasts}}
 #' @param design A design matrix.
-#' @param eset An \code{ExpressionSet} object.
 #' @param groups This argument is used when creating a legend for the resulting
 #' HTML pages. If NULL, the groups will be generated using the column names of
 #' the design matrix. In general it is best to leave this NULL.
@@ -315,6 +335,11 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
 #' of HTML locations. Defaults to "."
 #' @param reportDirectory A character string giving the location that the
 #' results will be written. Defaults to "./venns"
+#' @param affy Boolean. Are these Affymetrix data, and should hyperlinks to the affy website
+#' be generated in the HTML tables?
+#' @param probecol This argument is used in concert with the preceding argument. If these are Affymetrix data
+#' , then specify the column header in the \code{\link[limma:marraylm]{MArrayLM}} object that contains the Affymetrix IDs. Defaults to
+#' "PROBEID", which is the expected result if the data are annotated using a BioC annotation package.
 #' @param ... Used to pass other arguments to \code{probes2table}, in
 #' particular, to change the argument to \code{anncols} which controls the
 #' columns of hyperlinks to online databases (e.g., Entrez Gene, etc.). See
@@ -341,28 +366,30 @@ vennSelect2 <- function(fit, contrast, design, eset, groups = NULL, cols = NULL,
 #'     ## two Venn diagrams - a 3-way Venn with the first three contrasts
 #'     ## and a 2-way Venn with the last two contrasts
 #'     collist <- list(1:3,4:5)
-#'     venn <- makeVenn(fit2, contrast, design, eset, collist = collist)
+#'     venn <- makeVenn(fit2, contrast, design, collist = collist)
 #'     vennPage(venn, "index.html", "Venn diagrams")
 #'     }
 #' 
 #' @export makeVenn
-makeVenn <- function(fit, contrast, design, eset, groups = NULL, collist = NULL,
+makeVenn <- function(fit, contrast, design, groups = NULL, collist = NULL,
                      p.value = 0.05, lfc = 0, method = "both", adj.meth = "BH",
                      titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory = "./venns",
-                     ...){
+                     affy = TRUE, probecol = "PROBEID", ...){
     if(is.null(collist))
-        vennlst <- vennSelect2(fit = fit, contrast = contrast, design = design, eset = eset,
+        vennlst <- vennSelect2(fit = fit, contrast = contrast, design = design,
                                groups = groups, cols = seq_len(ncol(fit$coefficients)), p.value = p.value, lfc = lfc,
                                method = method, adj.meth = adj.meth, titleadd = titleadd,
                                fileadd = fileadd, baseUrl = baseUrl, 
-                               reportDirectory = paste0(reportDirectory, "/venn"), ...)
+                               reportDirectory = paste0(reportDirectory, "/venn"),
+                               affy = affy, probecol = probecol, ...)
     else
         vennlst <- lapply(seq(along = collist), function(x) 
-                          vennSelect2(fit = fit, contrast = contrast, design = design, eset = eset,
+                          vennSelect2(fit = fit, contrast = contrast, design = design, 
                                       groups = groups, cols = collist[[x]], p.value = p.value, lfc = lfc,
                                       method = method, adj.meth = adj.meth, titleadd = titleadd,
                                       fileadd = fileadd, baseUrl = baseUrl, 
-                                      reportDirectory = paste0(reportDirectory, "/venn", x), ...))
+                                      reportDirectory = paste0(reportDirectory, "/venn", x),
+                                      affy = affy, probecol = probecol, ...))
     vennlst
 }
 
@@ -429,6 +456,7 @@ makeVenn <- function(fit, contrast, design, eset, groups = NULL, collist = NULL,
 #'     }
 #' 
 #' @export vennPage
+
 vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
                      baseUrl = ".", reportDirectory = NULL, ...){
     if(is.null(reportDirectory)){
@@ -610,6 +638,12 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 makeImages <- function(df, eset, grp.factor, design, contrast, colind, repdir = "./reports", extraname = NULL){
     ## check that this is going to work
     eclass <- class(eset)[1]
+    addtrailingslash <- function(path){
+        tmp <- strsplit(repdir, "")[[1]]
+        if(!tmp[length(tmp)] %in% "/") path <- paste0(path, "/")
+        path
+    }
+    repdir <- addtrailingslash(repdir)
     rn <- switch(eclass,
                  ExpressionSet = featureNames(eset),
                  matrix = row.names(eset),
@@ -621,15 +655,16 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, repdir = 
     if(!all(row.names(df) %in% rn))
         stop(paste0("The row.names of your input data.frame do not match up with the data in your", eclass, ".",
                     " You need to fix that before proceeding!\n"), call. = FALSE)
-    figure.directory <- paste0("reports/", gsub(" ", "_", colnames(contrast)[colind]))
+    figure.directory <- paste0(repdir, gsub(" ", "_", colnames(contrast)[colind]))
     if(!is.null(extraname)) figure.directory <- paste0(figure.directory, extraname)
-    dir.create(figure.directory)
+    dir.create(figure.directory, recursive = TRUE)
     ind <- apply(design[,contrast[,colind] != 0], 1, sum) > 0
     grp.factor <- factor(grp.factor[ind])
     eset <- eset[,ind]
     colnames(df)[colnames(df) == "SYMBOL"] <- "Symbol"
     makeGenePlots(df, eset, grp.factor, figure.directory)
-    figure.directory <- gsub("reports/", "", figure.directory)
+   
+    figure.directory <- gsub(repdir, "", figure.directory)
     mini.image <- file.path(figure.directory, paste("mini", 
                                                    rownames(df), "png", sep = "."))
     pdf.image <- file.path(figure.directory, paste("boxplot", 
@@ -711,7 +746,7 @@ remove.axis.and.padding <- function(plot) {
 ##' @param extraname Character. An extra name that can be used if the contrast name isn't descriptive enough.
 ##' @param probecol The column name in the topTable object that contains probe IDs. Defaults to PROBEID.
 ##' @param affy Boolean. Are the arrays from Affymetrix?
-##' @return Returns an \link[ReportingTools]{HTMLReportRef} object.
+##' @return Returns an \link[ReportingTools:HTMLReportRef-class]{HTMLReportRef} object.
 ##' @author Jim MacDonald
 makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.dir = NULL, extraname = NULL, 
                         probecol = "PROBEID", affy = TRUE){
@@ -719,9 +754,7 @@ makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.d
     out <- fit.table[fit.table[,probecol] %in% prbs, , drop = FALSE]
     rep.dir <- gsub(" ", "_", cont.name)
     if(!is.null(extraname)) rep.dir <- paste0(rep.dir, "/", gsub(" ", "_", extraname))
-    any.entrez <- grep("entrez", names(fit.table), ignore.case = TRUE)
-    if(length(any.entrez) > 0) names(fit.table)[any.entrez] <- "ENTREZID"
-    mdf <- c(if(affy) list(affyLinks), if(length(any.entrez) > 0) list(entrezLinks))
+    mdf <- fixHeaderAndGo(fit.table, affy = affy, probecol = probecol)
     htab <- HTMLReport(go.id, paste0("Genes responsible for significance of ", go.id, " in contrast ", cont.name,
                                          if(!is.null(extraname)) paste(",", extraname)),
                        reportDirectory = rep.dir, basePath = base.dir)
@@ -729,7 +762,38 @@ makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.d
     finish(htab)
     htab
 }
-
+##' Internal function used to automatically test for columns that can be converted to links
+##'
+##' This is an internal function designed to test for the presence of Affymetrix Probeset IDs or
+##' Entrez Gene IDs, and if found, generate a list that can be passed to the ReportingTools publish
+##' function in order to generate hyperlinks. The underlying assumption is that the data will have been
+##' annotated using a Bioconductor annotation package, and thus Affy probeset IDs will have a column header
+##' "PROBEID", and Entrez Gene IDs will have a header "ENTREZID" (or any combination of upper and lowercase letters).
+##' @title Fix data.frame header for use with ReportingTools
+##' @param df A data.frame
+##' @param affy Boolean; does the data.frame contain Affymetrix probeset IDs?
+##' @param probecol Character. The column header containing Affymetrix probeset IDs. Defaults to "PROBEID".
+##' @return List of functions to be passed to \code
+##' @author Jim MacDonald
+fixHeaderAndGo <- function(df, affy = TRUE, probecol = "PROBEID"){
+     any.entrez <- grep("entrezid", names(df), ignore.case = TRUE)
+     if(length(any.entrez) > 0){
+         names(df)[any.entrez] <- "ENTREZID"
+         any.entrez <- TRUE
+     }
+     if(affy){
+         any.affy <- grep(probecol, names(df), ignore.case = TRUE)
+         if(length(any.affy) > 0) 
+             names(df)[any.affy] <- "PROBEID"
+         else
+             stop(paste("\n\nFailed trying to generate links to the Affymetrix",
+                        "website. If these are not Affy data, please set affy = FALSE",
+                        "otherwise set the probecol argument to match the column",
+                        "containing the Affymetrix Probeset IDs.\n"), call. = FALSE)
+     }
+     mdf <- list(affyLinks, entrezLinks)[c(affy, any.entrez)]
+     mdf
+ }
 
 ##' This function is used to create HTML tables to present the results from a Gene Ontology (GO) analysis.
 ##'
@@ -740,17 +804,18 @@ makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.d
 ##' automatically, but the default is to include extra glyphs in the main table that are not that useful. 
 ##' @title Create HTML tables for Gene Ontology (GO) analyses
 ##' @param fit.table The output from \link[limma]{topTable}
-##' @param go.summary The output from running \link[GOstats]{summary} on a \link[GOstats]{GOHyperGResults}} object.
-##' @param probe.summary The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats]{GOHyperGResults} object.
+##' @param go.summary The output from running \code{summary} on a \link[GOstats:GOHyperGResult-class]{GOHyperGResults} object.
+##' @param probe.summary The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats:GOHyperGResult-class]{GOHyperGResults} object.
 ##' @param cont.name The contrast name.
 ##' @param base.dir Character. Where should the HTML tables be generated? Defaults to GO_results.
 ##' @param extraname Character. An extra name that can be used if the contrast name isn't descriptive enough.
 ##' @param probecol  The column name in the topTable object that contains probe IDs. Defaults to PROBEID.
 ##' @param affy Boolean. Are the arrays from Affymetrix?
-##' @return Returns an \link[ReportingTools]{HTMLReportRef} object, which can be used when creating an index page to link
+##' @return Returns an \link[ReportingTools:HTMLReportRef-class]{HTMLReportRef} object, which can be used when creating an index page to link
 ##' to the results.
 ##' @export
 ##' @author Jim MacDonald
+
 makeGoTable <- function(fit.table, go.summary, probe.summary, cont.name, base.dir = "GO_results",
                         extraname = NULL, probecol = "PROBEID", affy = TRUE){
     htablst <- lapply(seq_len(nrow(go.summary)), function(x) makeGoGeneTable(fit.table, probe.summary[[x]],

@@ -156,7 +156,7 @@ dataAndHeatmapPage <- function(eset, fit, ind, columns = NULL, annot = NULL, fna
         d.f <- data.frame(Probesets = prbs,
                           do.call("cbind", otherdata),
                           if(is(eset, "ExpressionSet")) exprs(eset)[ind,columns] else eset[ind,columns])
-        print(xtable(d.f, caption = title), file = fnhtml, type = "html", include.rownames = FALSE)
+        print(xtable(d.f, caption = title), file = paste0(fname, ".html"), type = "html", include.rownames = FALSE)
     }
     target <- HTMLInitFile(".", fnhtml, Title = paste(title, "heatmap"))
     cat(paste("\n <h>", paste(title, "heatmap"), "</h>\n<br><br><br>", sep = ""), file = target, append = TRUE)

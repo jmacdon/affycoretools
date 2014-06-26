@@ -2,7 +2,7 @@ Package: affycoretools
 Date: 2008-12-15
 Title: Functions useful for those doing repetitive analyses
     with Affymetrix GeneChips.
-Version: 1.37.2
+Version: 1.35.10
 Author: James W. MacDonald
 Description: Various wrapper functions that have been written to
     streamline the more common analyses that a core Biostatistician
@@ -38,18 +38,3 @@ Suggests:
     knitr
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression
 VignetteBuilder: knitr
-Collate:
-    'affystart.R'
-    'biomartfuns.R'
-    'foldFilt.R'
-    'geneSetTables.R'
-    'getfldfil.R'
-    'hyperGtable.R'
-    'limma2annaffy.R'
-    'mirnaFuns.R'
-    'plotma.R'
-    'probes2table.R'
-    'reportingTools.R'
-    'vennSelect.R'
-    'zzz.R'
-    'affycoretools.R'
