@@ -419,7 +419,7 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
 ##     symb <- symb[!duplicated(symb$SYMBOL),]
 ##     eset <- eset[as.character(symb$PROBEID),]
 ##     fit <- fit[as.character(symb$PROBEID),]
-##     setlst <- lapply(sets, function(x) symbols2indices(get(x), as.character(symb$SYMBOL)))
+##     setlst <- lapply(sets, function(x) ids2indices(get(x), as.character(symb$SYMBOL)))
 ##     romerlst <- lapply(seq_len(ncol(contrast)), function(x)
 ##                        lapply(setlst, romer, y = exprs(eset), design = design, contrast = contrast[,x],
 ##                               if(!is.null(wts)) array.weights = wts))
@@ -500,7 +500,7 @@ runRomer <- function(setloc, annot = NULL, eset, design = NULL, contrast = NULL,
     symb <- symb[!duplicated(symb$SYMBOL),]
     eset <- eset[as.character(symb$PROBEID),]
     fit <- fit[as.character(symb$PROBEID),]
-    setlst <- lapply(broad, function(x) symbols2indices(x, as.character(symb$SYMBOL)))
+    setlst <- lapply(broad, function(x) ids2indices(x, as.character(symb$SYMBOL)))
     names(setlst) <- names(broad)
     romerlst <- lapply(seq_len(ncol(contrast)), function(x)
                        lapply(setlst, romer, y = exprs(eset), design = design, contrast = contrast[,x],

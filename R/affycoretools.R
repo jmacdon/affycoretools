@@ -30,7 +30,7 @@
 #' @importFrom utils write.table
 #' @importFrom GO.db GOTERM
 #' @importFrom biomaRt getBM listAttributes listFilters useMart
-#' @importFrom limma topTable vennCounts decideTests romer symbols2indices vennDiagram
+#' @importFrom limma topTable vennCounts decideTests romer ids2indices vennDiagram
 #' @importFrom GOstats probeSetSummary
 #' @importFrom annotate htmlpage getEG
 #' @importFrom genefilter genefilter filterfun kOverA pOverA cv
