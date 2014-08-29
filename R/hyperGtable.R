@@ -210,6 +210,8 @@ hyperG2annaffy <- function(probids, lib, eset, fit = NULL, subset = NULL, comp =
 hyperGoutput <- function(hyptObj, eset, pvalue, categorySize, sigProbesets, fit = NULL,
                          subset = NULL, comp = 1, output = c("significant", "all", "split"),
                          statistics = c("tstat","pval","FC"), html = TRUE, text = TRUE, ...){
+  .Deprecated(new = "makeGoTable", msg = paste("This function is being deprecated in lieu of",
+                                   "makeGoTable, which uses ReportingTools to create output."))
   require(paste(annotation(hyptObj), "db", sep = "."), character.only = TRUE, quietly = TRUE)
   if (!is(hyptObj, "GOHyperGResult")) 
     stop("result must be a GOHyperGResult instance (or subclass)")

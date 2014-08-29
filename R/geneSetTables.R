@@ -26,12 +26,9 @@
 #' \code{NULL}, the sampleNames will be used.
 #' @param col A vector of colors to use for the heatmap. If \code{NULL}, the
 #' \code{\link{bluered}} function will be used.
-#' @param annot Character. The name of the array annotation package to use to
-#' convert probeset IDs to gene symbols. If \code{NULL}, either the probeset
-#' IDs will be used, or the input from the 'nam' argument below will be used.
-#' @param nam Character. A vector of row.names to use for the heatmap. If
-#' \code{NULL}, and the above 'annot' argument is \code{NULL} as well, probeset
-#' IDs will be used.
+#' @param annot A matrix or data.frame containing gene symbols to annotate the heatmap.
+#' This will normally be extracted automatically from the 'fit' object passed to geneSetPage.
+#' If there is no annotation in the fit object, then the probe IDs will be used instead.
 #' @param scale.row Boolean. Should the data be scaled by row? Defaults to
 #' \code{FALSE}.
 #' @param key Boolean. Should a key be produced that shows the numeric range
@@ -44,18 +41,11 @@
 #' heatmaps in 'png' format.
 #' @author James W. MacDonald <jmacdon@@u.washington.edu>
 gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col = NULL,
-                      annot = NULL, nam = NULL, scale.row = FALSE, key = TRUE, bline = NULL){
-    if(!is.null(annot) && !is.null(nam))
-        stop(paste("You can specify an annotation package (annot argument) to use for row names\n",
-                   "or directly specify the row names (nam argument), but not both!\n\n", sep = ""),
-             call. = FALSE)
+                      annot = NULL, scale.row = FALSE, key = TRUE, bline = NULL){
     if(!is.null(bline) && scale.row)
         stop(paste("The scale.row and bline arguments are mutually exclusive - you can either\n",
                    "scale each row of the heatmap, or you can convert to fold changes, but not both.\n\n"),
              call. = FALSE)
-    if(!is.null(annot))
-        require(annot, quietly = TRUE, character.only = TRUE)
-    
     if(is.null(columns)) columns <- 1:dim(eset)[2]
     if(is(eset, "ExpressionSet"))
         mat <- exprs(eset)[ind,columns, drop = FALSE]
@@ -64,10 +54,11 @@ gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col 
     if(nrow(mat) < 2) return(NULL)
     if(!is.null(colnames)) colnames(mat) <- colnames
     if(!is.null(annot)){
-        rn <- sapply(AnnotationDbi::mget(row.names(mat), get(paste(sub("\\.db", "", annot),
-                                                                   "SYMBOL", sep = ""))), "[", 1)
-        rn <- ifelse(is.na(rn), row.names(mat), rn)
-        row.names(mat) <- rn
+        if("SYMBOL" %in% toupper(colnames(annot))){
+            rn <- annot[,grep("symbol", colnames(annot), ignore.case = TRUE)]
+            rn <- ifelse(is.na(rn), row.names(mat), rn)
+            row.names(mat) <- rn
+        }
     }
     ## fragile - there is no assurance that the order of the matrix matches the names supplied!
     if(!is.null(nam)) row.names(mat) <- nam
@@ -124,8 +115,6 @@ gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col 
 #' @param columns Numeric vector indicating which columns of the
 #' \code{\link{ExpressionSet}} to use. If \code{NULL}, all columns will be
 #' used.
-#' @param annot Character. The name of the annotation package for the array
-#' used. If \code{NULL}, data will be output without any additional annotation.
 #' @param fname The filename of the resulting output, without the 'html' file
 #' extension.
 #' @param heatmap Character. The filename of the heatmap to append to the
@@ -135,35 +124,44 @@ gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col 
 #' bottom of the HTML page.
 #' @param fitind Numeric. Which column of the \code{MArrayLM} object to use for
 #' output in the HTML table.
+#' @param affy Boolean. Are these Affymetrix arrays? If \code{TRUE}, then links
+#' will be generated to netaffx for the probeset IDs.
+#' @param \dots Included to allow arbitrary commands to be passed to lower level functions.
 #' @author James W. MacDonald
-dataAndHeatmapPage <- function(eset, fit, ind, columns = NULL, annot = NULL, fname, heatmap, title,
-                               key = TRUE, fitind = NULL){
+dataAndHeatmapPage <- function(eset, fit, ind, columns = NULL, fname, heatmap, title,
+                               key = TRUE, fitind = NULL, affy = TRUE, ...){
     fnhtml <- paste(fname, "_heatmap", sep = "")
     prbs <- featureNames(eset)[ind]
     if(is.null(columns)) columns <- 1:dim(eset)[2]
     if(is.null(fitind)) fitind <- 1:ncol(fit$t)
-    otherdata <- list(t.statistic = fit$t[ind,fitind],
+    otherdata <- data.frame(t.statistic = fit$t[ind,fitind],
                       p.value = fit$p.value[ind,fitind],
                       fold = fit$coefficients[ind,fitind])
     ind2 <- order(otherdata$p.value)
-    otherdata <- lapply(otherdata, function(x) x[ind2])
+    otherdata <- otherdata[ind2,]
     prbs <- prbs[ind2]
-    if(!is.null(annot)){
-        probes2table(eset = eset[,columns], probids = prbs, lib = annot,
-                     otherdata = otherdata, filename = fname, title = title,
-                     anncols = annaffy::aaf.handler()[c(1:3,6,7,9)])
-    }else{
-        d.f <- data.frame(Probesets = prbs,
-                          do.call("cbind", otherdata),
-                          if(is(eset, "ExpressionSet")) exprs(eset)[ind,columns] else eset[ind,columns])
-        print(xtable(d.f, caption = title), file = paste0(fname, ".html"), type = "html", include.rownames = FALSE)
+    ## Here we just rely on any annotations that exist in the MArrayLM object
+    rn <- row.names(fit$coef)
+    if(is.null(rn)) rn <- seq_len(nrow(fit$coef))
+    if(is.null(fit$genes)){
+        warning(paste("\nThere are no annotations in the MArrayLM object, using",
+                      if(is.null(row.names(fit$coef))) "row indices" else "row names",
+                      "from the MArrayLM object instead"))
+        annot <- data.frame(ID = rn[ind])
+    } else {
+        annot <- fit$genes[ind,]
     }
-    target <- HTMLInitFile(".", fnhtml, Title = paste(title, "heatmap"))
-    cat(paste("\n <h>", paste(title, "heatmap"), "</h>\n<br><br><br>", sep = ""), file = target, append = TRUE)
-    if(key) HTMLInsertGraph(sub("\\.png", "_key.png", heatmap), caption = "Heatmap key",
-                            Align = "left", WidthHTML = 300, HeightHTML = 150, file = target)
-    HTMLInsertGraph(heatmap, file = target, WidthHTML = NULL)
-    return(ind[ind2])
+    d.f <- cbind(annot, otherdata)
+    d.f <- fixHeaderAndGo(d.f, affy = affy, ...)
+    tab <- HTMLReport(fname, title)
+    publish(d.f$df, tab, if(length(d.f$mdf) > 0) .modifyDF = d.f$mdf)
+    finish(tab)
+    page <- openPage(fnhtml, title = paste(title, "heatmap"))
+    if (key) hwriteImage(sub("\\.png", "_key.png", heatmap), center = FALSE,
+                         width = 300, height = 150, page = page)
+    hwriteImage(heatmap, page)
+    closePage(page)
+    return(list(ind = ind[ind2], annot = annot))
 }
 
 
@@ -202,18 +200,14 @@ dataAndHeatmapPage <- function(eset, fit, ind, columns = NULL, annot = NULL, fna
 #' @param col A vector of colors for the heatmap. Defaults to
 #' \code{\link{bluered}}.
 #' @param caption Caption to put at the top of the HTML page.
-#' @param annot Character. The name of the annotation package for the arrray
-#' used. If \code{NULL}, the row names of the heatmap will be the probeset IDs
-#' unless the \sQuote{nam} argument below is used.
-#' @param nam Character. The row names for the resulting heatmap. If
-#' \code{NULL} and no \sQuote{annot} argument is used, the probeset IDs will be
-#' used for the row names.
 #' @param fitind Numeric. The columns of the \code{MArrayLM} object to use for
 #' the individual HTML tables.
 #' @param bline Defaults to \code{NULL}. Otherwise, a numeric vector indicating
 #' which columns of the data are the baseline samples. The data used for the
 #' heatmap will be centered by subtracting the mean of these columns from all
 #' data.
+#' @param affy Boolean; are these Affymetrix arrays? If \code{TRUE}, the Affymetrix
+#' probeset IDs will contain links to the netaffx site.
 #' @param \dots Allows arguments to be passed to lower-level functions. See
 #' \code{dataAndHeatmapPage} and \code{gsHeatmap} for available arguments.
 #' @return Nothing is returned. Called only for the side effect of creating
@@ -221,7 +215,7 @@ dataAndHeatmapPage <- function(eset, fit, ind, columns = NULL, annot = NULL, fna
 #' @author James W. MacDonald <jmacdon@@u.washington.edu>
 geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = ".", subdir = ".",
                         columns = NULL, colnames = NULL, col = NULL, caption = NULL,
-                        annot = NULL, nam = NULL, fitind = NULL, bline = NULL, ...){
+                        fitind = NULL, bline = NULL, affy = TRUE,  ...){
     ## first go through results and select genesets with significant results
     ind <- apply(rslts[,c("Up","Down","Mixed")], 1, function(x) any(x < cutoff))
     rslts <- rslts[ind,]
@@ -232,27 +226,24 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
     genesets <- genesets[ind2]
     fun <- function(x, ...){
         fn <- if(subdir == ".") paste(dir, x, sep = "/") else paste(dir, subdir, x, sep = "/")
-        ind2 <- dataAndHeatmapPage(eset = eset, fit = fit, ind = genesets[[x]], columns = columns,
-                                   annot = annot, fname = fn,
-                                   heatmap = paste(x, "png", sep = "."),
+        out <- dataAndHeatmapPage(eset = eset, fit = fit, ind = genesets[[x]], columns = columns,
+                                   fname = fn, heatmap = paste(x, "png", sep = "."),
                                    title = paste(x, "geneset,", if(subdir != ".") paste(subdir, "contrast")),
-                                   fitind = fitind)
-        gsHeatmap(eset = eset, ind = ind2, filename = paste(fn, ".png", sep = ""),
+                                   fitind = fitind, affy = affy, ...)
+        gsHeatmap(eset = eset, ind = out$ind, filename = paste(fn, ".png", sep = ""),
                   columns = columns, colnames = colnames, col = col,
-                  annot = annot, nam = nam, bline = bline, ...)
+                  annot = out$annot, bline = bline, ...)
         
         return(if(subdir == ".") paste(x, "html", sep = ".") else paste(subdir, "/", x, ".html", sep = ""))
     }
     fnames <- lapply(names(genesets), fun)
-    links <- paste("<a href=\"", fnames, "\">Data table</a>", sep = "")
-    hlinks <- paste("<a href=\"", gsub("\\.html", "_heatmap.html", fnames), "\">Heatmap</a>", sep = "")
-    cat("<script src=\"../sorttable.js\"></script>\n\n", file = paste(dir, file, sep = "/"))
-    d.f <- cbind(names(genesets), rslts, links, hlinks)
-    colnames(d.f) <- c("Genesets", colnames(rslts), "Data","Heatmaps")
-    print(xtable(d.f, caption = caption, digits = rep(c(0,3,0), c(3,3,2))),
-          caption.placement = "top", type = "html", file = paste(dir, file, sep = "/"),
-          sanitize.text.function = function(x) x,
-          include.rownames = FALSE, append = TRUE, html.table.attributes = c("border=1 class=\"sortable\""))
+    links <- hwrite(rep("Data table", length(fnames)), link = fnames, table = FALSE)
+    hlinks <- hwrite(rep("Heatmap", length(fnames)), link = gsub("\\.html","_heatmap.html", fnames), table = FALSE)
+    d.f <- data.frame(Genesets = names(genesets), rslts, Data = links, Heatmaps = hlinks)
+    tab <- HTMLReport(sub("\\.html$", "", file), caption, dir)
+    publish(d.f, tab)
+    finish(tab)
+    tab
 }
 
 
@@ -302,10 +293,6 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
 #' Alternatively, this can be replaced with other text. Please note that this
 #' text should conform to HTML standards (e.g., will be pasted into the HTML
 #' document as-is, so should contain any required HTML markup).
-#' @param annot Character. The name of the annotation package for the array
-#' being used. This is used to add annotation data to the data tables for each
-#' gene set. If \code{NULL} (the default), the tables will only contain
-#' probeset IDs and statistics.
 #' @param baseline.hmap Boolean. If \code{TRUE}, then the resulting heatmaps
 #' will be centered by subtracting the mean of the baseline sample. As an
 #' example, in a contrast of treatment A - treatment B, the mean of the
@@ -313,6 +300,8 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
 #' the fold change between the A and B samples.
 #' @param file Character. The filename to output. Defaults to
 #' 'indexRomer.html'.
+#' @param affy Boolean. Are these Affymetrix arrays? if \code{TRUE}, then
+#' thre will be links generated in the HTML table to the netaffx site.
 #' @param \dots Arguments to be passed to lower-level functions. See
 #' \code{geneSetPage}, \code{dataAndHeatmapPage} and \code{gsHeatmap} for
 #' available arguments.
@@ -321,8 +310,8 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
 #' @author James W. MacDonald <jmacdon@@u.washington.edu>
 #' @export outputRomer
 outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast = NULL, changenames = TRUE,
-                        dir = "genesets", explanation = NULL, annot = NULL, baseline.hmap = TRUE,
-                        file = "indexRomer.html", ...){
+                        dir = "genesets", explanation = NULL, baseline.hmap = TRUE, 
+                        file = "indexRomer.html", affy = TRUE,  ...){
     if(!is.null(design) && !is.null(contrast)){
         ## here I am assuming that if design and contrast are used, it's because this is
         ## being run by runRomer, so I don't have to check that things line up. Otherwise caveat emptor
@@ -357,7 +346,7 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
                         dir = dir, subdir = topnam[[i]], fitind = i,
                         columns = cols[[i]], colnames = nams[[i]],
                         caption = paste("Results for", topnam[i], "contrast, using", nextnam[j], "geneset"),
-                        annot = annot, bline = bline[[i]], ...)
+                        bline = bline[[i]], affy = affy,...)
         }
     }
 
@@ -366,48 +355,31 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
                        ".html", sep = "")
     contrastlnks <- paste("<a href=\"", contlinks, "\">", rep(topnam, each = length(nextnam)),
                           "</a>", sep = "")
-    if(is.null(explanation)){
-        target <- HTMLInitFile(".", sub("\\.html", "", file),"html", BackGroundColor = "#FFFFFF",
-                               Title = "Gene Set Enrichment Analysis based on Broad Gene Sets")
-        cat('\n<script type="text/javascript" src="sorttable.js"></script>',file=target, append = TRUE)
-        cat('\n<style type="text/css">',file=target, append = TRUE)
-        cat("\n<!--",file=target, append = TRUE)
-        cat("\nbody,td,th {",file=target, append = TRUE)
-        cat("\n	font-size: small;",file=target, append = TRUE)
-        cat("\n	font-family: Verdana, Geneva, sans-serif;",file=target, append = TRUE)
-        cat("\n	color: #000",file=target, append = TRUE)
-            cat("\n  width:100px;", file = target, append = TRUE)
-        cat("\n}",file=target, append = TRUE)
-        cat("\n-->",file=target, append = TRUE)
-        cat("\n</style>",file=target, append = TRUE)
-        HTML(paste("<br>This analysis is based on several gene set collections from the",
-                   "<a href=\"http://www.broadinstitute.org/gsea/msigdb/index.jsp\">Broad Institute MSigDB:</a>.",
-                   "The basic idea is to look for sets of genes that appear to be either higher, lower, or",
-                   "mixed (some higher, some lower) in a ranked list of genes than would be expected by chance.",
-                   "<br> In other words, if we were to randomly select a group of genes, we would expect them",
-                   "to be uniformly distributed in a ranked set of genes (where the genes are ranked based on",
-                   "a particular comparison of samples). If the set of genes in aggregate is found to be closer",
-                   "to the top of the gene list, then we assume this didn't occur by chance, and assume that",
-                   "that set of genes is in aggregate up-regulated, and possibly perturbed in the comparison of",
-                   "interest.<br>The Broad Institute genesets are arranged in six collections, based on either",
-                   "genetic location (C1-Positional), being part of a pathway (C2-Curated), being in a motif",
-                   "based on conserved cis-regulatory motifs (C3-Motif), computational gene sets based on",
-                   "expression of cancer associated genes (C4-Computational), Gene Ontology terms",
-                   "(C5-GeneOntology), or oncogenic signatures from cancer microarray experiments (C6-Oncogenic).",
-                   "<br>The analysis is based on the romer function in the Bioconductor limma package.",
-                   "Note that the table below is sortable - simply click on any header to re-sort."),
-             file= target)
-        
-    }else{
-        target <- HTMLInitFile(".", sub("\\.html", "", file),"html", BackGroundColor = "#FFFFFF",
-                               Title = "Gene Set Enrichment Analysis based on Broad Gene Sets")
-        HTML(explanation, file = target)
-    }
+    indx <- HTMLReport(sub("\\.html", "", file), "Gene Set Enrichment Analysis based on Broad Gene Sets", reportDirectory = dir)
     d.f <- data.frame(Genesets = rep(nextnam, length(topnam)),
                       Contrasts = contrastlnks)
-    print(xtable(d.f), include.rownames = FALSE, type = "html", file = file,
-          sanitize.text.function = function(x) x, append = TRUE,
-          html.table.attributes = "border=1, class=sortable")
+    if(is.null(explanation))
+        explanation <- paste("This analysis is based on several gene set collections from the",
+                             hwrite("Broad Institute MSigDB;", link = "http://www.broadinstitute.org/gsea/msigdb/index.jsp"),
+                             "The basic idea is to look for sets of genes that appear to be either higher, lower, or",
+                             "mixed (some higher, some lower) in a ranked list of genes than would be expected by chance.",
+                             "In other words, if we were to randomly select a group of genes, we would expect them",
+                             "to be uniformly distributed in a ranked set of genes (where the genes are ranked based on",
+                             "a particular comparison of samples). If the set of genes in aggregate is found to be closer",
+                             "to the top of the gene list, then we assume this didn't occur by chance, and assume that",
+                             "that set of genes is in aggregate up-regulated, and possibly perturbed in the comparison of",
+                             "interest.<br>The Broad Institute genesets are arranged in six collections, based on either",
+                             "genetic location (C1-Positional), being part of a pathway (C2-Curated), being in a motif",
+                             "based on conserved cis-regulatory motifs (C3-Motif), computational gene sets based on",
+                             "expression of cancer associated genes (C4-Computational), Gene Ontology terms",
+                             "(C5-GeneOntology), or oncogenic signatures from cancer microarray experiments (C6-Oncogenic).",
+                             "The analysis is based on the romer function in the Bioconductor limma package.",
+                             "Note that the table below is sortable - simply click on any header to re-sort.")
+
+        
+    publish(hwrite(explanation, br = TRUE), indx)
+    publish(d.f, indx)
+    finish(indx)
 }
 
 ## runRomer <- function(setloc, annot = NULL, eset, design = NULL, contrast = NULL, fit, wts = NULL, save = TRUE,
@@ -481,6 +453,8 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
 #' example, in a contrast of treatment A - treatment B, the mean of the
 #' treatment B samples will be subtracted. The heatmap colors then represent
 #' the fold change between the A and B samples.
+#' @param affy Boolean; are these Affymetrix arrays? If \code{TRUE}, the output tables
+#' will contain links to the netaffx site.
 #' @param \dots Used to pass arguments to lower-level functions. See
 #' \code{outputRomer} \code{geneSetPage}, \code{dataAndHeatmapPage} and
 #' \code{gsHeatmap} for available arguments.
@@ -490,7 +464,7 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
 #' @author James W. MacDonald <jmacdon@@u.washington.edu>
 #' @export runRomer
 runRomer <- function(setloc, annot = NULL, eset, design = NULL, contrast = NULL, fit, wts = NULL, save = TRUE,
-                     baseline.hmap = TRUE, ...){
+                     baseline.hmap = TRUE, affy = TRUE, ...){
     require(annot, quietly = TRUE, character.only = TRUE)
     thefile <- paste(setloc, dir(setloc, "Rdata$"), sep = "/")
     if(!file.exists(thefile)) stop(paste("Ensure that the Broad dataset exists in", thefile), call. = FALSE)
@@ -508,5 +482,5 @@ runRomer <- function(setloc, annot = NULL, eset, design = NULL, contrast = NULL,
     names(romerlst) <- colnames(contrast)
     if(save) save(list = "romerlst", file = "romer.Rdata")
     outputRomer(rsltlst = romerlst, genesetlst = setlst, eset = eset, fit = fit,
-                design = design, contrast = contrast, annot = annot, baseline.hmap = baseline.hmap, ...)
+                design = design, contrast = contrast, annot = annot, baseline.hmap = baseline.hmap, affy = affy, ...)
 }

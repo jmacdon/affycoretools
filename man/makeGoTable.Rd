@@ -34,9 +34,11 @@ This function is used to create HTML tables to present the results from a Gene O
 \details{
 After running a GO analysis, it is often useful to first present a table showing the set of significant GO terms
 for a given comparison, and then have links to a sub-table for each GO term that shows the genes that were responsible
-for the significance of that term. The first table can be generated using the \code{\link{GOstats::summary}} function, but
+for the significance of that term. The first table can be generated using the \link[GOstats:GOHyperGResult-class]{summary} function, but
 it will not contain the links to the sub-table. The ReportingTools package has functionality to make these tables and sub-tables
 automatically, but the default is to include extra glyphs in the main table that are not that useful.
+
+This function is intended to generate a more useful version of the table that one normally gets from ReportingTools.
 }
 \author{
 Jim MacDonald

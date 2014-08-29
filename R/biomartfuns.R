@@ -355,7 +355,8 @@ vennSelectBM <- function (eset, design, x, contrast, fit, method = "same", adj.m
                           otherdata = annBM()[1:3], ann.source = "entrezgene",
                           html = TRUE, text = TRUE, affyid = FALSE, ...){
 
-  
+  .Deprecated(new = "makeVenn", msg = paste("This function is being deprecated. Please see the RefactoredAffycoretools",
+              "vignette for more current ways to create annotated output."))
   mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""))
 
   ## check to see if the ann.source is available
@@ -537,7 +538,8 @@ limma2biomaRt <- function (eset, fit, design, contrast, species, links = linksBM
                            pval = TRUE, FC = TRUE, expression = TRUE, html = TRUE, text = TRUE,
                            save = FALSE, addname = NULL, interactive = TRUE, affyid = FALSE){
 
-  
+  .Deprecated(new = "", msg = paste("This function is being deprecated. Please see the RefactoredAffycoretools",
+                        "vignette for more current ways to annotate output."))
   if(!interactive){
     limma2biomaRt.na(eset=eset, fit=fit, design=design, contrast=contrast, species=species,
                      links=links, otherdata=otherdata, ann.source=ann.source,
@@ -834,7 +836,8 @@ probes2tableBM <- function(eset, probids, species, filename, otherdata = NULL,
                            links = linksBM()[1:3], otherann = annBM()[1:3],
                            ann.source = "entrezgene", express = TRUE, html = TRUE,
                            text = TRUE, affyid = FALSE){
-
+  .Deprecated(new= "", msg = paste("This function is being deprecated. Please see the RefactoredAffycoretools",
+                       "vignette for more current ways to annotate output."))
   mart <- useMart("ensembl", dataset = paste(species, "_gene_ensembl", sep=""))
   
   ## check to see if ann.source is available
@@ -962,7 +965,8 @@ foldFiltBM <- function(object, fold = 1, groups, comps, compnames, species,
                        links = linksBM()[1:3], otherann = annBM()[1:3], filterfun = NULL,
                        ann.source = "entrezgene", affyid = FALSE, html = TRUE,
                        text = TRUE, save = FALSE){
- 
+  .Deprecated(new = "", msg = paste("This fucntion is being deprecated. Please see the RefactoredAffycoretools",
+                        "vignette for more current ways to annotate output."))
   if(is(object, "ExpressionSet"))
     x  <- exprs(object)
   if(length(unique(groups)) != length(groups)){

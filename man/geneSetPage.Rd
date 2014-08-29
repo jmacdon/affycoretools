@@ -6,8 +6,7 @@ pages for each significant gene set.}
 \usage{
 geneSetPage(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = ".",
   subdir = ".", columns = NULL, colnames = NULL, col = NULL,
-  caption = NULL, annot = NULL, nam = NULL, fitind = NULL,
-  bline = NULL, ...)
+  caption = NULL, fitind = NULL, bline = NULL, affy = TRUE, ...)
 }
 \arguments{
 \item{rslts}{The results from running \code{\link{romer}} on one gene set.}
@@ -42,14 +41,6 @@ heatmap. See \code{dataAndHeatmapPage} for more information.}
 
 \item{caption}{Caption to put at the top of the HTML page.}
 
-\item{annot}{Character. The name of the annotation package for the arrray
-used. If \code{NULL}, the row names of the heatmap will be the probeset IDs
-unless the \sQuote{nam} argument below is used.}
-
-\item{nam}{Character. The row names for the resulting heatmap. If
-\code{NULL} and no \sQuote{annot} argument is used, the probeset IDs will be
-used for the row names.}
-
 \item{fitind}{Numeric. The columns of the \code{MArrayLM} object to use for
 the individual HTML tables.}
 
@@ -57,6 +48,9 @@ the individual HTML tables.}
 which columns of the data are the baseline samples. The data used for the
 heatmap will be centered by subtracting the mean of these columns from all
 data.}
+
+\item{affy}{Boolean; are these Affymetrix arrays? If \code{TRUE}, the Affymetrix
+probeset IDs will contain links to the netaffx site.}
 
 \item{\dots}{Allows arguments to be passed to lower-level functions. See
 \code{dataAndHeatmapPage} and \code{gsHeatmap} for available arguments.}

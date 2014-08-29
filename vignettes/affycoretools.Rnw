@@ -45,6 +45,13 @@ BiocStyle::latex()
 
 \section{Overview}
 
+\textbf{Please note that most of the following is now outdated. This
+  document will remain for one more release cycle while all annaffy
+  based tools are deprecated, and once they become defunct this
+  document will be removed. Please see the replacement vignette called
+  UsingReportingTools, which explains how to use the refactored
+  functions that now rely on ReportingTools for HTML output.}
+
 This package is made up of various 'wrapper' functions that I use 
 to help automate some of the more routine aspects of my job as a 
 Biostatistician in a microarray core facility. Since the vast majority 

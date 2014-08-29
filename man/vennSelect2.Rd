@@ -55,10 +55,7 @@ for each probeset to the Affy website to be generated for the resulting HTML tab
 for the Affymetrix probeset IDs? Defaults to "PROBEID", which is the default if
 the data are annotated using a Bioconductor annotation package.}
 
-\item{...}{Used to pass other arguments to \code{probes2table}, in
-particular, to change the argument to \code{anncols} which controls the
-columns of hyperlinks to online databases (e.g., Entrez Gene, etc.). See
-\code{\link[annaffy]{aaf.handler}} for more information.}
+\item{\dots}{Used to pass arguments to lower level functions.}
 }
 \value{
 A list with two items. First, a list of \code{HTMLReport} objects

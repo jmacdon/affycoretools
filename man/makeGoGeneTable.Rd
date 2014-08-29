@@ -9,7 +9,7 @@ makeGoGeneTable(fit.table, probe.sum.table, go.id, cont.name, base.dir = NULL,
 \arguments{
 \item{fit.table}{The output from \link[limma]{topTable}}
 
-\item{probe.sum.table}{The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats]{GOHyperGResults} object.}
+\item{probe.sum.table}{The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats:GOHyperGResult-class]{GOHyperGResults} object.}
 
 \item{go.id}{The GO ID of interest}
 

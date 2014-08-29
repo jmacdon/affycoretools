@@ -4,7 +4,7 @@
 \title{A function to run the romer function on a set of contrasts.}
 \usage{
 runRomer(setloc, annot = NULL, eset, design = NULL, contrast = NULL, fit,
-  wts = NULL, save = TRUE, baseline.hmap = TRUE, ...)
+  wts = NULL, save = TRUE, baseline.hmap = TRUE, affy = TRUE, ...)
 }
 \arguments{
 \item{setloc}{A character vector giving the path for gene set RData files
@@ -37,6 +37,9 @@ will be centered by subtracting the mean of the baseline sample. As an
 example, in a contrast of treatment A - treatment B, the mean of the
 treatment B samples will be subtracted. The heatmap colors then represent
 the fold change between the A and B samples.}
+
+\item{affy}{Boolean; are these Affymetrix arrays? If \code{TRUE}, the output tables
+will contain links to the netaffx site.}
 
 \item{\dots}{Used to pass arguments to lower-level functions. See
 \code{outputRomer} \code{geneSetPage}, \code{dataAndHeatmapPage} and

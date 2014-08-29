@@ -37,10 +37,9 @@
 #' @importFrom gcrma gcrma
 #' @importFrom splines ns
 #' @importFrom xtable xtable
-#' @importFrom lattice xyplot panel.xyplot panel.abline lattice.options dotplot
+#' @importFrom lattice xyplot panel.xyplot panel.abline lattice.options dotplot bwplot
 #' @importFrom grid grid.newpage pushViewport viewport unit upViewport
 #' @importFrom gplots heatmap.2 bluered venn plot.venn
-#' @importFrom R2HTML HTML as.title HTMLInsertGraph HTMLInitFile
 #' @importFrom oligoClasses db
 #' @importFrom ReportingTools HTMLReport CSVFile publish finish reporting.theme filename path
 #' @importFrom hwriter hwrite hwriteImage hmakeTag closePage openPage

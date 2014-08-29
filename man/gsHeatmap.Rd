@@ -4,7 +4,7 @@
 \title{A function to create a simple heatmap and key.}
 \usage{
 gsHeatmap(eset, ind, filename, columns = NULL, colnames = NULL,
-  col = NULL, annot = NULL, nam = NULL, scale.row = FALSE, key = TRUE,
+  col = NULL, annot = NULL, scale.row = FALSE, key = TRUE,
   bline = NULL)
 }
 \arguments{
@@ -26,13 +26,9 @@ used.}
 \item{col}{A vector of colors to use for the heatmap. If \code{NULL}, the
 \code{\link{bluered}} function will be used.}
 
-\item{annot}{Character. The name of the array annotation package to use to
-convert probeset IDs to gene symbols. If \code{NULL}, either the probeset
-IDs will be used, or the input from the 'nam' argument below will be used.}
-
-\item{nam}{Character. A vector of row.names to use for the heatmap. If
-\code{NULL}, and the above 'annot' argument is \code{NULL} as well, probeset
-IDs will be used.}
+\item{annot}{A matrix or data.frame containing gene symbols to annotate the heatmap.
+This will normally be extracted automatically from the 'fit' object passed to geneSetPage.
+If there is no annotation in the fit object, then the probe IDs will be used instead.}
 
 \item{scale.row}{Boolean. Should the data be scaled by row? Defaults to
 \code{FALSE}.}

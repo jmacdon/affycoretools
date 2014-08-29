@@ -4,8 +4,8 @@
 \title{A function to create an annotated HTML table for all genes in a significant
 gene set as well as a heatmap of these data.}
 \usage{
-dataAndHeatmapPage(eset, fit, ind, columns = NULL, annot = NULL, fname,
-  heatmap, title, key = TRUE, fitind = NULL)
+dataAndHeatmapPage(eset, fit, ind, columns = NULL, fname, heatmap, title,
+  key = TRUE, fitind = NULL, affy = TRUE, ...)
 }
 \arguments{
 \item{eset}{An \code{\link{ExpressionSet}} containing normalized, summarized
@@ -20,9 +20,6 @@ gene expression data.}
 \code{\link{ExpressionSet}} to use. If \code{NULL}, all columns will be
 used.}
 
-\item{annot}{Character. The name of the annotation package for the array
-used. If \code{NULL}, data will be output without any additional annotation.}
-
 \item{fname}{The filename of the resulting output, without the 'html' file
 extension.}
 
@@ -36,6 +33,11 @@ bottom of the HTML page.}
 
 \item{fitind}{Numeric. Which column of the \code{MArrayLM} object to use for
 output in the HTML table.}
+
+\item{affy}{Boolean. Are these Affymetrix arrays? If \code{TRUE}, then links
+will be generated to netaffx for the probeset IDs.}
+
+\item{\dots}{Included to allow arbitrary commands to be passed to lower level functions.}
 }
 \description{
 This is intended to be an internal function to \code{runRomer}. It is

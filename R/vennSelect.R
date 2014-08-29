@@ -423,6 +423,9 @@ t.stat.dat <- function(fit, index, contrast, adj.meth = "BH", stats,
 vennSelect <- function(eset, design, x, contrast, fit, method = "same", adj.meth = "BH",
                        stat = "fstat", otherstats = c("pval", "FC"), order.by = "pval",
                        foldFilt = NULL, save = FALSE, titleadd = NULL, ...){
+  .Deprecated(new = "makeVenn", msg = paste("This function is being deprecated in lieu of the",
+                                "makeVenn and vennPage functions, which use ReportingTools to",
+                                "annotate and present results."))
   ## eset is an ExpressionSet containing data used for comparisons
   ## design is a design matrix from limma
   ## x is a TestResults object from a call to decideTests()

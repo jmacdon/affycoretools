@@ -47,7 +47,8 @@ probes2table <- function(eset, probids, lib, otherdata = NULL,
                          text=FALSE, express = TRUE, save=FALSE,  filename,
                          title = NULL){
 
-
+  .Deprecated(new = "", msg = paste("This function is being deprecated. Please see the RefactoredAffycoretools",
+                        "vignette for more current ways to annotate output."))
   ## test that lib has a .db extension
   if(length(grep("\\.db$", lib)) < 1)
       lib <- paste(lib, "db", sep = ".")

@@ -76,6 +76,8 @@
 #' @export foldFilt
 foldFilt <-function(object, fold = 1, groups, comps, compnames,
                     save = FALSE, text = TRUE, html = TRUE, filterfun = NULL){
+  .Deprecated(new = "", msg = paste("foldFilt is being deprecated. Please see the RefactoredAffycoretools",
+                        "vignette for more up to date ways to annotate results."))
   if(is(object, "ExpressionSet"))
     x  <- exprs(object)
   if(length(unique(groups)) != length(groups)){
@@ -212,6 +214,8 @@ getIndex <- function(comps, groups){
 #' @export vennSelectFC
 vennSelectFC <- function(eset, x, comps, order.by = "sum", method = "same", text = TRUE,
                          html = TRUE, ...){
+  .Deprecated(new = "makeVenn", msg = paste("vennSelectFC is being deprecated. Please see the RefactoredAffycoretools",
+              "vignette for more current ways to create Venn diagrams."))
   ncomps <- dim(x)[2]
   if(ncomps < 2 || ncomps > 3)
     stop("This function only works for two or three comparisons at a time.\n",

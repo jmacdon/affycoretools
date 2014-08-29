@@ -13,7 +13,10 @@ fixHeaderAndGo(df, affy = TRUE, probecol = "PROBEID")
 \item{probecol}{Character. The column header containing Affymetrix probeset IDs. Defaults to "PROBEID".}
 }
 \value{
-List of functions to be passed to \code
+Returns a list of length two (with names mdf and df). The mdf object can be passed to the
+\code{\link[ReportingTools:publish-methods]{publish}} using the .modifyDF argument, and the df object is
+input dat.frame with column names corrected to conform to \code{affyLinks} and \code{entrezLinks}, so links
+will be generated correctly.
 }
 \description{
 Internal function used to automatically test for columns that can be converted to links

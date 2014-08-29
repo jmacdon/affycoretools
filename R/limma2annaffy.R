@@ -86,6 +86,8 @@ limma2annaffy <- function(eset, fit, design, contrast, lib, adjust = "fdr",
                           pfilt = NULL, fldfilt = NULL, tstat = TRUE, pval = TRUE, FC = TRUE,
                           expression = TRUE, html = TRUE, text = FALSE, save = FALSE,
                           addname = NULL, addtitle = NULL, interactive = TRUE, natFC = FALSE){
+  .Deprecated(new = "", msg = paste("limma2annaffy is being deprecated. Please see the RefactoredAffycoretools vignette",
+                        "for more current ways to create annotated output"))
   ## if lib isn't a .db package, make it so
   if(length(grep("\\.db$", lib)) < 1)
       lib <- paste(lib, "db", sep = ".")

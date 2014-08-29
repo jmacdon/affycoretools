@@ -3,8 +3,8 @@
 \alias{makeImages}
 \title{Add dotplot images}
 \usage{
-makeImages(df, eset, grp.factor, design, contrast, colind,
-  repdir = "./reports", extraname = NULL)
+makeImages(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE,
+  repdir = "./reports", extraname = NULL, ...)
 }
 \arguments{
 \item{df}{A data.frame from calling \code{topTable}. Note that the row.names for this data.frame must
@@ -23,12 +23,17 @@ so do not subset yourself.}
 
 \item{colind}{Which column of the contrast matrix are we using? In other words, for which comparison are we creating a table?}
 
+\item{boxplot}{Boolean. If \code{TRUE}, the output HTML table will have a boxplot showing differences between groups. If
+\code{FALSE} (default), the table will have dotplots.}
+
 \item{repdir}{A directory in which to put the HTML tables. Defaults to a "reports" directory in the working directory.}
 
 \item{extraname}{By default, the tables will go in a "reports" subdirectory, and will be named based on the column
 name of the contrast that is specified by the colind argument (after replacing any spaces with an underscore). If this
 will result in name collisions (e.g., a previous file will be over-written because the resulting names are the same),
 then an extraname can be appended to ensure uniqueness.}
+
+\item{\dots}{Allows arbitrary arguments to be passed down to lower level functions.}
 }
 \value{
 A list, two items. The first item is the input data.frame with the glyphs included, ready to be used with

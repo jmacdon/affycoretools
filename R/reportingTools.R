@@ -39,10 +39,10 @@
 #' finish(htab)}
 #' 
 #' @export entrezLinks affyLinks goLinks
-entrezLinks <- function(df, ...){
-    df$ENTREZID <- hwrite(as.character(df$ENTREZID),
-                          link = paste0("http://www.ncbi.nlm.nih.gov/gene/",
-                          as.character(df$ENTREZID)), table = FALSE)
+entrezLinks <- function (df, ...) {
+    naind <- is.na(df$ENTREZID)
+    df$ENTREZID[!naind] <- hwrite(as.character(df$ENTREZID[!naind]), link = paste0("http://www.ncbi.nlm.nih.gov/gene/", 
+        as.character(df$ENTREZID[!naind])), table = FALSE)
     return(df)
 }
 
@@ -129,10 +129,7 @@ goLinks <- function(df, ...){
 #' @param probecol If the "affy" argument is \code{TRUE}, what is the column header
 #' for the Affymetrix probeset IDs? Defaults to "PROBEID", which is the default if
 #' the data are annotated using a Bioconductor annotation package.
-#' @param ... Used to pass other arguments to \code{probes2table}, in
-#' particular, to change the argument to \code{anncols} which controls the
-#' columns of hyperlinks to online databases (e.g., Entrez Gene, etc.). See
-#' \code{\link[annaffy]{aaf.handler}} for more information.
+#' @param \dots Used to pass arguments to lower level functions. 
 #' @return A list with two items. First, a list of \code{HTMLReport} objects
 #' from the ReportingTools package, which can be used to create an index page
 #' with links to the HTML pages created by this function. See the help page for
@@ -164,6 +161,10 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
     }
     
     dtmat <- decideTests(fit, adjust.method = adj.meth, p.value = p.value, lfc = lfc)
+    if(all(apply(dtmat, 2, sum) == 0)) stop(paste("There are no significant genes at a p.value <",
+                p.value, "and a fold change >", lfc, "with",
+                switch(adj.meth, none = "no multiplicity adjustment!", paste("a", adj.meth, "multiplicity adjustment!"))),
+                call. = FALSE)
     colind <- getCols(design, contrast)
     
     
@@ -229,7 +230,9 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
     }
                        
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
-    mdf <- lapply(csvlst, fixHeaderAndGo, affy = affy, probecol = probecol)[[1]]
+    fixed.dflst <- lapply(csvlst, fixHeaderAndGo, affy = affy, probecol = probecol)
+    csvlst <- lapply(fixed.dflst, function(x) x$df)
+    mdf <- fixed.dflst[[1]]$mdf
     
     if(length(mdf) > 0)
         lapply(ind, function(x) publish(csvlst[[x]], vennout[[x]],  .modifyDF = mdf))
@@ -340,10 +343,7 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
 #' @param probecol This argument is used in concert with the preceding argument. If these are Affymetrix data
 #' , then specify the column header in the \code{\link[limma:marraylm]{MArrayLM}} object that contains the Affymetrix IDs. Defaults to
 #' "PROBEID", which is the expected result if the data are annotated using a BioC annotation package.
-#' @param ... Used to pass other arguments to \code{probes2table}, in
-#' particular, to change the argument to \code{anncols} which controls the
-#' columns of hyperlinks to online databases (e.g., Entrez Gene, etc.). See
-#' \code{\link[annaffy]{aaf.handler}} for more information.
+#' @param ... Used to pass other arguments to lower level functions.
 #' @return A list containing the output from calling \code{vennSelect2} on the
 #' columns specified by the collist argument. This is intended as input to
 #' \code{vennPage}, which will use those data to create the HTML page with Venn
@@ -624,18 +624,21 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 ##' @param design The design matrix used by limma or edgeR to fit the model.
 ##' @param contrast The contrast matrix used by limma or edgeR to make comparisons.
 ##' @param colind Which column of the contrast matrix are we using? In other words, for which comparison are we creating a table?
+##' @param boxplot Boolean. If \code{TRUE}, the output HTML table will have a boxplot showing differences between groups. If
+##' \code{FALSE} (default), the table will have dotplots. 
 ##' @param repdir A directory in which to put the HTML tables. Defaults to a "reports" directory in the working directory.
 ##' @param extraname By default, the tables will go in a "reports" subdirectory, and will be named based on the column
 ##' name of the contrast that is specified by the colind argument (after replacing any spaces with an underscore). If this
 ##' will result in name collisions (e.g., a previous file will be over-written because the resulting names are the same),
 ##' then an extraname can be appended to ensure uniqueness.
+##' @param \dots Allows arbitrary arguments to be passed down to lower level functions.
 ##' @return A list, two items. The first item is the input data.frame with the glyphs included, ready to be used with
 ##' ReportingTools to create an HTML table. The second item is a pdf of the most differentially expressed comparison. This is
 ##' useful for those who are using e.g., knitr or Sweave and want to be able to automatically insert an example dotplot
 ##' in the document to show clients what to expect.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
 ##' @export makeImages
-makeImages <- function(df, eset, grp.factor, design, contrast, colind, repdir = "./reports", extraname = NULL){
+makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE, repdir = "./reports", extraname = NULL, ...){
     ## check that this is going to work
     eclass <- class(eset)[1]
     addtrailingslash <- function(path){
@@ -662,7 +665,8 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, repdir = 
     grp.factor <- factor(grp.factor[ind])
     eset <- eset[,ind]
     colnames(df)[colnames(df) == "SYMBOL"] <- "Symbol"
-    makeGenePlots(df, eset, grp.factor, figure.directory)
+    makeGenePlots(df = df, expression.dat = eset, factor = grp.factor, figure.directory = figure.directory,
+                  boxplot = boxplot, ...)
    
     figure.directory <- gsub(repdir, "", figure.directory)
     mini.image <- file.path(figure.directory, paste("mini", 
@@ -676,7 +680,7 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, repdir = 
 
 ## this I just stole from ReportingTools because I don't like their stupid dotplots on top of boxplots
 
-makeGenePlots <- function (df, expression.dat, factor, figure.directory, ylab.type = "Expression Value", 
+makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot, ylab.type = "Expression Value", 
     scales = list(), par.settings = list(), xlab = NULL, ...) {
     scales <- c(scales, list(x = list(rot = 45)))
     if (inherits(expression.dat, "eSet")) {
@@ -696,9 +700,15 @@ makeGenePlots <- function (df, expression.dat, factor, figure.directory, ylab.ty
         else {
             ylab <- paste(probe, ylab.type)
         }
-        bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
-            groups = factor, ylab = ylab, 
-            scales = scales, par.settings = par.settings, xlab = xlab)
+        if(boxplot) {
+            bigplot <- bwplot(expression.dat[probe, ] ~ factor, 
+                              groups = factor, ylab = ylab, 
+                              scales = scales, par.settings = par.settings, xlab = xlab)
+        } else {
+            bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
+                               groups = factor, ylab = ylab, 
+                               scales = scales, par.settings = par.settings, xlab = xlab)
+        }
         miniplot <- remove.axis.and.padding(bigplot)
         minipng.filename <- paste("mini", probe, "png", sep = ".")
         minipng.file <- file.path(figure.directory, minipng.filename)
@@ -739,7 +749,7 @@ remove.axis.and.padding <- function(plot) {
 ##' (if the data are Affymetrix) and to the NCBI Gene database (if there are Entrez Gene IDs).
 ##' @title Make Gene table from GO analysis results
 ##' @param fit.table The output from \link[limma]{topTable}
-##' @param probe.sum.table The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats]{GOHyperGResults} object.
+##' @param probe.sum.table The output from running \link[GOstats]{probeSetSummary} on a \link[GOstats:GOHyperGResult-class]{GOHyperGResults} object.
 ##' @param go.id The GO ID of interest
 ##' @param cont.name The contrast name.
 ##' @param base.dir Character. Where should the HTML tables be generated? Defaults to NULL. 
@@ -754,11 +764,11 @@ makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.d
     out <- fit.table[fit.table[,probecol] %in% prbs, , drop = FALSE]
     rep.dir <- gsub(" ", "_", cont.name)
     if(!is.null(extraname)) rep.dir <- paste0(rep.dir, "/", gsub(" ", "_", extraname))
-    mdf <- fixHeaderAndGo(fit.table, affy = affy, probecol = probecol)
+    fixed <- fixHeaderAndGo(out, affy = affy, probecol = probecol)
     htab <- HTMLReport(go.id, paste0("Genes responsible for significance of ", go.id, " in contrast ", cont.name,
                                          if(!is.null(extraname)) paste(",", extraname)),
                        reportDirectory = rep.dir, basePath = base.dir)
-    publish(out, htab, if(length(mdf) > 0) .modifyDF = mdf)
+    publish(fixed$df, htab, if(length(fixed$mdf) > 0) .modifyDF = fixed$mdf)
     finish(htab)
     htab
 }
@@ -773,7 +783,10 @@ makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.d
 ##' @param df A data.frame
 ##' @param affy Boolean; does the data.frame contain Affymetrix probeset IDs?
 ##' @param probecol Character. The column header containing Affymetrix probeset IDs. Defaults to "PROBEID".
-##' @return List of functions to be passed to \code
+##' @return Returns a list of length two (with names mdf and df). The mdf object can be passed to the
+##' \code{\link[ReportingTools:publish-methods]{publish}} using the .modifyDF argument, and the df object is
+##' input dat.frame with column names corrected to conform to \code{affyLinks} and \code{entrezLinks}, so links
+##' will be generated correctly.
 ##' @author Jim MacDonald
 fixHeaderAndGo <- function(df, affy = TRUE, probecol = "PROBEID"){
      any.entrez <- grep("entrezid", names(df), ignore.case = TRUE)
@@ -792,16 +805,18 @@ fixHeaderAndGo <- function(df, affy = TRUE, probecol = "PROBEID"){
                         "containing the Affymetrix Probeset IDs.\n"), call. = FALSE)
      }
      mdf <- list(affyLinks, entrezLinks)[c(affy, any.entrez)]
-     mdf
+     return(list(mdf = mdf, df = df))
  }
 
 ##' This function is used to create HTML tables to present the results from a Gene Ontology (GO) analysis.
 ##'
 ##' After running a GO analysis, it is often useful to first present a table showing the set of significant GO terms
 ##' for a given comparison, and then have links to a sub-table for each GO term that shows the genes that were responsible
-##' for the significance of that term. The first table can be generated using the \code{\link{GOstats::summary}} function, but
+##' for the significance of that term. The first table can be generated using the \link[GOstats:GOHyperGResult-class]{summary} function, but
 ##' it will not contain the links to the sub-table. The ReportingTools package has functionality to make these tables and sub-tables
-##' automatically, but the default is to include extra glyphs in the main table that are not that useful. 
+##' automatically, but the default is to include extra glyphs in the main table that are not that useful.
+##' 
+##'This function is intended to generate a more useful version of the table that one normally gets from ReportingTools.
 ##' @title Create HTML tables for Gene Ontology (GO) analyses
 ##' @param fit.table The output from \link[limma]{topTable}
 ##' @param go.summary The output from running \code{summary} on a \link[GOstats:GOHyperGResult-class]{GOHyperGResults} object.
