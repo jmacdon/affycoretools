@@ -633,6 +633,8 @@ writeFit <- function(fit, annotation = NULL, eset,
         names(lst) <- touse
         out <- data.frame(probeset = fn,
                           do.call("cbind", lst))
+    } else if(!is.null(fit$genes)) {
+        out <- fit$genes
     } else {
         out <- data.frame(probeset = row.names(fit$t))
     }
