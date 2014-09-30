@@ -41,8 +41,9 @@
 #' @export entrezLinks affyLinks goLinks
 entrezLinks <- function (df, ...) {
     naind <- is.na(df$ENTREZID)
-    df$ENTREZID[!naind] <- hwrite(as.character(df$ENTREZID[!naind]), link = paste0("http://www.ncbi.nlm.nih.gov/gene/", 
-        as.character(df$ENTREZID[!naind])), table = FALSE)
+    df$ENTREZID <- hwrite(as.character(df$ENTREZID), link = paste0("http://www.ncbi.nlm.nih.gov/gene/", 
+        as.character(df$ENTREZID)), table = FALSE)
+    df$ENTREZID[naind] <- ""
     return(df)
 }
 
