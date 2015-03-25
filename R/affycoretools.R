@@ -17,27 +17,20 @@
 #' convert all the functions to primarily use ReportingTools.
 #'
 #' @importMethodsFrom affy hist mas5calls
-#' @importMethodsFrom annaffy "colnames<-" saveHTML saveText
-#' @importMethodsFrom AnnotationDbi Term get
+#' @importMethodsFrom AnnotationDbi Term get dbconn select
 #' @importMethodsFrom Biobase annotation exprs featureNames sampleNames write.exprs
-#' @importMethodsFrom genefilter plot
 #' @importFrom affy AffyRNAdeg mas5 plotAffyRNAdeg plotDensity ReadAffy rma
-#' @importFrom annaffy aaf.handler aafTable aafTableAnn aafTableInt
 #' @importFrom Biobase addVigs2WinMenu assayDataElement
 #' @importFrom graphics layout legend par text
 #' @importFrom grDevices dev.off rainbow recordPlot replayPlot
 #' @importFrom stats median p.adjust prcomp
 #' @importFrom utils write.table
-#' @importFrom GO.db GOTERM
-#' @importFrom biomaRt getBM listAttributes listFilters useMart
 #' @importFrom limma topTable vennCounts decideTests romer ids2indices vennDiagram
 #' @importFrom GOstats probeSetSummary
-#' @importFrom annotate htmlpage getEG
-#' @importFrom genefilter genefilter filterfun kOverA pOverA cv
 #' @importFrom gcrma gcrma
 #' @importFrom splines ns
 #' @importFrom xtable xtable
-#' @importFrom lattice xyplot panel.xyplot panel.abline lattice.options dotplot bwplot
+#' @importFrom lattice xyplot panel.xyplot panel.abline lattice.options dotplot bwplot trellis.par.get panel.dotplot
 #' @importFrom grid grid.newpage pushViewport viewport unit upViewport
 #' @importFrom gplots heatmap.2 bluered venn plot.venn
 #' @importFrom oligoClasses db

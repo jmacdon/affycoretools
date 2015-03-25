@@ -632,6 +632,8 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 ##' name of the contrast that is specified by the colind argument (after replacing any spaces with an underscore). If this
 ##' will result in name collisions (e.g., a previous file will be over-written because the resulting names are the same),
 ##' then an extraname can be appended to ensure uniqueness.
+##' @param weights Array weights, generally from \code{arrayWeights} in the limma package. These will affect the size
+##' of the plotting symbols, to reflect the relative importance of each sample.
 ##' @param \dots Allows arbitrary arguments to be passed down to lower level functions.
 ##' @return A list, two items. The first item is the input data.frame with the glyphs included, ready to be used with
 ##' ReportingTools to create an HTML table. The second item is a pdf of the most differentially expressed comparison. This is
@@ -639,7 +641,7 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 ##' in the document to show clients what to expect.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
 ##' @export makeImages
-makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE, repdir = "./reports", extraname = NULL, ...){
+makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE, repdir = "./reports", extraname = NULL, weights = NULL, ...){
     ## check that this is going to work
     eclass <- class(eset)[1]
     addtrailingslash <- function(path){
@@ -662,12 +664,12 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
     figure.directory <- paste0(repdir, gsub(" ", "_", colnames(contrast)[colind]))
     if(!is.null(extraname)) figure.directory <- paste0(figure.directory, extraname)
     dir.create(figure.directory, recursive = TRUE)
-    ind <- apply(design[,contrast[,colind] != 0], 1, sum) > 0
+    ind <- apply(design[,contrast[,colind] != 0, drop = FALSE], 1, sum) > 0
     grp.factor <- factor(grp.factor[ind])
     eset <- eset[,ind]
     colnames(df)[colnames(df) == "SYMBOL"] <- "Symbol"
     makeGenePlots(df = df, expression.dat = eset, factor = grp.factor, figure.directory = figure.directory,
-                  boxplot = boxplot, ...)
+                  boxplot = boxplot, weights = weights, ...)
    
     figure.directory <- gsub(repdir, "", figure.directory)
     mini.image <- file.path(figure.directory, paste("mini", 
@@ -682,7 +684,7 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
 ## this I just stole from ReportingTools because I don't like their stupid dotplots on top of boxplots
 
 makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot, ylab.type = "Expression Value", 
-    scales = list(), par.settings = list(), xlab = NULL, ...) {
+    scales = list(), par.settings = list(), xlab = NULL, weights = NULL, ...) {
     scales <- c(scales, list(x = list(rot = 45)))
     if (inherits(expression.dat, "eSet")) {
         expression.dat <- exprs(expression.dat)
@@ -706,9 +708,20 @@ makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot
                               groups = factor, ylab = ylab, 
                               scales = scales, par.settings = par.settings, xlab = xlab)
         } else {
-            bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
-                               groups = factor, ylab = ylab, 
-                               scales = scales, par.settings = par.settings, xlab = xlab)
+            if(is.null(weights)) {
+                bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
+                                   groups = factor, ylab = ylab, 
+                                   scales = scales, par.settings = par.settings, xlab = xlab)
+            } else {
+                bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
+                                   ylab = ylab, scales = scales, 
+                                   par.settings = par.settings, xlab = xlab,
+                                   col = trellis.par.get()$superpose.symbol$col[-4], col.var = factor,
+                                   cex = weights,
+                                   panel = function(x, y, cex, col, col.var, subscripts, ...) {
+                                       panel.dotplot(x, y, col = col[col.var[subscripts]],
+                                                     cex = cex[subscripts], ...)})
+            }
         }
         miniplot <- remove.axis.and.padding(bigplot)
         minipng.filename <- paste("mini", probe, "png", sep = ".")
@@ -846,4 +859,43 @@ makeGoTable <- function(fit.table, go.summary, probe.summary, cont.name, base.di
     publish(go.summary, htab, .modifyDF = goLinks)
     finish(htab)
     htab
+}
+
+#' Filter a topTable object
+#' 
+#' This function is designed to filter genes from a \code{topTable} object
+#' based on p-value and/or fold change. This is an internal function and is not
+#' intended to be called by thte end user.
+#' 
+#' 
+#' @param fit An \code{MArrayLM} object, resulting from a call to \code{eBayes}
+#' @param coef The contrast to be extracted into the topTable. See ?topTable
+#' for more information.
+#' @param number The number of genes to output. Only used if both foldfilt and
+#' pfilt are NULL.
+#' @param fldfilt The absolute value of fold difference to filter on. This
+#' assumes the data are log transformed.
+#' @param pfilt The p-value to filter on.
+#' @param adjust The multiplicity adjustment to use. Options are
+#' '"bonferroni"', '"holm"', '"hochberg"', '"hommel"', '"fdr"' and '"none"'. If
+#' '"none"' then the p-values are not adjusted. A 'NULL' value will result in
+#' the default adjustment method, which is '"fdr"'.
+#' @return Returns a \code{data.frame} containing the selected genes.
+#' @author James W. MacDonald <jmacdon@@u.washington.edu>
+#' @keywords internal
+tableFilt <- function(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
+                      adjust = "fdr"){
+  if(is.null(fldfilt) && is.null(pfilt)){
+    tab <- topTable(fit, coef = coef, number = number, adjust.method = adjust)
+  }else{
+    tab <- topTable(fit, coef = coef, number = dim(fit$coefficients)[1],
+                    adjust.method = adjust)
+  }
+## Filter on p-value
+  if(!is.null(pfilt))
+      tab <- tab[tab[,"adj.P.Val"] < pfilt,]
+  ## Filter on fold change
+  if(!is.null(fldfilt))
+    tab <- tab[abs(tab[,"logFC"]) > fldfilt,]
+  tab
 }

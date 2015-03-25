@@ -60,8 +60,6 @@ gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col 
             row.names(mat) <- rn
         }
     }
-    ## fragile - there is no assurance that the order of the matrix matches the names supplied!
-    if(!is.null(nam)) row.names(mat) <- nam
     if(scale.row){
         mat <- sweep(mat, 1, rowMeans(mat))
         mat <- sweep(mat, 1, apply(mat, 1, sd), "/")
