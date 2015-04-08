@@ -376,21 +376,18 @@ makeVenn <- function(fit, contrast, design, groups = NULL, collist = NULL,
                      p.value = 0.05, lfc = 0, method = "both", adj.meth = "BH",
                      titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory = "./venns",
                      affy = TRUE, probecol = "PROBEID", ...){
-    if(is.null(collist))
-        vennlst <- vennSelect2(fit = fit, contrast = contrast, design = design,
-                               groups = groups, cols = seq_len(ncol(fit$coefficients)), p.value = p.value, lfc = lfc,
-                               method = method, adj.meth = adj.meth, titleadd = titleadd,
-                               fileadd = fileadd, baseUrl = baseUrl, 
-                               reportDirectory = paste0(reportDirectory, "/venn"),
-                               affy = affy, probecol = probecol, ...)
-    else
-        vennlst <- lapply(seq(along = collist), function(x) 
-                          vennSelect2(fit = fit, contrast = contrast, design = design, 
-                                      groups = groups, cols = collist[[x]], p.value = p.value, lfc = lfc,
-                                      method = method, adj.meth = adj.meth, titleadd = titleadd,
-                                      fileadd = fileadd, baseUrl = baseUrl, 
-                                      reportDirectory = paste0(reportDirectory, "/venn", x),
-                                      affy = affy, probecol = probecol, ...))
+    if(is.null(collist)){
+        if(ncol(fit$coef) > 4) stop("You can only make Venn diagrams with four or fewer contrasts!\n\n",
+                                    call. = FALSE)
+        collist <- list(seq_len(ncol(fit$coef)))
+    }
+    vennlst <- lapply(seq(along = collist), function(x) 
+        vennSelect2(fit = fit, contrast = contrast, design = design, 
+                    groups = groups, cols = collist[[x]], p.value = p.value, lfc = lfc,
+                    method = method, adj.meth = adj.meth, titleadd = titleadd,
+                    fileadd = fileadd, baseUrl = baseUrl, 
+                    reportDirectory = paste0(reportDirectory, "/venn", x),
+                    affy = affy, probecol = probecol, ...))
     vennlst
 }
 
