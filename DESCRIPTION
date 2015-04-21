@@ -2,7 +2,7 @@ Package: affycoretools
 Date: 2008-12-15
 Title: Functions useful for those doing repetitive analyses
     with Affymetrix GeneChips
-Version: 1.41.0
+Version: 1.41.1
 Author: James W. MacDonald
 Description: Various wrapper functions that have been written to
     streamline the more common analyses that a core Biostatistician
@@ -30,5 +30,6 @@ Suggests:
     BiocStyle,
     knitr,
     hgu95av2.db
+    rgl
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression
 VignetteBuilder: knitr
