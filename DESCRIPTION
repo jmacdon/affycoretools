@@ -29,7 +29,7 @@ Suggests:
     hgfocuscdf,
     BiocStyle,
     knitr,
-    hgu95av2.db
+    hgu95av2.db,
     rgl
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression
 VignetteBuilder: knitr
