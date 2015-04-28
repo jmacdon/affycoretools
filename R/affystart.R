@@ -354,6 +354,9 @@ plotDeg <- function(dat, filenames = NULL){
 #' @param legend Boolean. Should a legend be added to the plot? Defaults to
 #' \code{TRUE}.
 #' @param main A character \code{vector} for the plot title.
+#' @param plot3d Boolean. If \code{TRUE}, then the PCA plot will be rendered in
+#' 3D using the rgl package. Defaults to \code{FALSE}. Note that the pcs
+#' argument should have a length of three in this case.
 #' @param outside Boolean. If \code{TRUE} the legend will be placed outside the
 #' plotting region, at the top right of the plot.
 #' @param \dots Further arguments to be passed to \code{plot}. See the help
@@ -373,10 +376,13 @@ plotDeg <- function(dat, filenames = NULL){
 #' @export plotPCA
 plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
-                    legend = TRUE, main = "Principal Components Plot",  outside = FALSE, ...){
+                    legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, outside = FALSE, ...){
   if(is.character(groups)) stop("The groups argument should be numeric, not character!\n", call. = FALSE)  
-  if(length(pcs) != 2) stop("You can only plot two principal components.\n", call. = FALSE)
-  
+  if(length(pcs) != 2 && !plot3d) stop("You can only plot two principal components.\n", call. = FALSE)
+  if(length(pcs) != 3 && plot3d) stop("For 3D plotting, you should specify 3 principal components.\n", call. = FALSE)
+
+
+
   if(is(object, "ExpressionSet")){
       if(max(pcs) > dim(exprs(object))[2])
           stop(paste("There are only", dim(exprs(object))[2], "principal components to plot.\n", call. = FALSE))
@@ -408,42 +414,49 @@ plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.
   if(screeplot){
       plot(pca, main = "Screeplot")
   }else{
-      if(legend && outside){
-          opar <- par(no.readonly = TRUE)
-          par(xpd = TRUE, mar = par()$mar + c(0,0,0,5))
-      }
-      if(squarepca){
-          ylim <- max(abs(range(pca$x[,pcs[1]])))
+      if(plot3d){
+          require("rgl", quietly = TRUE) || stop("The rgl package must be installed to do 3D plots.\n", call. = FALSE)
+          plotstuff <- pcaPCH(len, groups, pch, col)
+          plot3d(pca$x[,pcs], type = "s", col = plotstuff$col, size = 2)
+          cat(paste("Sometimes rgl doesn't plot the first time.\nIf there",
+                    "isn't anything in the plotting window, close it and re-run plotPCA().\n"))
+      }else{
+          if(legend && outside){
+              opar <- par(no.readonly = TRUE)
+              par(xpd = TRUE, mar = par()$mar + c(0,0,0,5))
+          }
+          if(squarepca){
+              ylim <- max(abs(range(pca$x[,pcs[1]])))
               ylim <- c(-ylim, ylim)
-      }else ylim <- NULL
-      plotstuff <- pcaPCH(len, groups, pch, col)
-      plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
-           ylab= paste("PC", pcs[2], sep=""),
-           xlab=paste("PC", pcs[1], sep=""),
-           main = main, ylim = ylim, ...)
-      
-      if(!is.null(addtext)){
-          smidge <-  (par("usr")[4] - par("usr")[3])/50
-          text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext,
-               cex = 0.7)
-      }
-      if(legend){
-          if(outside){
-              if(is.null(groups))
-                  unq <- unique(plotstuff)
-              else
-                  unq <- unique(plotstuff[order(groups),])
-              legend(par("usr")[2], par("usr")[4], groupnames, pch = unq[,1],
-                     col = unq[,2], pt.bg = unq[,2], bty = "n")
-              par(opar)
-          }else{
-              pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
-                         y.coord = y.coord, ...)
+          }else ylim <- NULL
+          plotstuff <- pcaPCH(len, groups, pch, col)
+          plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
+               ylab= paste("PC", pcs[2], sep=""),
+               xlab=paste("PC", pcs[1], sep=""),
+               main = main, ylim = ylim, ...)
+
+          if(!is.null(addtext)){
+              smidge <-  (par("usr")[4] - par("usr")[3])/50
+              text(pca$x[,pcs[1]], pca$x[,pcs[2]] + smidge, label = addtext,
+                   cex = 0.7)
+          }
+          if(legend){
+              if(outside){
+                  if(is.null(groups))
+                      unq <- unique(plotstuff)
+                  else
+                      unq <- unique(plotstuff[order(groups),])
+                  legend(par("usr")[2], par("usr")[4], groupnames, pch = unq[,1],
+                         col = unq[,2], pt.bg = unq[,2], bty = "n")
+                  par(opar)
+              }else{
+                  pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
+                             y.coord = y.coord, ...)
+              }
           }
       }
   }
 }
-
 
 
 

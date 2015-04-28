@@ -5,7 +5,8 @@
 \title{Add dotplot images}
 \usage{
 makeImages(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE,
-  repdir = "./reports", extraname = NULL, weights = NULL, ...)
+  repdir = "./reports", extraname = NULL, weights = NULL,
+  insert.after = 3, ...)
 }
 \arguments{
 \item{df}{A data.frame from calling \code{topTable}. Note that the row.names for this data.frame must
@@ -36,6 +37,8 @@ then an extraname can be appended to ensure uniqueness.}
 
 \item{weights}{Array weights, generally from \code{arrayWeights} in the limma package. These will affect the size
 of the plotting symbols, to reflect the relative importance of each sample.}
+
+\item{insert.after}{Which column should the image be inserted after? Defaults to 3.}
 
 \item{\dots}{Allows arbitrary arguments to be passed down to lower level functions.}
 }
