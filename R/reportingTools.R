@@ -675,8 +675,8 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
                                                    rownames(df), "png", sep = "."))
     pdf.image <- file.path(figure.directory, paste("boxplot", 
                                                   rownames(df), "pdf", sep = "."))
-    df <- data.frame(df[,1:insert.after], Image = hwriteImage(mini.image, link = pdf.image, table = FALSE),
-                     df[,(insert.after + 1):ncol(df)])
+    df <- data.frame(df[,1:insert.after, drop = FALSE], Image = hwriteImage(mini.image, link = pdf.image, table = FALSE),
+                     df[,(insert.after + 1):ncol(df), drop = FALSE])
     return(list(df = df, top.pdf = pdf.image[1]))
 }
 
