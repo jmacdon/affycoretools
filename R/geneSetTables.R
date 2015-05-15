@@ -128,7 +128,7 @@ gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col 
 #' @author James W. MacDonald
 dataAndHeatmapPage <- function(eset, fit, ind, columns = NULL, fname, heatmap, title,
                                key = TRUE, fitind = NULL, affy = TRUE, ...){
-    fnhtml <- paste(fname, "_heatmap", sep = "")
+    fnhtml <- paste(fname, "_heatmap.html", sep = "")
     prbs <- featureNames(eset)[ind]
     if(is.null(columns)) columns <- 1:dim(eset)[2]
     if(is.null(fitind)) fitind <- 1:ncol(fit$t)

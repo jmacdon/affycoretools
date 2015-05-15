@@ -55,9 +55,13 @@ affyLinks <- function(df, ...){
 }
 
 goLinks <- function(df, ...){
+    ## first column likely to be links. Extract out the GO IDs
+    linkpart <- as.character(df[,1])
+    if(length(grep("href", linkpart)) > 0)
+        linkpart <- sapply(strsplit(linkpart, ">|<"), "[", 3)
     df$Term <- hwrite(as.character(df$Term),
                       link = paste0("http://amigo.geneontology.org/amigo/term/",
-                      as.character(df[,1])), table = FALSE)
+                      linkpart), table = FALSE)
     return(df)
 }
 
@@ -469,7 +473,7 @@ vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = F
                     br = TRUE)
                         
     lapply(seq(along = vennlst), function(x) drawVenn(vennlst[[x]], page = hpage, 
-               dir = reportDirectory, num = x, cex = cex.venn, shift.title = shift.title))
+               dir = reportDirectory, num = x, cex = cex.venn, shift.title = shift.title, ...))
     closePage(hpage)
     paste0(reportDirectory, "/", pagename, ".html")
 }
@@ -773,6 +777,8 @@ remove.axis.and.padding <- function(plot) {
 ##' @author Jim MacDonald
 makeGoGeneTable <- function(fit.table, probe.sum.table, go.id, cont.name, base.dir = NULL, extraname = NULL, 
                         probecol = "PROBEID", affy = TRUE){
+    ## Windows doesn't like ':' in a file name and will silently replace with '_' anyway
+    go.id <- gsub(":", "_", go.id)
     prbs <- probe.sum.table$ProbeSetID[as.logical(probe.sum.table$selected)]
     out <- fit.table[fit.table[,probecol] %in% prbs, , drop = FALSE]
     rep.dir <- gsub(" ", "_", cont.name)
