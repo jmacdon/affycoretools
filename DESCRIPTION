@@ -2,7 +2,7 @@ Package: affycoretools
 Date: 2008-12-15
 Title: Functions useful for those doing repetitive analyses
     with Affymetrix GeneChips
-Version: 1.41.6
+Version: 1.41.7
 Author: James W. MacDonald
 Description: Various wrapper functions that have been written to
     streamline the more common analyses that a core Biostatistician
@@ -19,7 +19,7 @@ Imports:
     splines,
     xtable,
     AnnotationDbi,
-    lattice,
+    ggplot2,
     gplots,
     oligoClasses,
     ReportingTools,
