@@ -28,13 +28,6 @@ maplot <- function(object){
     }else{
         mat <- as.matrix(object)
     }
-    if(!is.null(layout) && length(layout) !=2)
-        stop("The layout argument should be a numeric vector of length two!\n",
-             call. = FALSE)
-    if(!is.null(layout) && length(unique(layout)) != 1)
-        warning(paste("You will get better results if the layout argument is a vector\n",
-                      "of two equal numbers, usually between 2 and 5.\n"),
-                call. = FALSE, immediate. = TRUE)
     med <- apply(mat, 1, median, na.rm = TRUE)
     M <- mat - med
     A <- (mat + med)/2
