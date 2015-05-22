@@ -36,6 +36,7 @@
 #' @importFrom oligoClasses db
 #' @importFrom ReportingTools HTMLReport CSVFile publish finish reporting.theme filename path
 #' @importFrom hwriter hwrite hwriteImage hmakeTag closePage openPage
+#' @importFrom ggplot2 ggplot geom_point facet_wrap aes
 #' @docType package
 #' @name affycoretools
 #' @author

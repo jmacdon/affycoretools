@@ -415,7 +415,7 @@ plotPCA <- function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.
       plot(pca, main = "Screeplot")
   }else{
       if(plot3d){
-          require("rgl", quietly = TRUE) || stop("The rgl package must be installed to do 3D plots.\n", call. = FALSE)
+          requireNamespace("rgl", quietly = TRUE) || stop("The rgl package must be installed to do 3D plots.\n", call. = FALSE)
           plotstuff <- pcaPCH(len, groups, pch, col)
           plot3d(pca$x[,pcs], type = "s", col = plotstuff$col, size = 2)
           cat(paste("Sometimes rgl doesn't plot the first time.\nIf there",
