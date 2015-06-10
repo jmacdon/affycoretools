@@ -689,13 +689,15 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
 makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot, ylab.type = "Expression Value", 
     scales = list(), par.settings = list(), xlab = NULL, weights = NULL, ...) {
     scales <- c(scales, list(x = list(rot = 45)))
-    if (inherits(expression.dat, "eSet")) {
-        expression.dat <- exprs(expression.dat)
-    }
-    else if (is(expression.dat, "data.frame")) {
-        expression.dat <- as.matrix(expression.dat)
-    }
-    
+    eclass <- class(expression.dat)[1]
+    expression.dat <- switch(eclass,
+                             ExpressionSet = exprs(expression.dat),
+                             matrix = expression.dat,
+                             data.frame = as.matrix(expression.dat),
+                             DGEList = cpm(expression.dat, log = TRUE),
+                             stop(paste0("The 'expression.dat' argument is of class", eclass, ". This function can only use",
+                            "an ExpressionSet, matrix, data.frame or DGEList object"), call. = FALSE))
+        
     if (any(!rownames(df) %in% rownames(expression.dat))) {
         stop(paste("Can't find expression data for some features\n"))
     }
