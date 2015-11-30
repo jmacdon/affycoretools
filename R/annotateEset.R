@@ -95,8 +95,8 @@ setMethod("annotateEset", c("ExpressionSet","AffyExonPDInfo"),
                    stop("Type must be either 'core' or 'probeset'", call. = FALSE))
     load(system.file(paste0("/extdata/", type), package = annotation(x)))
     annot <- pData(get(sub("\\.rda", "", type)))
-    anno <- as.data.frame(do.call(rbind, lapply(strsplit(annot$mrnaassignment, " // "), "[", 1:3)))
-    names(anno) <- c("ID", "SOURCE","GENENAME")
+    anno <- as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3)))
+    names(anno) <- c("ID", "SYMBOL","GENENAME")
     row.names(anno) <- as.character(annot$probesetid)
     anno <- anno[featureNames(object),]
     if(!isTRUE(all.equal(row.names(anno), featureNames(object))))
@@ -133,8 +133,9 @@ setMethod("annotateEset", c("ExpressionSet","data.frame"),
         stop(paste("You must specify the column containing the probeset IDs (probecol argument)",
                    "and the column(s) containing the annotation data you wish to use (annocols argument).\n"),
              call. = FALSE)
+    rn <- as.character(x[,probecol])
     anno <- x[,annocols]
-    row.names(anno) <- as.character(anno[,probecol])
+    row.names(anno) <- rn
     anno <- anno[featureNames(object),]
     if(!isTRUE(all.equal(row.names(anno), featureNames(object))))
         stop(paste("There appears to be a mismatch between the ExpressionSet and the",
