@@ -17,8 +17,9 @@
 #' convert all the functions to primarily use ReportingTools.
 #'
 #' @importMethodsFrom affy hist mas5calls
-#' @importMethodsFrom AnnotationDbi Term get dbconn select
-#' @importMethodsFrom Biobase annotation exprs featureNames sampleNames write.exprs
+#' @importMethodsFrom AnnotationDbi Term get dbconn select mapIds 
+#' @importMethodsFrom Biobase annotation exprs featureNames sampleNames write.exprs pData featureData<- AnnotatedDataFrame
+#' @importFrom S4Vectors DataFrame
 #' @importFrom affy AffyRNAdeg mas5 plotAffyRNAdeg plotDensity ReadAffy rma
 #' @importFrom Biobase addVigs2WinMenu assayDataElement
 #' @importFrom graphics layout legend par text
@@ -26,6 +27,7 @@
 #' @importFrom stats median p.adjust prcomp
 #' @importFrom utils write.table
 #' @importFrom limma topTable vennCounts decideTests romer ids2indices vennDiagram
+#' @importFrom edgeR cpm
 #' @importFrom GOstats probeSetSummary
 #' @importFrom gcrma gcrma
 #' @importFrom splines ns
@@ -37,6 +39,7 @@
 #' @importFrom ReportingTools HTMLReport CSVFile publish finish reporting.theme filename path
 #' @importFrom hwriter hwrite hwriteImage hmakeTag closePage openPage
 #' @importFrom ggplot2 ggplot geom_point facet_wrap aes
+#' @import methods
 #' @docType package
 #' @name affycoretools
 #' @author

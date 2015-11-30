@@ -5,18 +5,19 @@
 
 #' Add links to data when using ReportingTools
 #' 
-#' These functions are intended to add links to the Affymetrix, Entrez Gene,
+#' These functions are intended to add links to the Affymetrix, Entrez Gene, Nuccore,
 #' and AmiGO databases when creating HTML tables using ReportingTools.
 #' 
 #' These functions are not actually intended to be called directly. Instead,
 #' they are used as targets for the .modifyDF argument of the \code{publish}
 #' function of ReportingTools. See the example below for more detail.
 #' 
-#' @aliases entrezLinks affyLinks goLinks
+#' @aliases entrezLinks affyLinks goLinks nuccoreLinks
 #' @param df A data.frame, usually created using the \code{select} function of
 #' the AnnotationDbi package. For Entrez ID data, the column name must be
 #' ENTREZID. For Affy data, the column name must be PROBEID, and for GO data
-#' the column name must be Term. Any other names will fail.
+#' the column name must be Term. For Nuccore the column name can be any of
+#' "GI", "REFSEQ", "ACCNUM". Any other names will fail.
 #' @param ... Allows one to pass arbitrary arguments to lower level functions.
 #' Currently unsupported.
 #' @return A data.frame is returned, with links included.
@@ -26,19 +27,21 @@
 #' 
 #' \dontrun{
 #' ## say we have an ExpressionSet from HuGene 1.0 ST array
+#' dat <- read.celfiles()
+#' eset <- rma(dat)
+#' ## annotate the ExpressionSet
+#' eset <- annotateEset(eset, hugene10sttranscriptcluster.db,
+#' columns = c("ENTREZID","ACCNUM","SYMBOL"))
 #' ## and fit a model using limma
 #' fit <- lmFit(eset, design)
 #' fit2 <- eBayes(fit)
-#' ## now annotate the genes using select()
-#' fit2$genes <- select(hugene10sttranscriptcluster.db, featureNames(eset),
-#' c("ENTREZID","SYMBOL"))
 #' ## and create an HTML page with links to Affy and Entrez
 #' out <- topTable(fit2, coef=2)
 #' htab <- HTMLReport("The title","a_short_name")
-#' publish(out, htab, .modifyDF = list(affyLinks, entrezLinks))
+#' publish(out, htab, .modifyDF = list(affyLinks, entrezLinks, nuccoreLinks))
 #' finish(htab)}
 #' 
-#' @export entrezLinks affyLinks goLinks
+#' @export entrezLinks affyLinks goLinks nuccoreLinks
 entrezLinks <- function (df, ...) {
     naind <- is.na(df$ENTREZID)
     df$ENTREZID <- hwrite(as.character(df$ENTREZID), link = paste0("http://www.ncbi.nlm.nih.gov/gene/", 
@@ -65,7 +68,20 @@ goLinks <- function(df, ...){
     return(df)
 }
 
-
+nuccoreLinks <- function(df, ...){
+    col <- grep("GI|REFSEQ|ACCNUM", colnames(df), ignore.case = TRUE)
+    if(length(col) == 0) {
+        stop(paste("There needs to be a column labeled 'GI', 'REFSEQ', or 'ACCNUM'",
+                   "to add links to the nuccore database."), call. = FALSE)
+    } else if(length(col) > 1) {
+        stop(paste("There can only be one column labeled 'GI', 'REFSEQ', or 'ACCNUM'",
+                   "to add links to the nuccore database."), call. = FALSE)
+    }
+    df[,col] <- hwrite(as.character(df[,col]),
+                       link = paste0("http://www.ncbi.nlm.nih.gov/nuccore/",
+                                     as.character(df[,col])), table = FALSE)
+    return(df)
+}
 
 
 

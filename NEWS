@@ -1,0 +1,9 @@
+affycoretools v1.43.1
+=====================
+
+Changes:
+
+Added new functionality to automatically annotate ExpressionSets,
+using either ChipDb (e.g., hugene10sttranscriptcluster.db) packages,
+pdInfo (e.g., pd.hugene.1.0.v1) packages, or user-supplied
+data.frames. 

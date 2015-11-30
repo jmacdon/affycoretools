@@ -96,9 +96,9 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
         if(is.null(miRNAcol)) miRNAcol <- 2
         if(is.null(mRNAcol)) mRNAcol <- 12
     }
-    tab <- switch(transType,
-                  ensembl = "ensembl_trans",
-                  "refseq")
+    ## tab <- switch(transType,
+    ##               ensembl = "ensembl_trans",
+    ##               "refseq")
 
     miRNAids <- convertIDs(miRNAids)
     annot <- read.table(miRNAannot, sep = "\t", stringsAsFactors = FALSE)
@@ -116,14 +116,20 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
     con <- dbconn(get(paste(sub("\\.db", "", chipPkg), "ENTREZID", sep = "")))
     dbGetQuery(con, attachSQL)
 
-    makeSql <- function(ids, tab){
-        paste("select distinct probe_id from probes ",
-              "inner join orgDB.genes as gi on probes.gene_id=gi.gene_id ",
-              "inner join orgDB.", tab, " as et on gi._id=et._id ",
-              "where et.trans_id in ('", paste(ids, collapse = "','"), "');", sep = "")
+    makeSql <- function(ids, transType){
+        sql <- switch(transType,
+                      ensembl = paste("select distinct probe_id from probes ",
+                      "inner join orgDB.genes as gi on probes.gene_id=gi.gene_id ",
+                      "inner join orgDB.ensembl_trans as et on gi._id=et._id ",
+                      "where et.trans_id in ('", paste(ids, collapse = "','"), "');", sep = ""),
+                      paste("select distinct probe_id from probes ",
+                            "inner join orgDB.genes as gi on probes.gene_id=gi.gene_id ",
+                            "inner join orgDB.refseq as et on gi._id=et._id ",
+                            "where et.accession in ('", paste(ids, collapse = "','"), "');", sep = ""))
+        return(sql)
     }
     
-    mrnaprbs <- lapply(prblst, function(x) dbGetQuery(con, makeSql(x, tab))[,1])
+    mrnaprbs <- lapply(prblst, function(x) dbGetQuery(con, makeSql(x, transType))[,1])
     intprbs <- lapply(mrnaprbs, function(x) mRNAids[mRNAids %in% x])
     intprbs <- intprbs[sapply(intprbs, length) > 0]
     dbGetQuery(con, "detach orgDB;")
@@ -179,6 +185,11 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
 #' @param header Character. The plot title if a heatmap is output.
 #' @param plot Boolean. Should a heatmap be generated?
 #' @param out Boolean. Should the matrix of correlation coefficients be output?
+#' @param lhei From \code{\link[gplots]{heatmap.2}}. This controls the ratio of the heatmap
+#' to the key size. If there are very few mRNAs being plotted, you may need to change to
+#' something like (0.5, 5).
+#' @param margins From \code{\link[gplots]{heatmap.2}}. This controls the right and bottom
+#' margins, respectively. Increase either value if names get cut off.
 #' @return This function will output a numeric matrix if the 'out' argument is
 #' \code{TRUE}.
 #' @author James W. MacDonald
@@ -186,7 +197,7 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
 #' @keywords manip
 #' @export makeHmap
 makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL, chipPkg,
-                     header, plot = TRUE, out = TRUE){
+                     header, plot = TRUE, out = TRUE, lhei = c(0.05, 0.95), margins = c(5,8)){
     mRNAdat <- allToMat(mRNAdat)
     miRNAdat <- allToMat(miRNAdat)
     if(is.null(mRNAvec)) mRNAvec <- seq_len(ncol(mRNAdat))
@@ -219,8 +230,7 @@ makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL
     for(i in seq(along = cn2))
         mat[mRNAlst[[i]], cn[i]] <- getCor(cn2[i], mRNAlst[[i]])
     
-    rn2 <- sapply(AnnotationDbi::mget(rn, get(paste(sub("\\.db", "", chipPkg), "SYMBOL", sep = "")),
-                       ifnotfound=NA), function(x) x[1])
+    rn2 <- mapIds(get(chipPkg), rn, "SYMBOL", "PROBEID", multiVals = "first")
     rn2 <- ifelse(is.na(rn2), rn, rn2)
     row.names(mat) <- rn2
     ## alphabetize matrix
@@ -228,13 +238,14 @@ makeHmap <- function(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL
     mat <- mat[ord,,drop = FALSE]
     if(plot){
         heatmap.2(mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none",
-                  trace = "none", density.info = "none", lhei = c(0.05, 0.95),
+                  trace = "none", density.info = "none", lhei = lhei,
                   cexCol = 0.6, colsep = 1:ncol(mat), rowsep = 1:nrow(mat),
-                  sepcolor = "lightgrey", main = header, margins = c(5,8))
+                  sepcolor = "lightgrey", main = header, margins = margins)
     }
-    if(out)
+    if(out){
         mat <- data.frame(mRNA.ID = rn[ord], mat, row.names = NULL)
         return(mat)
+    }
 }
 
   

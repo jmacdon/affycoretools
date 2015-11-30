@@ -2,7 +2,7 @@ Package: affycoretools
 Date: 2008-12-15
 Title: Functions useful for those doing repetitive analyses
     with Affymetrix GeneChips
-Version: 1.43.0
+Version: 1.43.1
 Author: James W. MacDonald
 Description: Various wrapper functions that have been written to
     streamline the more common analyses that a core Biostatistician
@@ -10,7 +10,8 @@ Description: Various wrapper functions that have been written to
 Maintainer: James W. MacDonald <jmacdon@u.washington.edu>
 License: Artistic-2.0
 Depends:
-    Biobase
+    Biobase,
+    methods
 Imports:
     affy,
     limma,
@@ -24,7 +25,9 @@ Imports:
     oligoClasses,
     ReportingTools,
     hwriter,
-    lattice
+    lattice,
+    S4Vectors,
+    edgeR
 Suggests:
     affydata,
     hgfocuscdf,
@@ -34,3 +37,4 @@ Suggests:
     rgl
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1
