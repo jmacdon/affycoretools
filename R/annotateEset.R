@@ -39,7 +39,7 @@ setGeneric("annotateEset", function(object, x, ...) standardGeneric("annotateEse
 ##' @describeIn annotateEset Annotate an ExpressionSet using a ChipDb package for annotation data.
 ##' @export
 setMethod("annotateEset", c("ExpressionSet","ChipDb"),
-          function(object, x, columns = c("ENTREZID","SYMBOL","GENENAME"), multivals = "first"){
+          function(object, x, columns = c("PROBEID","ENTREZID","SYMBOL","GENENAME"), multivals = "first"){
     
     multivals <- switch(multivals,
                         first = "first",
