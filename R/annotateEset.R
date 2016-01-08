@@ -98,6 +98,8 @@ setMethod("annotateEset", c("ExpressionSet","AffyExonPDInfo"),
     anno <- as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3)))
     names(anno) <- c("ID", "SYMBOL","GENENAME")
     row.names(anno) <- as.character(annot$probesetid)
+    anno$PROBEID <- row.names(anno)
+    anno <- anno[,c(4,1:3)]
     anno <- anno[featureNames(object),]
     if(!isTRUE(all.equal(row.names(anno), featureNames(object))))
         stop(paste("There appears to be a mismatch between the ExpressionSet and",
