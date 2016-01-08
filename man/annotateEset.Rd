@@ -14,7 +14,8 @@
 annotateEset(object, x, ...)
 
 \S4method{annotateEset}{ExpressionSet,ChipDb}(object, x,
-  columns = c("ENTREZID", "SYMBOL", "GENENAME"), multivals = "first")
+  columns = c("PROBEID", "ENTREZID", "SYMBOL", "GENENAME"),
+  multivals = "first")
 
 \S4method{annotateEset}{ExpressionSet,AffyGenePDInfo}(object, x,
   type = "core", ...)
