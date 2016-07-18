@@ -40,17 +40,25 @@ setGeneric("annotateEset", function(object, x, ...) standardGeneric("annotateEse
 ##' @export
 setMethod("annotateEset", c("ExpressionSet","ChipDb"),
           function(object, x, columns = c("PROBEID","ENTREZID","SYMBOL","GENENAME"), multivals = "first"){
-    
+    ## Doing mapIds(chipDb, featureNames(object), "PROBEID","PROBEID") fails for many packages, and wastes compute cycles
+    ## so we just add that by hand.
+    addcol <- FALSE
+    if(any(columns == "PROBEID")) {
+        addcol <- TRUE
+        columns <- columns[-grep("PROBEID", columns)]
+        collst <- list(PROBEID = featureNames(object))
+    }
     multivals <- switch(multivals,
                         first = "first",
                         list = "CharacterList",
                         CharacterList = "CharacterList",
                         stop("The multivals argument should be 'first', 'list' or ;CharacterList'", call. = FALSE))
     annolst <- lapply(columns, function(y) mapIds(x, featureNames(object), y, "PROBEID", multiVals = multivals))
+    if(addcol) annolst <- c(collst, annolst)
     anno <- switch(multivals,
                    first = as.data.frame(annolst),
                    DataFrame(annolst))
-    names(anno) <- columns
+    names(anno) <- if(addcol) c("PROBEID", columns) else columns
     if(!isTRUE(all.equal(row.names(anno), featureNames(object))))
         stop(paste("There appears to be a mismatch between the ExpressionSet and",
                    "the annotation data.\nPlease ensure that the summarization level",
@@ -97,7 +105,9 @@ setMethod("annotateEset", c("ExpressionSet","AffyExonPDInfo"),
     annot <- pData(get(sub("\\.rda", "", type)))
     anno <- as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3)))
     names(anno) <- c("ID", "SYMBOL","GENENAME")
-    row.names(anno) <- as.character(annot$probesetid)
+    row.names(anno) <- switch(type,
+                              probeset = as.character(annot$probesetid),
+                              core = as.character(annot$transcriptclusterid))
     anno$PROBEID <- row.names(anno)
     anno <- anno[,c(4,1:3)]
     anno <- anno[featureNames(object),]

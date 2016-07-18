@@ -251,7 +251,7 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
     }
                        
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
-    fixed.dflst <- lapply(csvlst, fixHeaderAndGo, affy = affy, probecol = probecol)
+    fixed.dflst <- lapply(csvlst[ind], fixHeaderAndGo, affy = affy, probecol = probecol)
     csvlst <- lapply(fixed.dflst, function(x) x$df)
     mdf <- fixed.dflst[[1]]$mdf
     
@@ -519,6 +519,7 @@ drawVenn <- function(lst, page, dir, num, cex = 1, shift.title = FALSE, ...){
 }
 
 vennLinks <- function(lst, page, mapname, reportDirectory){
+    if(is.null(page)) page <- ""
     fun <- function(x,y) paste0('<area shape="circle" coords=',
                                     x, ' href=', y, '></area>')
     if(is(lst$venncounts, "VennCounts")){
