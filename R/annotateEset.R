@@ -97,12 +97,12 @@ setMethod("annotateEset", c("ExpressionSet","AffyExonPDInfo"),
 })
 
 .dataFromNetaffx <- function(object, x, type = "core", ...){
-    type <- switch(type,
-                   core = "netaffxTranscript.rda",
-                   probeset = "netaffxProbeset.rda",
-                   stop("Type must be either 'core' or 'probeset'", call. = FALSE))
-    load(system.file(paste0("/extdata/", type), package = annotation(x)))
-    annot <- pData(get(sub("\\.rda", "", type)))
+    typeToGet <- switch(type,
+                        core = "netaffxTranscript.rda",
+                        probeset = "netaffxProbeset.rda",
+                        stop("Type must be either 'core' or 'probeset'", call. = FALSE))
+    load(system.file(paste0("/extdata/", typeToGet), package = annotation(x)))
+    annot <- pData(get(sub("\\.rda", "", typeToGet)))
     anno <- as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3)))
     names(anno) <- c("ID", "SYMBOL","GENENAME")
     row.names(anno) <- switch(type,
