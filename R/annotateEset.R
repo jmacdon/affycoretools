@@ -96,6 +96,18 @@ setMethod("annotateEset", c("ExpressionSet","AffyExonPDInfo"),
     .dataFromNetaffx(object, x, type,...)
 })
 
+##' @describeIn annotateEset Annotate an ExpressionSet using an AffyExpressionPDInfo package.
+##' @export
+setMethod("annotateEset", c("ExpressionSet","AffyExpressionPDInfo"),
+          function(object, x, type = "core", ...){
+    if(type != "core") warning("Setting type to 'core', as that is the only summarization available.", call. = FALSE)
+    if(!file.exists(system.file(paste0("/extdata/netaffxTranscript.rda"), package = annotation(x))))
+        stop(paste("There is no annotation object provided with the", deparse(substitute(x)), "package."), call. = FALSE)
+    .dataFromNetaffx(object, x, type = "core",...)
+})
+
+
+
 .dataFromNetaffx <- function(object, x, type = "core", ...){
     typeToGet <- switch(type,
                         core = "netaffxTranscript.rda",
@@ -103,24 +115,34 @@ setMethod("annotateEset", c("ExpressionSet","AffyExonPDInfo"),
                         stop("Type must be either 'core' or 'probeset'", call. = FALSE))
     load(system.file(paste0("/extdata/", typeToGet), package = annotation(x)))
     annot <- pData(get(sub("\\.rda", "", typeToGet)))
-    anno <- as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3)))
-    names(anno) <- c("ID", "SYMBOL","GENENAME")
-    row.names(anno) <- switch(type,
-                              probeset = as.character(annot$probesetid),
-                              core = as.character(annot$transcriptclusterid))
-    anno$PROBEID <- row.names(anno)
-    anno <- anno[,c(4,1:3)]
-    anno <- anno[featureNames(object),]
-    if(!isTRUE(all.equal(row.names(anno), featureNames(object))))
+    if(nrow(annot)/nrow(object) < 0.95)
         stop(paste("There appears to be a mismatch between the ExpressionSet and",
                    "the annotation data.\nPlease ensure that the summarization level",
                    "for the ExpressionSet and the 'type' argument are the same.\n",
                    "See ?annotateEset for more information on the type argument.\n"),
              call. = FALSE)
+    anno <- switch(type,
+                   core = as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3))),
+                   probeset = as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " /// "), function(x) unlist(strsplit(x[1], " // "))))))
+    names(anno) <- c("ID", "SYMBOL","GENENAME")[seq_len(ncol(anno))]
+    row.names(anno) <- switch(type,
+                              probeset = as.character(annot$probesetid),
+                              core = as.character(annot$transcriptclusterid))
+    anno$PROBEID <- row.names(anno)
+    anno <- anno[,c(ncol(anno),1:(ncol(anno)-1))]
+    if(!all(featureNames(object) %in% row.names(anno)))  anno <- .makeFullDf(anno, featureNames(object))
+    anno <- anno[featureNames(object),]
     andf <- dfToAnnoDF(anno)
     featureData(object) <- andf
     stopifnot(validObject(object))
     object
+}
+
+.makeFullDf <- function(d.f, rn){
+    for(i in seq_len(ncol(d.f))) d.f[,i] <- as.character(d.f[,i])
+    tmp <- data.frame(matrix(nrow = length(rn), ncol = ncol(d.f), dimnames = list(rn, names(d.f))))
+    tmp[row.names(d.f),] <- d.f
+    tmp
 }
 
 ##' @describeIn annotateEset Method to capture character input.

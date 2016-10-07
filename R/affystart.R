@@ -661,6 +661,7 @@ writeFit <- function(fit, annotation = NULL, eset,
 #' 
 #' @param input Either a character string (e.g., "pd.hugene.1.0.st.v1") or a
 #' FeatureSet object.
+#' @param level The summarization level used when calling rma. 
 #' @return If the argument is a character string, returns a data.frame
 #' containing probeset IDs along with the probeset type, that can be used to
 #' subset e.g., an ExpressionSet of Gene ST data, or an MArrayLM object created
@@ -671,32 +672,120 @@ writeFit <- function(fit, annotation = NULL, eset,
 #' @author James W. MacDonald <jmacdon@@u.washington.edu>
 #' @keywords manip
 #' @export getMainProbes
-getMainProbes <- function(input){
+getMainProbes <- function(input, level = "core"){
     if(is(input, "ExpressionSet")){
-        pdinfo <- annotation(input)
-        if(length(grep("^pd", pdinfo)) != 1)
-            stop(paste("The file", pdinfo, "does not appear to have been processed using",
-                       "the oligo package.\nIn this case the argument to this function should",
-                       "be the name of the correct pd.info package (e.g., pd.hugene.1.0.st.v1.\n"),
-                 call.  = FALSE)
+        pdinfo <- get(annotation(input))
+        .getMainProbes(input, pdinfo, level = level)
     }else{
-        if(is.character(input)) pdinfo <- input
-        else
-            if(!is.character(input))
-                stop(paste("The input argument for this function should either be an ExpressionSet",
-                           "that was generated using oligo, or the name of the pd.info package",
-                           "that corresponds to your data.\n"), call. = FALSE)
+        if(is.character(input)){
+            require(input, quietly = TRUE, character.only = TRUE)
+            .getMainProbes(, input, level = level)
+        }
     }
-    require(pdinfo, character.only = TRUE)
-    con <- db(get(pdinfo))
-    types <- dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
-                                   "using(fsetid);"))
-    dbDisconnect(con)
-    if(is(input, "ExpressionSet")){
-        types <- types[match(featureNames(input), types[,1]),]
-        ind <- types[,2] %in% 1
-        return(input[ind,])
-    } else 
-        return(types)
 }
+
+
+    
+setGeneric(".getMainProbes", function(object, x, ...) standardGeneric(".getMainProbes"))
+
+setMethod(".getMainProbes", c("ExpressionSet","AffyGenePDInfo"),
+          function(object, x, level = "core", ...){
+    con <- db(x)
+    types <- switch(level,
+           core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                                        "using(fsetid);")),
+           probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
+           stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
+    on.exit(dbDisconnect(con))
+    if(!all(featureNames(object) %in% types[,1]))
+        stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
+    types <- types[match(featureNames(object), types[,1]),]
+    mains <- whichMains(con, types)
+    ind <- types[,2] %in% mains
+    return(object[ind,])
+})
+
+setMethod(".getMainProbes", c("ExpressionSet","AffyHTAPDInfo"),
+          function(object, x, level = "core", ...){
+    con <- db(x)
+    types <- switch(level,
+           core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                                        "using(fsetid);")),
+           probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
+           stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
+    on.exit(dbDisconnect(con))
+    if(!all(featureNames(object) %in% types[,1]))
+        stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
+    types <- types[match(featureNames(object), types[,1]),]
+    mains <- whichMains(con, types)
+    ind <- types[,2] %in% mains
+    return(object[ind,])
+})
+
+setMethod(".getMainProbes", c("ExpressionSet","AffyExonPDInfo"),
+          function(object, x, level = "core", ...){
+    con <- db(x)
+    types <- switch(level,
+           core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                                        "using(fsetid);")),
+           extended = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join extended_mps",
+                                            "using(fsetid);")),
+           full = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join full_mps",
+                                            "using(fsetid);")),
+           probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
+           stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
+    on.exit(dbDisconnect(con))
+    if(!all(featureNames(object) %in% types[,1]))
+        stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
+    types <- types[match(featureNames(object), types[,1]),]
+    mains <- whichMains(con, types)
+    ind <- types[,2] %in% mains
+    return(object[ind,])
+})
+
+setMethod(".getMainProbes", c("ExpressionSet","AffyExpressionPDInfo"),
+          function(object, x, ...){
+    con <- db(x)
+    atest <- dbGetQuery(con, "select * from featureSet limit 2;")
+    if(!any(names(atest) %in% "type")) {
+        warning("This array type doesn't have 'main' probesets. Returning unfiltered.", call. = FALSE)
+        return(object)
+    }
+    types <- dbGetQuery(con, "select distinct man_fsetid, type from featureSet")
+    on.exit(dbDisconnect(con))
+    if(!all(featureNames(object) %in% types[,1]))
+        stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
+    types <- types[match(featureNames(object), types[,1]),]
+    mains <- whichMains(con, types)
+    ind <- types[,2] %in% mains
+    return(object[ind,])
+})
+
+setMethod(".getMainProbes", c("missing", "character"),
+          function(object, x, level = "core", ...){
+    pkg <- get(x)
+    con <- db(pkg)
+    on.exit(dbDisconnect(con))
+    if(is(pkg, "AffyExpressionPDInfo")){
+        return(dbGetQuery(con, "select distinct man_fsetid, type from featureSet"))
+    } else {
+        checklevel <- c("probeset", gsub("_mps", "", grep("mps$", dbListTables(con), value = TRUE)))
+        if(!any(checklevel %in% level)) stop(paste("The pdInfoPackag only has", paste(checklevel, collapse = ", "), "levels."), call. = FALSE)
+        types <- switch(level,
+                        core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                                                     "using(fsetid);")),
+                        extended = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join extended_mps",
+                                                         "using(fsetid);")),
+                        full = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join full_mps",
+                                                     "using(fsetid);")),
+                        probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
+                        stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
+        return(types)
+    }
+})
+
   
+whichMains <- function(con, types){
+    thetypes <- dbGetQuery(con, "select * from type_dict;")
+    thetypes$type[grep("main", thetypes$type_id)]
+}

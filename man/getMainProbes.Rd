@@ -4,11 +4,13 @@
 \alias{getMainProbes}
 \title{Remove control probesets from ST arrays}
 \usage{
-getMainProbes(input)
+getMainProbes(input, level = "core")
 }
 \arguments{
 \item{input}{Either a character string (e.g., "pd.hugene.1.0.st.v1") or a
 FeatureSet object.}
+
+\item{level}{The summarization level used when calling rma.}
 }
 \value{
 If the argument is a character string, returns a data.frame

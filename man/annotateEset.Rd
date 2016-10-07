@@ -4,6 +4,7 @@
 \name{annotateEset}
 \alias{annotateEset}
 \alias{annotateEset,ExpressionSet,AffyExonPDInfo-method}
+\alias{annotateEset,ExpressionSet,AffyExpressionPDInfo-method}
 \alias{annotateEset,ExpressionSet,AffyGenePDInfo-method}
 \alias{annotateEset,ExpressionSet,AffyHTAPDInfo-method}
 \alias{annotateEset,ExpressionSet,ChipDb-method}
@@ -24,6 +25,9 @@ annotateEset(object, x, ...)
   ...)
 
 \S4method{annotateEset}{ExpressionSet,AffyExonPDInfo}(object, x,
+  type = "core", ...)
+
+\S4method{annotateEset}{ExpressionSet,AffyExpressionPDInfo}(object, x,
   type = "core", ...)
 
 \S4method{annotateEset}{ExpressionSet,character}(object, x, ...)
@@ -80,6 +84,8 @@ ChipDb package is not available.
 \item \code{object = ExpressionSet,x = AffyHTAPDInfo}: Annotate an ExpressionSet using an AffyHTAPDInfo package.
 
 \item \code{object = ExpressionSet,x = AffyExonPDInfo}: Annotate an ExpressionSet using an AffyExonPDInfo package.
+
+\item \code{object = ExpressionSet,x = AffyExpressionPDInfo}: Annotate an ExpressionSet using an AffyExpressionPDInfo package.
 
 \item \code{object = ExpressionSet,x = character}: Method to capture character input.
 
