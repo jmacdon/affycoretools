@@ -692,7 +692,7 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyGenePDInfo"),
           function(object, x, level = "core", ...){
     con <- db(x)
     types <- switch(level,
-           core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+           core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                         "using(fsetid);")),
            probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
            stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
@@ -709,7 +709,7 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyHTAPDInfo"),
           function(object, x, level = "core", ...){
     con <- db(x)
     types <- switch(level,
-           core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+           core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                         "using(fsetid);")),
            probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
            stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
@@ -726,11 +726,11 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyExonPDInfo"),
           function(object, x, level = "core", ...){
     con <- db(x)
     types <- switch(level,
-           core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+           core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                         "using(fsetid);")),
-           extended = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join extended_mps",
+           extended = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join extended_mps",
                                             "using(fsetid);")),
-           full = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join full_mps",
+           full = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join full_mps",
                                             "using(fsetid);")),
            probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
            stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
@@ -772,11 +772,11 @@ setMethod(".getMainProbes", c("missing", "character"),
         checklevel <- c("probeset", gsub("_mps", "", grep("mps$", dbListTables(con), value = TRUE)))
         if(!any(checklevel %in% level)) stop(paste("The pdInfoPackag only has", paste(checklevel, collapse = ", "), "levels."), call. = FALSE)
         types <- switch(level,
-                        core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                        core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                                      "using(fsetid);")),
-                        extended = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join extended_mps",
+                        extended = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join extended_mps",
                                                          "using(fsetid);")),
-                        full = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join full_mps",
+                        full = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join full_mps",
                                                      "using(fsetid);")),
                         probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
                         stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
