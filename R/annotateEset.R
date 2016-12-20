@@ -52,7 +52,7 @@ setMethod("annotateEset", c("ExpressionSet","ChipDb"),
                         first = "first",
                         list = "CharacterList",
                         CharacterList = "CharacterList",
-                        stop("The multivals argument should be 'first', 'list' or ;CharacterList'", call. = FALSE))
+                        stop("The multivals argument should be 'first', 'list' or 'CharacterList'", call. = FALSE))
     annolst <- lapply(columns, function(y) mapIds(x, featureNames(object), y, "PROBEID", multiVals = multivals))
     if(addcol) annolst <- c(collst, annolst)
     anno <- switch(multivals,
@@ -124,7 +124,7 @@ setMethod("annotateEset", c("ExpressionSet","AffyExpressionPDInfo"),
     anno <- switch(type,
                    core = as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3))),
                    probeset = as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " /// "), function(x) unlist(strsplit(x[1], " // "))))))
-    names(anno) <- c("ID", "SYMBOL","GENENAME")[seq_len(ncol(anno))]
+    names(anno) <- c("ID", "SYMBOL","GENENAME","CHRLOC","ENTREZID")[seq_len(ncol(anno))]
     row.names(anno) <- switch(type,
                               probeset = as.character(annot$probesetid),
                               core = as.character(annot$transcriptclusterid))
