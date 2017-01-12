@@ -28,7 +28,8 @@ Imports:
     lattice,
     S4Vectors,
     edgeR,
-    RSQLite
+    RSQLite,
+    BiocGenerics
 Suggests:
     affydata,
     hgfocuscdf,

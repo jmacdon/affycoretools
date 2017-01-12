@@ -39,6 +39,12 @@
 #' @importFrom ReportingTools HTMLReport CSVFile publish finish reporting.theme filename path
 #' @importFrom hwriter hwrite hwriteImage hmakeTag closePage openPage
 #' @importFrom ggplot2 ggplot geom_point facet_wrap aes
+#' @importFrom grDevices pdf png
+#' @importFrom graphics axis image plot segments
+#' @importFrom stats cor quantile sd
+#' @importFrom utils read.table
+#' @importFrom RSQLite dbGetQuery dbDisconnect dbListTables
+#' @importFrom BiocGenerics plotPCA
 #' @import methods
 #' @docType package
 #' @name affycoretools
