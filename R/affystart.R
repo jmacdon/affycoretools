@@ -319,13 +319,15 @@ plotDeg <- function(dat, filenames = NULL){
 
 
 
-#' A Function to Make a PCA Plot from an ExpressionSet
+#' A Function to Make a PCA Plot from an ExpressionSet or matrix
 #' 
 #' This function makes a PCA plot from an ExpressionSet or matrix
+#'
+#' @name plotPCA
+#' @rdname plotPCA
+#' @aliases plotPCA plotPCA,matrix-method
 #' 
-#' 
-#' @param object An \code{ExpressionSet}, \code{matrix} or \code{prcomp}
-#' object.
+#' @param object An \code{ExpressionSet} object or matrix.
 #' @param groups A numeric \code{vector} delineating group membership for
 #' samples. Default is \code{NULL}, in which case default plotting symbols and
 #' colors will be used.
@@ -375,7 +377,7 @@ plotDeg <- function(dat, filenames = NULL){
 #' 
 #' @export plotPCA
 
-setMethod("plotPCA", "ExpressionSet",
+setMethod("plotPCA", "matrix",
           function(object, groups = NULL, groupnames = NULL, addtext = NULL, x.coord = NULL, y.coord = NULL,
                     screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1,2),
                    legend = TRUE, main = "Principal Components Plot", plot3d = FALSE, outside = FALSE, ...){
@@ -385,35 +387,13 @@ setMethod("plotPCA", "ExpressionSet",
     if(length(pcs) != 3 && plot3d) stop("For 3D plotting, you should specify 3 principal components.\n", call. = FALSE)
 
 
-
-    if(is(object, "ExpressionSet")){
-        if(max(pcs) > dim(exprs(object))[2])
-            stop(paste("There are only", dim(exprs(object))[2], "principal components to plot.\n", call. = FALSE))
-        if(is.null(groupnames)) groupnames <- sampleNames(object)
-        if(is.factor(groupnames)) groupnames <- as.character(groupnames)
-        pca <- prcomp(t(exprs(object)))
-        len <- length(sampleNames(object))
-    }else{
-        if(class(object) == "matrix"){
-            if(max(pcs) > dim(object)[2])
-                stop(paste("There are only", dim(object)[2], "principal components to plot.\n", call. = FALSE))
-            if(is.null(groupnames)) groupnames <- colnames(object)
-            if(is.factor(groupnames)) groupnames <- as.character(groupnames)
-            pca <- prcomp(t(object))
-            len <- dim(object)[2]
-        }else{
-            if(class(object) == "prcomp"){
-                if(max(pcs) > dim(object$x)[2])
-                    stop(paste("There are only", dim(object$x)[2], "principal components to plot.\n", call. = FALSE))
-                if(is.null(groupnames)) groupnames <- row.names(object$x)
-                if(is.factor(groupnames)) groupnames <- as.character(groupnames)
-                pca <- object
-                len <- dim(object$x)[2]
-            }else{
-                stop("plotPCA currently only supports ExpressionSets, matrices and prcomp objects")
-            }
-        }
-    }
+    if(max(pcs) > dim(object)[2])
+        stop(paste("There are only", dim(object)[2], "principal components to plot.\n", call. = FALSE))
+    if(is.null(groupnames)) groupnames <- colnames(object)
+    if(is.factor(groupnames)) groupnames <- as.character(groupnames)
+    pca <- prcomp(t(object))
+    len <- dim(object)[2]
+    
     if(screeplot){
         plot(pca, main = "Screeplot")
     }else{
@@ -460,6 +440,17 @@ setMethod("plotPCA", "ExpressionSet",
         }
     }
 })
+
+
+##' @param object An \code{ExpressionSet}
+##' @describeIn plotPCA 
+##' @export
+setMethod("plotPCA", "ExpressionSet",
+          function(object, ...){
+    plotPCA(exprs(object), ...)
+})
+
+
 
 
 
