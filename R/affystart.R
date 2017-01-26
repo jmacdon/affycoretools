@@ -442,7 +442,7 @@ setMethod("plotPCA", "matrix",
 })
 
 
-##' @param object An \code{ExpressionSet}
+
 ##' @describeIn plotPCA 
 ##' @export
 setMethod("plotPCA", "ExpressionSet",

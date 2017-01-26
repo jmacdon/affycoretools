@@ -67,8 +67,6 @@ plotting region, at the top right of the plot.}
 
 \item{\dots}{Further arguments to be passed to \code{plot}. See the help
 page for \code{plot} for further information.}
-
-\item{object}{An \code{ExpressionSet}}
 }
 \value{
 This function returns nothing. It is called only for the side effect
