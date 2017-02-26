@@ -76,11 +76,10 @@ However, there will be many instances in which a given miRNA isn't thought
 to target a particular mRNA. Whenever this occurs, the heatmap will have a
 white cell, and the output data for that combination will be NA.
 }
-\author{
-James W. MacDonald
-}
 \seealso{
 mirna2mrna
 }
+\author{
+James W. MacDonald
+}
 \keyword{manip}
-

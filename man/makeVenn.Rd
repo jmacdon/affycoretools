@@ -139,4 +139,3 @@ just statistics will be output in the resulting HTML tables.
 James W. MacDonald \email{jmacdon@u.washington.edu}
 }
 \keyword{manip}
-

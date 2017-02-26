@@ -44,4 +44,3 @@ This function is intended to generate a more useful version of the table that on
 \author{
 Jim MacDonald
 }
-

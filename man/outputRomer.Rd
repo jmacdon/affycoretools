@@ -86,4 +86,3 @@ Second, see the code for runRomer, specifically the line that creates the
 \author{
 James W. MacDonald <jmacdon@u.washington.edu>
 }
-

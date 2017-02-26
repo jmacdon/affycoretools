@@ -59,11 +59,10 @@ significantly differentially expressed.
 The output from this function is intended as input for
 \code{\link{makeHmap}}.
 }
-\author{
-James W. MacDonald
-}
 \seealso{
 makeHmap
 }
+\author{
+James W. MacDonald
+}
 \keyword{manip}
-

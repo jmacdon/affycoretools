@@ -39,4 +39,4 @@ Suggests:
     rgl
 biocViews: ReportWriting, Microarray, OneChannel, GeneExpression
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

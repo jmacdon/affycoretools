@@ -3,8 +3,8 @@
 \docType{methods}
 \name{plotPCA}
 \alias{plotPCA}
-\alias{plotPCA,ExpressionSet-method}
 \alias{plotPCA,matrix-method}
+\alias{plotPCA,ExpressionSet-method}
 \title{A Function to Make a PCA Plot from an ExpressionSet or matrix}
 \usage{
 \S4method{plotPCA}{matrix}(object, groups = NULL, groupnames = NULL,
@@ -79,6 +79,7 @@ This function makes a PCA plot from an ExpressionSet or matrix
 \itemize{
 \item \code{ExpressionSet}: 
 }}
+
 \examples{
 
 library("affy")
@@ -92,4 +93,3 @@ plotPCA(sample.ExpressionSet, groups =
 James W. MacDonald <jmacdon@u.washington.edu>
 }
 \keyword{hplot}
-

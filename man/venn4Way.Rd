@@ -40,4 +40,3 @@ In addition, the numbers in each cell are underlined with colored bars that help
 \author{
 James W. MacDonald \email{jmacdon@u.washington.edu}
 }
-

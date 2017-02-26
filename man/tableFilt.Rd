@@ -38,4 +38,3 @@ intended to be called by thte end user.
 James W. MacDonald <jmacdon@u.washington.edu>
 }
 \keyword{internal}
-

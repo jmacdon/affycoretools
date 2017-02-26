@@ -60,4 +60,3 @@ the end user to have more control over the finished product.
 \author{
 James W. MacDonald <jmacdon@u.washington.edu>
 }
-

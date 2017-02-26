@@ -39,4 +39,3 @@ genes that gave rise to a significant GO term. This function creates the table, 
 \author{
 Jim MacDonald
 }
-

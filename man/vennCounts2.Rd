@@ -56,4 +56,3 @@ James W. MacDonald <jmacdon@u.washington.edu>
 }
 \keyword{hplot}
 \keyword{manip}
-

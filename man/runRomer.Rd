@@ -82,4 +82,3 @@ point to individual files in subdirectories within the genesets subdirectory
 \author{
 James W. MacDonald <jmacdon@u.washington.edu>
 }
-

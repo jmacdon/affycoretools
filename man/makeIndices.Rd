@@ -26,4 +26,3 @@ be called by the end user.
 James W. MacDonald <jmacdon@u.washington.edu>
 }
 \keyword{internal}
-

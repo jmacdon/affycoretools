@@ -76,4 +76,3 @@ as part of the \code{runRomer} function.
 \author{
 James W. MacDonald <jmacdon@u.washington.edu>
 }
-

@@ -81,4 +81,3 @@ this function to create the HTML page with clickable links.
 James W. MacDonald \email{jmacdon@u.washington.edu}
 }
 \keyword{manip}
-

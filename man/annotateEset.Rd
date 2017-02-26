@@ -3,11 +3,11 @@
 \docType{methods}
 \name{annotateEset}
 \alias{annotateEset}
-\alias{annotateEset,ExpressionSet,AffyExonPDInfo-method}
-\alias{annotateEset,ExpressionSet,AffyExpressionPDInfo-method}
+\alias{annotateEset,ExpressionSet,ChipDb-method}
 \alias{annotateEset,ExpressionSet,AffyGenePDInfo-method}
 \alias{annotateEset,ExpressionSet,AffyHTAPDInfo-method}
-\alias{annotateEset,ExpressionSet,ChipDb-method}
+\alias{annotateEset,ExpressionSet,AffyExonPDInfo-method}
+\alias{annotateEset,ExpressionSet,AffyExpressionPDInfo-method}
 \alias{annotateEset,ExpressionSet,character-method}
 \alias{annotateEset,ExpressionSet,data.frame-method}
 \title{Method to annotate ExpressionSets automatically}
@@ -91,6 +91,7 @@ ChipDb package is not available.
 
 \item \code{object = ExpressionSet,x = data.frame}: Annotate an ExpressionSet using a user-supplied data.frame.
 }}
+
 \examples{
 \dontrun{
 dat <- read.celfiles(filenames = list.celfiles())
@@ -104,4 +105,3 @@ eset <- annotateEset(eset, pd.hugene.1.0.st.v1)
 \author{
 Jim MacDonald
 }
-

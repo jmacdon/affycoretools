@@ -22,4 +22,3 @@ each gene, and each array is then compared to the baseline array.
 James W. MacDonald <jmacdon@u.washington.edu>
 }
 \keyword{hplot}
-

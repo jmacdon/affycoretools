@@ -31,11 +31,10 @@ containing t-statistics, p-values, and fold change data for all contrasts.
 This function is designed to output annotation data as well as statistics
 (p-values, fold change, t-statistics) for all probes on a chip.
 }
-\author{
-James W. MacDonald <jmacdon@u.washington.edu>
-}
 \seealso{
 \code{\link[limma:write.fit]{write.fit}}
 }
+\author{
+James W. MacDonald <jmacdon@u.washington.edu>
+}
 \keyword{manip}
-

@@ -64,4 +64,3 @@ for most microarray analyses there are not enough replicates to make a boxplot u
 \author{
 James W. MacDonald \email{jmacdon@u.washington.edu}
 }
-

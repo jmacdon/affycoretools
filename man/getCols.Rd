@@ -25,4 +25,3 @@ the end user
 James W. MacDonald
 }
 \keyword{internal}
-

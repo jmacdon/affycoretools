@@ -11,6 +11,8 @@ affystart(..., filenames = NULL, groups = NULL, groupnames = NULL,
   "REFSEQ"))
 }
 \arguments{
+\item{\dots}{Requires that all variables be named.}
+
 \item{filenames}{If not all cel files in a directory will be used, pass a
 vector of filenames.}
 
@@ -47,8 +49,6 @@ Currently only supports text format.}
 
 \item{ann.vec}{A character \code{vector} of annotation data to add to the
 output file.}
-
-\item{\dots}{Requires that all variables be named.}
 }
 \value{
 Returns an \code{ExpressionSet}.
@@ -57,12 +57,11 @@ Returns an \code{ExpressionSet}.
 This function is designed to automatically read in all cel files in a
 directory, make all pre-processing QC plots and compute expression measures.
 }
-\author{
-James W. MacDonald <jmacdon@u.washington.edu>
-}
 \seealso{
 \code{plotHist}, \code{plotDeg}, \code{plotPCA}
 }
+\author{
+James W. MacDonald <jmacdon@u.washington.edu>
+}
 \keyword{hplot}
 \keyword{manip}
-

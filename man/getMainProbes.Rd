@@ -29,4 +29,3 @@ from the Gene ST array types.
 James W. MacDonald <jmacdon@u.washington.edu>
 }
 \keyword{manip}
-
