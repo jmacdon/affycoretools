@@ -685,16 +685,16 @@ setGeneric(".getMainProbes", function(object, x, ...) standardGeneric(".getMainP
 setMethod(".getMainProbes", c("ExpressionSet","AffyGenePDInfo"),
           function(object, x, level = "core", ...){
     con <- db(x)
-    types <- switch(level,
-           core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
-                                        "using(fsetid);")),
-           probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
-           stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
+    mains <- whichMains(con, types)
+    if(isTRUE(mains)){
+        message("All probes are main probes, returning input ExpressionSet.")
+        return(object)
+    }
+    types <- queryMaker(con, level, "gene")
     on.exit(dbDisconnect(con))
     if(!all(featureNames(object) %in% types[,1]))
         stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
     types <- types[match(featureNames(object), types[,1]),]
-    mains <- whichMains(con, types)
     ind <- types[,2] %in% mains
     return(object[ind,])
 })
@@ -702,16 +702,16 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyGenePDInfo"),
 setMethod(".getMainProbes", c("ExpressionSet","AffyHTAPDInfo"),
           function(object, x, level = "core", ...){
     con <- db(x)
-    types <- switch(level,
-           core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
-                                        "using(fsetid);")),
-           probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
-           stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
+    mains <- whichMains(con, types)
+    if(isTRUE(mains)){
+        message("All probes are main probes, returning input ExpressionSet.")
+        return(object)
+    }
+    types <- queryMaker(con, level, "hta")
     on.exit(dbDisconnect(con))
     if(!all(featureNames(object) %in% types[,1]))
         stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
-    types <- types[match(featureNames(object), types[,1]),]
-    mains <- whichMains(con, types)
+    types <- types[match(featureNames(object), types[,1]),]    
     ind <- types[,2] %in% mains
     return(object[ind,])
 })
@@ -719,20 +719,16 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyHTAPDInfo"),
 setMethod(".getMainProbes", c("ExpressionSet","AffyExonPDInfo"),
           function(object, x, level = "core", ...){
     con <- db(x)
-    types <- switch(level,
-           core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
-                                        "using(fsetid);")),
-           extended = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join extended_mps",
-                                            "using(fsetid);")),
-           full = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join full_mps",
-                                            "using(fsetid);")),
-           probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
-           stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
+    mains <- whichMains(con, types)
+    if(isTRUE(mains)){
+        message("All probes are main probes, returning input ExpressionSet.")
+        return(object)
+    }
+    types <- queryMaker(con, level, "exon")
     on.exit(dbDisconnect(con))
     if(!all(featureNames(object) %in% types[,1]))
         stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
-    types <- types[match(featureNames(object), types[,1]),]
-    mains <- whichMains(con, types)
+    types <- types[match(featureNames(object), types[,1]),]    
     ind <- types[,2] %in% mains
     return(object[ind,])
 })
@@ -740,9 +736,14 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyExonPDInfo"),
 setMethod(".getMainProbes", c("ExpressionSet","AffyExpressionPDInfo"),
           function(object, x, ...){
     con <- db(x)
+    mains <- whichMains(con, types)
+    if(isTRUE(mains)){
+        message("All probes are main probes, returning input ExpressionSet.")
+        return(object)
+    }
     atest <- dbGetQuery(con, "select * from featureSet limit 2;")
     if(!any(names(atest) %in% "type")) {
-        warning("This array type doesn't have 'main' probesets. Returning unfiltered.", call. = FALSE)
+        message("This array type only has 'main' probesets. Returning unfiltered.")
         return(object)
     }
     types <- dbGetQuery(con, "select distinct man_fsetid, type from featureSet")
@@ -750,7 +751,6 @@ setMethod(".getMainProbes", c("ExpressionSet","AffyExpressionPDInfo"),
     if(!all(featureNames(object) %in% types[,1]))
         stop(paste("There is a mismatch between the featureNames of the ExpressionSet and results from the pdInfoPackage."), call. = FALSE)
     types <- types[match(featureNames(object), types[,1]),]
-    mains <- whichMains(con, types)
     ind <- types[,2] %in% mains
     return(object[ind,])
 })
@@ -761,19 +761,23 @@ setMethod(".getMainProbes", c("missing", "character"),
     con <- db(pkg)
     on.exit(dbDisconnect(con))
     if(is(pkg, "AffyExpressionPDInfo")){
-        return(dbGetQuery(con, "select distinct man_fsetid, type from featureSet"))
+        atest <- dbGetQuery(con, "select * from featureSet limit 2;")
+        if(!any(names(atest) %in% "type"))
+            message("This array type only has 'main' probesets, so no filtering needed.")
+        else
+            return(dbGetQuery(con, "select distinct man_fsetid, type from featureSet"))
+    } else if(is(pkg, "AffyHTAPDInfo")) {
+        mains <- whichMains(con, types)
+        if(isTRUE(mains)){
+            message("This array type only has 'main' probesets, so no filtering needed.")
+        } else {
+            types <- queryMaker(con, level, "hta")
+            return(types)
+        }
     } else {
         checklevel <- c("probeset", gsub("_mps", "", grep("mps$", dbListTables(con), value = TRUE)))
-        if(!any(checklevel %in% level)) stop(paste("The pdInfoPackag only has", paste(checklevel, collapse = ", "), "levels."), call. = FALSE)
-        types <- switch(level,
-                        core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
-                                                     "using(fsetid);")),
-                        extended = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join extended_mps",
-                                                         "using(fsetid);")),
-                        full = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join full_mps",
-                                                     "using(fsetid);")),
-                        probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
-                        stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
+        if(!any(checklevel %in% level)) stop(paste("The pdInfoPackage only has", paste(checklevel, collapse = ", "), "levels."), call. = FALSE)
+        types <- queryMaker(con, level, "exon")
         return(types)
     }
 })
@@ -781,5 +785,37 @@ setMethod(".getMainProbes", c("missing", "character"),
   
 whichMains <- function(con, types){
     thetypes <- dbGetQuery(con, "select * from type_dict;")
-    thetypes$type[grep("main", thetypes$type_id)]
+    typeind <- grep("main", thetypes$type_id)
+    if(nrow(thetypes) == length(typeind))
+        return(TRUE)
+    else
+        return(thetypes$type[typeind])
+}
+
+queryMaker <- function(con, level, type){
+    if(type == "exon"){
+        types <- switch(level,
+                        core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
+                                                     "using(fsetid);")),
+                        extended = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join extended_mps",
+                                                         "using(fsetid);")),
+                        full = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join full_mps",
+                                                     "using(fsetid);")),
+                        probeset = dbGetQuery(con, paste("select fsetid, type from featureSet;")),
+                        stop("Available summarization levels include core, extended, full, and probeset.", call. = FALSE))
+    } else if(type == "hta") {
+        types <- switch(level,
+                        core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                                                     "using(fsetid);")),
+                        probeset = dbGetQuery(con, paste("select distinct man_fsetid, type from featureSet;")),
+                        stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
+        
+   } else {
+        types <- switch(level,
+                        core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                                                     "using(fsetid);")),
+                        probeset = dbGetQuery(con, paste("select fsetid, type from featureSet;")),
+                        stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
+   }
+    return(types)
 }
