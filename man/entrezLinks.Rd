@@ -5,6 +5,7 @@
 \alias{affyLinks}
 \alias{goLinks}
 \alias{nuccoreLinks}
+\alias{ensemblLinks}
 \title{Add links to data when using ReportingTools}
 \usage{
 entrezLinks(df, ...)

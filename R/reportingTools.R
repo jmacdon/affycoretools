@@ -12,7 +12,7 @@
 #' they are used as targets for the .modifyDF argument of the \code{publish}
 #' function of ReportingTools. See the example below for more detail.
 #' 
-#' @aliases entrezLinks affyLinks goLinks nuccoreLinks
+#' @aliases entrezLinks affyLinks goLinks nuccoreLinks ensemblLinks
 #' @param df A data.frame, usually created using the \code{select} function of
 #' the AnnotationDbi package. For Entrez ID data, the column name must be
 #' ENTREZID. For Affy data, the column name must be PROBEID, and for GO data
@@ -41,7 +41,7 @@
 #' publish(out, htab, .modifyDF = list(affyLinks, entrezLinks, nuccoreLinks))
 #' finish(htab)}
 #' 
-#' @export entrezLinks affyLinks goLinks nuccoreLinks
+#' @export entrezLinks affyLinks goLinks nuccoreLinks ensemblLinks
 entrezLinks <- function (df, ...) {
     naind <- is.na(df$ENTREZID)
     df$ENTREZID <- hwrite(as.character(df$ENTREZID), link = paste0("http://www.ncbi.nlm.nih.gov/gene/", 
@@ -83,6 +83,14 @@ nuccoreLinks <- function(df, ...){
     return(df)
 }
 
+ensemblLinks <- function(df, ...){
+    naind <- is.na(df$GENEID)
+    df$GENEID <- hwriter::hwrite(as.character(df$GENEID),
+                                 link = paste0("http://www.ensembl.org/Gene/Summary?db=core;g=",
+                                               as.character(df$GENEID)), table = FALSE)
+    df$GENEID[naind] <- ""
+    return(df)
+}
 
 
 #' Select and Output Genelists Based on Venn Diagrams
@@ -252,7 +260,7 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
                        
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
     fixed.dflst <- lapply(csvlst[ind], fixHeaderAndGo, affy = affy, probecol = probecol)
-    csvlst <- lapply(fixed.dflst, function(x) x$df)
+    csvlst[ind] <- lapply(fixed.dflst, function(x) x$df)
     mdf <- fixed.dflst[[1]]$mdf
     
     if(length(mdf) > 0)
@@ -283,197 +291,224 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
 
 
 
-#' High-level function for making Venn diagrams and outputting the results from
-#' the diagrams in HTML and CSV files.
-#' 
-#' This function is designed to output CSV and HTML tables based on an analysis
-#' using the limma package, with output generated using the ReportingTools
-#' package.
-#' 
-#' The purpose of this function is to output HTML and text tables with lists of
-#' genes that fulfill the criteria of a call to
-#' \code{\link[limma]{decideTests}} as well as the direction of differential
-#' expression. This is a high-level function that calls \code{vennSelect2}
-#' internally, and is intended to be used with \code{vennPage} to create a set
-#' of Venn diagrams (on an HTML page) that have clickable links in each cell of
-#' the diagram. The links will then pass the end user to individual HTML pages
-#' that contain the genes that are represented by the counts in a given cell of
-#' the Venn diagram.
-#' 
-#' In general, the only thing that is needed to create a set of Venn diagrams
-#' is a list of numeric vectors that indicate the columns of the contrast
-#' matrix that are to be used for a given diagram. See the example below for a
-#' better explanation.
-#' 
-#' Some important things to note: First, the names of the HTML and text tables
-#' are extracted from the \code{colnames} of the \code{TestResults} object,
-#' which come from the contrasts matrix, so it is important to use something
-#' descriptive. Second, the method argument is analogous to the \code{include}
-#' argument from \code{\link[limma:venn]{vennCounts}} or
-#' \code{\link[limma:venn]{vennDiagram}}. Choosing "both" will select genes
-#' that are differentially expressed in one or more comparisons, regardless of
-#' direction. Choosing "up" or "down" will select genes that are only
-#' differentially expressed in one direction. Choosing "same" will select genes
-#' that are differentially expressed in the same direction. Choosing "sameup"
-#' or "samedown" will select genes that are differentially expressed in the
-#' same direction as well as 'up' or 'down'.
-#' 
-#' Note that this is different than sequentially choosing "up" and then "down".
-#' For instance, a gene that is upregulated in one comparison and downregulated
-#' in another comparison will be listed in the intersection of those two
-#' comparisons if "both" is chosen, it will be listed in only one comparison
-#' for both the "up" and "down" methods, and it will be listed in the union
-#' (e.g., not selected) if "same" is chosen.
-#' 
-#' Unlike \code{vennSelect}, this function automatically creates both HTML and
-#' CSV output files.
-#'
-#' Also please note that this function relys on annotation information contained in
-#' the "genes" slot of the "fit" object. If there are no annotation data, then
-#' just statistics will be output in the resulting HTML tables.
-#' 
-#' @param fit An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to
-#' \code{\link[limma:ebayes]{eBayes}}.
-#' @param contrast A contrasts matrix, produced either by hand, or by a call to
-#' \code{\link[limma]{makeContrasts}}
-#' @param design A design matrix.
-#' @param groups This argument is used when creating a legend for the resulting
-#' HTML pages. If NULL, the groups will be generated using the column names of
-#' the design matrix. In general it is best to leave this NULL.
-#' @param collist A list containing numeric vectors indicating which columns of
-#' the fit, contrast and design matrix to use. If \code{NULL}, all columns will
-#' be used.
-#' @param p.value A p-value to filter the results by.
-#' @param lfc A log fold change to filter the results by.
-#' @param method One of "same", "both", "up", "down", "sameup", or "samedown".
-#' See details for more information.
-#' @param adj.meth Method to use for adjusting p-values. Default is 'BH', which
-#' corresponds to 'fdr'. Ideally one would set this value to be the same as was
-#' used for \code{\link[limma]{decideTests}}.
-#' @param titleadd Additional text to add to the title of the HTML tables.
-#' Default is NULL, in which case the title of the table will be the same as
-#' the filename.
-#' @param fileadd Additional text to add to the name of the HTML and CSV
-#' tables. Default is NULL.
-#' @param baseUrl A character string giving the location of the page in terms
-#' of HTML locations. Defaults to "."
-#' @param reportDirectory A character string giving the location that the
-#' results will be written. Defaults to "./venns"
-#' @param affy Boolean. Are these Affymetrix data, and should hyperlinks to the affy website
-#' be generated in the HTML tables?
-#' @param probecol This argument is used in concert with the preceding argument. If these are Affymetrix data
-#' , then specify the column header in the \code{\link[limma:marraylm]{MArrayLM}} object that contains the Affymetrix IDs. Defaults to
-#' "PROBEID", which is the expected result if the data are annotated using a BioC annotation package.
-#' @param ... Used to pass other arguments to lower level functions.
-#' @return A list containing the output from calling \code{vennSelect2} on the
-#' columns specified by the collist argument. This is intended as input to
-#' \code{vennPage}, which will use those data to create the HTML page with Venn
-#' diagrams with clickable links.
-#' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
-#' @keywords manip
-#' @examples
-#' 
-#'   \dontrun{
-#'     mat <- matrix(rnorm(1e6), ncol = 20)
-#'     design <- model.matrix(~factor(1:4, each=5))
-#'     colnames(design) <- LETTERS[1:4]
-#'     contrast <- matrix(c(1,-1,0,0,1,0,-1,0,1,0,0,-1,0,1,-1,0,0,1,0,-1),
-#'     ncol = 5)
-#'     colnames(contrast) <- paste(LETTERS[c(1,1,1,2,2)],
-#'     LETTERS[c(2,3,4,3,4)], sep = " vs ")
-#'     fit <- lmFit(mat, design)
-#'     fit2 <- contrasts.fit(fit, contrast)
-#'     fit2 <- eBayes(fit2)
-#'     ## two Venn diagrams - a 3-way Venn with the first three contrasts
-#'     ## and a 2-way Venn with the last two contrasts
-#'     collist <- list(1:3,4:5)
-#'     venn <- makeVenn(fit2, contrast, design, collist = collist)
-#'     vennPage(venn, "index.html", "Venn diagrams")
-#'     }
-#' 
-#' @export makeVenn
-makeVenn <- function(fit, contrast, design, groups = NULL, collist = NULL,
-                     p.value = 0.05, lfc = 0, method = "both", adj.meth = "BH",
-                     titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory = "./venns",
-                     affy = TRUE, probecol = "PROBEID", ...){
+##' This function is designed to output CSV and HTML tables based on an analysis
+##' using the limma or edgeR packages, with output generated using the ReportingTools
+##' package. Please note that a DGEGLM object from edgeR is simply converted to an
+##' MArrayLM object from limma and then used in the default MArrayLM method, so all
+##' arguments for the MArrayLM object pertain to the DGEGLM method as well.
+##' 
+##' The purpose of this function is to output HTML and text tables with lists of
+##' genes that fulfill the criteria of a call to
+##' \code{\link[limma]{decideTests}} as well as the direction of differential
+##' expression. This is a high-level function that calls \code{vennSelect2}
+##' internally, and is intended to be used with \code{vennPage} to create a set
+##' of Venn diagrams (on an HTML page) that have clickable links in each cell of
+##' the diagram. The links will then pass the end user to individual HTML pages
+##' that contain the genes that are represented by the counts in a given cell of
+##' the Venn diagram.
+##' 
+##' In general, the only thing that is needed to create a set of Venn diagrams
+##' is a list of numeric vectors that indicate the columns of the contrast
+##' matrix that are to be used for a given diagram. See the example below for a
+##' better explanation.
+##' 
+##' Some important things to note: First, the names of the HTML and text tables
+##' are extracted from the \code{colnames} of the \code{TestResults} object,
+##' which come from the contrasts matrix, so it is important to use something
+##' descriptive. Second, the method argument is analogous to the \code{include}
+##' argument from \code{\link[limma:venn]{vennCounts}} or
+##' \code{\link[limma:venn]{vennDiagram}}. Choosing "both" will select genes
+##' that are differentially expressed in one or more comparisons, regardless of
+##' direction. Choosing "up" or "down" will select genes that are only
+##' differentially expressed in one direction. Choosing "same" will select genes
+##' that are differentially expressed in the same direction. Choosing "sameup"
+##' or "samedown" will select genes that are differentially expressed in the
+##' same direction as well as 'up' or 'down'.
+##' 
+##' Note that this is different than sequentially choosing "up" and then "down".
+##' For instance, a gene that is upregulated in one comparison and downregulated
+##' in another comparison will be listed in the intersection of those two
+##' comparisons if "both" is chosen, it will be listed in only one comparison
+##' for both the "up" and "down" methods, and it will be listed in the union
+##' (e.g., not selected) if "same" is chosen.
+##' 
+##' Unlike \code{vennSelect}, this function automatically creates both HTML and
+##' CSV output files.
+##'
+##' Also please note that this function relys on annotation information contained in
+##' the "genes" slot of the "fit" object. If there are no annotation data, then
+##' just statistics will be output in the resulting HTML tables.
+##'
+##' @title High-level function for making Venn diagrams and outputting the results from
+##' the diagrams in HTML and CSV files.
+##' @param object An \code{\link[limma:marraylm]{MArrayLM}} or \code{\link[edgeR:DGEGLM]{DGEGLM}} object.
+##' @param contrast A contrasts matrix, produced either by hand, or by a call to
+##' \code{\link[limma]{makeContrasts}}
+##' @param design A design matrix.
+##' @param groups This argument is used when creating a legend for the resulting
+##' HTML pages. If NULL, the groups will be generated using the column names of
+##' the design matrix. In general it is best to leave this NULL.
+##' @param collist A list containing numeric vectors indicating which columns of
+##' the fit, contrast and design matrix to use. If \code{NULL}, all columns will
+##' be used.
+##' @param p.value A p-value to filter the results by.
+##' @param lfc A log fold change to filter the results by.
+##' @param method One of "same", "both", "up", "down", "sameup", or "samedown".
+##' See details for more information.
+##' @param adj.meth Method to use for adjusting p-values. Default is 'BH', which
+##' corresponds to 'fdr'. Ideally one would set this value to be the same as was
+##' used for \code{\link[limma]{decideTests}}.
+##' @param titleadd Additional text to add to the title of the HTML tables.
+##' Default is NULL, in which case the title of the table will be the same as
+##' the filename.
+##' @param fileadd Additional text to add to the name of the HTML and CSV
+##' tables. Default is NULL.
+##' @param baseUrl A character string giving the location of the page in terms
+##' of HTML locations. Defaults to "."
+##' @param reportDirectory A character string giving the location that the
+##' results will be written. Defaults to "./venns"
+##' @param affy Boolean. Are these Affymetrix data, and should hyperlinks to the affy website
+##' be generated in the HTML tables?
+##' @param probecol This argument is used in concert with the preceding argument. If these are Affymetrix data
+##' , then specify the column header in the \code{\link[limma:marraylm]{MArrayLM}} object that contains the Affymetrix IDs. Defaults to
+##' "PROBEID", which is the expected result if the data are annotated using a BioC annotation package.
+##' @param ... Used to pass other arguments to lower level functions.
+##' @return A list containing the output from calling \code{vennSelect2} on the
+##' columns specified by the collist argument. This is intended as input to
+##' \code{vennPage}, which will use those data to create the HTML page with Venn
+##' diagrams with clickable links.
+##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
+##' @keywords manip
+##' @examples
+##' 
+##'   \dontrun{
+##'     mat <- matrix(rnorm(1e6), ncol = 20)
+##'     design <- model.matrix(~factor(1:4, each=5))
+##'     colnames(design) <- LETTERS[1:4]
+##'     contrast <- matrix(c(1,-1,0,0,1,0,-1,0,1,0,0,-1,0,1,-1,0,0,1,0,-1),
+##'     ncol = 5)
+##'     colnames(contrast) <- paste(LETTERS[c(1,1,1,2,2)],
+##'     LETTERS[c(2,3,4,3,4)], sep = " vs ")
+##'     fit <- lmFit(mat, design)
+##'     fit2 <- contrasts.fit(fit, contrast)
+##'     fit2 <- eBayes(fit2)
+##'     ## two Venn diagrams - a 3-way Venn with the first three contrasts
+##'     ## and a 2-way Venn with the last two contrasts
+##'     collist <- list(1:3,4:5)
+##'     venn <- makeVenn(fit2, contrast, design, collist = collist)
+##'     vennPage(venn, "index.html", "Venn diagrams")
+##'     }
+##' 
+##' @describeIn makeVenn Make a Venn diagram using an MArrayLM object.
+##' @export makeVenn
+setMethod("makeVenn", "MArrayLM",
+          function(object, contrast, design, groups = NULL, collist = NULL,
+                   p.value = 0.05, lfc = 0, method = "both", adj.meth = "BH",
+                   titleadd = NULL, fileadd = NULL, baseUrl = ".", reportDirectory = "./venns",
+                   affy = TRUE, probecol = "PROBEID", ...){
     if(is.null(collist)){
-        if(ncol(fit$coef) > 4) stop("You can only make Venn diagrams with four or fewer contrasts!\n\n",
+        if(ncol(object$coef) > 4) stop("You can only make Venn diagrams with four or fewer contrasts!\n\n",
                                     call. = FALSE)
-        collist <- list(seq_len(ncol(fit$coef)))
+        collist <- list(seq_len(ncol(object$coef)))
     }
     vennlst <- lapply(seq(along = collist), function(x) 
-        vennSelect2(fit = fit, contrast = contrast, design = design, 
+        vennSelect2(fit = object, contrast = contrast, design = design, 
                     groups = groups, cols = collist[[x]], p.value = p.value, lfc = lfc,
                     method = method, adj.meth = adj.meth, titleadd = titleadd,
                     fileadd = fileadd, baseUrl = baseUrl, 
                     reportDirectory = paste0(reportDirectory, "/venn", x),
                     affy = affy, probecol = probecol, ...))
     vennlst
-}
+})
 
 
+##' @param comp.method Character. For DGEGLM objects, the DGEGLM object must first be processed using one of \code{\link[limma:glmLRT]{glmLRT}},
+##' \code{\link[limma:glmQLFTest]{glmQLFTest}}, or \code{\link[limma:glmTreat]{glmTreat}}. Choose glmLRT if you fit a model using
+##' \code{\link[limma:glmFit]{glmFit}}, glmQLFTest if you fit a model using \code{\link[limma:glmQLFit]{glmQLFit}}, or glmTreat if
+##' you fit either of those models, but want to incorporate the log fold change into the comparison.
+##'  
+##' 
+##' @describeIn makeVenn Make a Venn diagram using a DGEGLM object.
+##' @export
+setMethod("makeVenn", "DGEGLM",
+          function(object, contrast, design, comp.method = c("glmLRT","glmQLFTest", "glmTreat"), lfc = 0, ...){
+    comp.method <-  match.arg(comp.method, c("glmLRT","glmQLFTest", "glmTreat"))
+    if(comp.method == "glmTreat" && lfc <= 0)
+        stop(paste("When using the glmTreat method you must also choose a non-zero lfc value."), call. = FALSE)
+    lst <- switch(comp.method,
+                  glmLRT = lapply(seq_len(ncol(contrast)), function(x) glmLRT(object, contrast = contrast[,x])),
+                  glmQLFTest = lapply(seq_len(ncol(contrast)), function(x) glmQLFTest(object, contrast = contrast[,x])),
+                  glmTreat = lapply(seq_len(ncol(contrast)), function(x) glmTreat(object, contrast = contrast[,x], lfc = lfc)))
+    object <- new("MArrayLM", list(p.value = do.call(cbind, lapply(lst, function(x) x$table$PValue)),
+                                   coefficients = do.call(cbind, lapply(lst, function(x) x$table$logFC)),
+                                   genes = object$genes))
+    colnames(object$p.value) <- colnames(object$coefficients) <- colnames(contrast)
+    makeVenn(object, contrast, design, lfc = lfc, ...)
+})
+   
 
-#' High-level function for making Venn diagrams with clickable links to HTML
-#' pages with the underlying genes.
-#' 
-#' This function is designed to be used in conjunction with the \code{makeVenn}
-#' function, to first create a set of HTML pages containing the genes that are
-#' represented by the cells of a Venn diagram, and then create an HTML page
-#' with the same Venn diagrams, with clickable links that will point the end
-#' user to the HTML pages.
-#' 
-#' This function is intended to be used as part of a pipeline, by first calling
-#' \code{makeVenn} and then using the output from that function as input to
-#' this function to create the HTML page with clickable links.
-#' 
-#' @param vennlst The output from \code{makeVenn}.
-#' @param pagename Character. The file name for the resulting HTML page.
-#' Something like 'venns' is reasonable. Note that the .html will automatically
-#' be appended.
-#' @param pagetitle Character. The heading for the HTML page.
-#' @param cex.venn Numeric. Adjusts the size of the font in the Venn diagram.
-#' Usually the default is OK.
-#' @param shift.title Boolean. Should the right contrast name of the Venn
-#' diagram be shifted down? Useful for long contrast names. If a two-way Venn
-#' diagram, this will shift the right name down so they don't overlap. If a
-#' three-way Venn diagram, this will shift the top right name down.
-#' @param baseUrl Character. The base URL for the resulting HTML page. The
-#' default of "." is usually optimal.
-#' @param reportDirectory If \code{NULL}, the reportDirectory will be extracted
-#' from the vennlst. This is usually what one should do.
-#' @param ... To allow passing other arguments to lower level functions.
-#' Currently not used.
-#' @return An HTMLReport object. If used as input to the ReportingTools
-#' \code{publish} function, this will create a link on an index page to the
-#' Venn diagram HTML page. See e.g., the microarray analysis vignette for
-#' ReportingTools for more information.
-#' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
-#' @keywords manip
-#' @examples
-#' 
-#'   \dontrun{
-#'     mat <- matrix(rnorm(1e6), ncol = 20)
-#'     design <- model.matrix(~factor(1:4, each=5))
-#'     colnames(design) <- LETTERS[1:4]
-#'     contrast <- matrix(c(1,-1,0,0,1,0,-1,0,1,0,0,-1,0,1,-1,0,0,1,0,-1),
-#'     ncol = 5)
-#'     colnames(contrast) <- paste(LETTERS[c(1,1,1,2,2)],
-#'     LETTERS[c(2,3,4,3,4)], sep = " vs ")
-#'     fit <- lmFit(mat, design)
-#'     fit2 <- contrasts.fit(fit, contrast)
-#'     fit2 <- eBayes(fit2)
-#'     ## two Venn diagrams - a 3-way Venn with the first three contrasts
-#'     ## and a 2-way Venn with the last two contrasts
-#'     collist <- list(1:3,4:5)
-#'     venn <- makeVenn(fit2, contrast, design, eset, collist = collist)
-#'     vennreport <- vennPage(venn, "index.html", "Venn diagrams")
-#'     indexPage <- HTMLReport("index", "My results", reportDirectory =
-#'     ".", baseUrl = ".")
-#'     publish(vennreport)
-#'     finish(indexPage)
-#'     }
-#' 
-#' @export vennPage
+
+##' High-level function for making Venn diagrams with clickable links to HTML
+##' pages with the underlying genes.
+##' 
+##' This function is designed to be used in conjunction with the \code{makeVenn}
+##' function, to first create a set of HTML pages containing the genes that are
+##' represented by the cells of a Venn diagram, and then create an HTML page
+##' with the same Venn diagrams, with clickable links that will point the end
+##' user to the HTML pages.
+##' 
+##' This function is intended to be used as part of a pipeline, by first calling
+##' \code{makeVenn} and then using the output from that function as input to
+##' this function to create the HTML page with clickable links.
+##' 
+##' @param vennlst The output from \code{makeVenn}.
+##' @param pagename Character. The file name for the resulting HTML page.
+##' Something like 'venns' is reasonable. Note that the .html will automatically
+##' be appended.
+##' @param pagetitle Character. The heading for the HTML page.
+##' @param cex.venn Numeric. Adjusts the size of the font in the Venn diagram.
+##' Usually the default is OK.
+##' @param shift.title Boolean. Should the right contrast name of the Venn
+##' diagram be shifted down? Useful for long contrast names. If a two-way Venn
+##' diagram, this will shift the right name down so they don't overlap. If a
+##' three-way Venn diagram, this will shift the top right name down.
+##' @param baseUrl Character. The base URL for the resulting HTML page. The
+##' default of "." is usually optimal.
+##' @param reportDirectory If \code{NULL}, the reportDirectory will be extracted
+##' from the vennlst. This is usually what one should do.
+##' @param ... To allow passing other arguments to lower level functions.
+##' Currently not used.
+##' @return An HTMLReport object. If used as input to the ReportingTools
+##' \code{publish} function, this will create a link on an index page to the
+##' Venn diagram HTML page. See e.g., the microarray analysis vignette for
+##' ReportingTools for more information.
+##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
+##' @keywords manip
+##' @examples
+##' 
+##'   \dontrun{
+##'     mat <- matrix(rnorm(1e6), ncol = 20)
+##'     design <- model.matrix(~factor(1:4, each=5))
+##'     colnames(design) <- LETTERS[1:4]
+##'     contrast <- matrix(c(1,-1,0,0,1,0,-1,0,1,0,0,-1,0,1,-1,0,0,1,0,-1),
+##'     ncol = 5)
+##'     colnames(contrast) <- paste(LETTERS[c(1,1,1,2,2)],
+##'     LETTERS[c(2,3,4,3,4)], sep = " vs ")
+##'     fit <- lmFit(mat, design)
+##'     fit2 <- contrasts.fit(fit, contrast)
+##'     fit2 <- eBayes(fit2)
+##'     ## two Venn diagrams - a 3-way Venn with the first three contrasts
+##'     ## and a 2-way Venn with the last two contrasts
+##'     collist <- list(1:3,4:5)
+##'     venn <- makeVenn(fit2, contrast, design, eset, collist = collist)
+##'     vennreport <- vennPage(venn, "index.html", "Venn diagrams")
+##'     indexPage <- HTMLReport("index", "My results", reportDirectory =
+##'     ".", baseUrl = ".")
+##'     publish(vennreport)
+##'     finish(indexPage)
+##'     }
+##' 
+##' @export vennPage
 
 vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
                      baseUrl = ".", reportDirectory = NULL, ...){

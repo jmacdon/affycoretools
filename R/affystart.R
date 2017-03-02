@@ -679,8 +679,7 @@ getMainProbes <- function(input, level = "core"){
 }
 
 
-    
-setGeneric(".getMainProbes", function(object, x, ...) standardGeneric(".getMainProbes"))
+   
 
 setMethod(".getMainProbes", c("ExpressionSet","AffyGenePDInfo"),
           function(object, x, level = "core", ...){
