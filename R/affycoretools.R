@@ -27,7 +27,7 @@
 #' @importFrom stats median p.adjust prcomp
 #' @importFrom utils write.table
 #' @importFrom limma topTable vennCounts decideTests romer ids2indices vennDiagram
-#' @importFrom edgeR cpm
+#' @importFrom edgeR cpm glmLRT glmQLFTest glmTreat
 #' @importFrom GOstats probeSetSummary
 #' @importFrom gcrma gcrma
 #' @importFrom splines ns

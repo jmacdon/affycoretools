@@ -19,7 +19,7 @@ makeVenn(object, ...)
   comp.method = c("glmLRT", "glmQLFTest", "glmTreat"), lfc = 0, ...)
 }
 \arguments{
-\item{object}{An \code{\link[limma:marraylm]{MArrayLM}} or \code{\link[edgeR:DGEGLM]{DGEGLM}} object.}
+\item{object}{An \code{\link[limma:marraylm]{MArrayLM}} or \code{\link[edgeR:DGEGLM-class]{DGEGLM}} object.}
 
 \item{...}{Used to pass other arguments to lower level functions.}
 
@@ -67,9 +67,9 @@ be generated in the HTML tables?}
 , then specify the column header in the \code{\link[limma:marraylm]{MArrayLM}} object that contains the Affymetrix IDs. Defaults to
 "PROBEID", which is the expected result if the data are annotated using a BioC annotation package.}
 
-\item{comp.method}{Character. For DGEGLM objects, the DGEGLM object must first be processed using one of \code{\link[limma:glmLRT]{glmLRT}},
-\code{\link[limma:glmQLFTest]{glmQLFTest}}, or \code{\link[limma:glmTreat]{glmTreat}}. Choose glmLRT if you fit a model using
-\code{\link[limma:glmFit]{glmFit}}, glmQLFTest if you fit a model using \code{\link[limma:glmQLFit]{glmQLFit}}, or glmTreat if
+\item{comp.method}{Character. For DGEGLM objects, the DGEGLM object must first be processed using one of \code{\link[edgeR:glmfit]{glmLRT}},
+\code{\link[edgeR]{glmQLFTest}}, or \code{\link[edgeR]{glmTreat}}. Choose glmLRT if you fit a model using
+\code{\link[edgeR:glmfit]{glmFit}}, glmQLFTest if you fit a model using \code{\link[edgeR]{glmQLFit}}, or glmTreat if
 you fit either of those models, but want to incorporate the log fold change into the comparison.}
 }
 \value{

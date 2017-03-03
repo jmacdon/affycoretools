@@ -341,7 +341,7 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
 ##'
 ##' @title High-level function for making Venn diagrams and outputting the results from
 ##' the diagrams in HTML and CSV files.
-##' @param object An \code{\link[limma:marraylm]{MArrayLM}} or \code{\link[edgeR:DGEGLM]{DGEGLM}} object.
+##' @param object An \code{\link[limma:marraylm]{MArrayLM}} or \code{\link[edgeR:DGEGLM-class]{DGEGLM}} object.
 ##' @param contrast A contrasts matrix, produced either by hand, or by a call to
 ##' \code{\link[limma]{makeContrasts}}
 ##' @param design A design matrix.
@@ -422,9 +422,9 @@ setMethod("makeVenn", "MArrayLM",
 })
 
 
-##' @param comp.method Character. For DGEGLM objects, the DGEGLM object must first be processed using one of \code{\link[limma:glmLRT]{glmLRT}},
-##' \code{\link[limma:glmQLFTest]{glmQLFTest}}, or \code{\link[limma:glmTreat]{glmTreat}}. Choose glmLRT if you fit a model using
-##' \code{\link[limma:glmFit]{glmFit}}, glmQLFTest if you fit a model using \code{\link[limma:glmQLFit]{glmQLFit}}, or glmTreat if
+##' @param comp.method Character. For DGEGLM objects, the DGEGLM object must first be processed using one of \code{\link[edgeR:glmfit]{glmLRT}},
+##' \code{\link[edgeR]{glmQLFTest}}, or \code{\link[edgeR]{glmTreat}}. Choose glmLRT if you fit a model using
+##' \code{\link[edgeR:glmfit]{glmFit}}, glmQLFTest if you fit a model using \code{\link[edgeR]{glmQLFit}}, or glmTreat if
 ##' you fit either of those models, but want to incorporate the log fold change into the comparison.
 ##'  
 ##' 
