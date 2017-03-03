@@ -84,11 +84,11 @@ nuccoreLinks <- function(df, ...){
 }
 
 ensemblLinks <- function(df, ...){
-    naind <- is.na(df$GENEID)
-    df$GENEID <- hwriter::hwrite(as.character(df$GENEID),
+    naind <- is.na(df$ENSEMBL)
+    df$ENSEMBL <- hwriter::hwrite(as.character(df$ENSEMBL),
                                  link = paste0("http://www.ensembl.org/Gene/Summary?db=core;g=",
-                                               as.character(df$GENEID)), table = FALSE)
-    df$GENEID[naind] <- ""
+                                               as.character(df$ENSEMBL)), table = FALSE)
+    df$ENSEMBL[naind] <- ""
     return(df)
 }
 
