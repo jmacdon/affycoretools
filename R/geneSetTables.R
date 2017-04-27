@@ -313,15 +313,15 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
     if(!is.null(design) && !is.null(contrast)){
         ## here I am assuming that if design and contrast are used, it's because this is
         ## being run by runRomer, so I don't have to check that things line up. Otherwise caveat emptor
-        cols <- lapply(1:ncol(contrast), function(x) c(which(as.logical(design[,contrast[,x] > 0])),
-                                                       which(as.logical(design[,contrast[,x] < 0]))))
+        cols <- lapply(1:ncol(contrast), function(x) which(apply(design[,contrast[,x] != 0, drop = FALSE], 1, function(y) any(y != 0))))
+            
         if(changenames)
             nams <- lapply(1:ncol(contrast), function(x) c(rep(colnames(design)[contrast[,x] > 0],
                                                                sum(design[,contrast[,x] > 0])),
                                                            rep(colnames(design)[contrast[,x] < 0],
                                                                sum(design[,contrast[,x] < 0]))))
         if(baseline.hmap)
-            bline <- lapply(1:ncol(contrast), function(x) which(as.logical(design[,contrast[,x] < 0])))
+            bline <- lapply(1:ncol(contrast), function(x) which(apply(design[,contrast[,x] < 0, drop = FALSE], 1, function(y) any(y != 0))))
         else
             bline <- NULL
     }
