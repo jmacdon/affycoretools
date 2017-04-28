@@ -310,16 +310,20 @@ geneSetPage <- function(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = "
 outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast = NULL, changenames = TRUE,
                         dir = "genesets", explanation = NULL, baseline.hmap = TRUE, 
                         file = "indexRomer.html", affy = TRUE,  ...){
+    ## Ensure we are using a cell means design
+    if(any(apply(design, 1, sum) > 1)) stop(paste("The design matrix needs to be for a cell-means model (e.g., one '1' per row)",
+                                                  "for this function to work correctly. If you have an intercept or batch variables",
+                                                  "please construct a simplified design matrix that just specifies the individual sample",
+                                                  "types.\n"), call. = FALSE)
+   
     if(!is.null(design) && !is.null(contrast)){
         ## here I am assuming that if design and contrast are used, it's because this is
         ## being run by runRomer, so I don't have to check that things line up. Otherwise caveat emptor
         cols <- lapply(1:ncol(contrast), function(x) which(apply(design[,contrast[,x] != 0, drop = FALSE], 1, function(y) any(y != 0))))
             
         if(changenames)
-            nams <- lapply(1:ncol(contrast), function(x) c(rep(colnames(design)[contrast[,x] > 0],
-                                                               sum(design[,contrast[,x] > 0])),
-                                                           rep(colnames(design)[contrast[,x] < 0],
-                                                               sum(design[,contrast[,x] < 0]))))
+            nams <- lapply(cols, function(x) colnames(design)[apply(design[x,],1,function(y) which(y != 0))])
+                
         if(baseline.hmap)
             bline <- lapply(1:ncol(contrast), function(x) which(apply(design[,contrast[,x] < 0, drop = FALSE], 1, function(y) any(y != 0))))
         else
@@ -463,6 +467,12 @@ outputRomer <- function(rsltlst, genesetlst, eset, fit, design = NULL, contrast 
 #' @export runRomer
 runRomer <- function(setloc, annot = NULL, eset, design = NULL, contrast = NULL, fit, wts = NULL, save = TRUE,
                      baseline.hmap = TRUE, affy = TRUE, ...){
+    ## Ensure we are using a cell means design
+    if(any(apply(design, 1, sum) > 1)) stop(paste("The design matrix needs to be for a cell-means model (e.g., one '1' per row)",
+                                                  "for this function to work correctly. If you have an intercept or batch variables",
+                                                  "please construct a simplified design matrix that just specifies the individual sample",
+                                                  "types.\n"), call. = FALSE)
+   
     require(annot, quietly = TRUE, character.only = TRUE)
     thefile <- paste(setloc, dir(setloc, "Rdata$"), sep = "/")
     if(!file.exists(thefile)) stop(paste("Ensure that the Broad dataset exists in", thefile), call. = FALSE)
