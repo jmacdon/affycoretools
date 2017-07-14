@@ -6,7 +6,7 @@
 \usage{
 makeImages(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE,
   repdir = "./reports", extraname = NULL, weights = NULL,
-  insert.after = 3, ...)
+  insert.after = 3, altnam = NULL, ...)
 }
 \arguments{
 \item{df}{A data.frame from calling \code{topTable}. Note that the row.names for this data.frame must
@@ -39,6 +39,10 @@ then an extraname can be appended to ensure uniqueness.}
 of the plotting symbols, to reflect the relative importance of each sample.}
 
 \item{insert.after}{Which column should the image be inserted after? Defaults to 3.}
+
+\item{altnam}{Normally the output file directories are generated from the colnames of the contrast matrix.
+This argument can be used to over-ride the default, particularly in the case that one is computing an F-test using a
+set of columns from the contrast matrix.}
 
 \item{\dots}{Allows arbitrary arguments to be passed down to lower level functions.}
 }

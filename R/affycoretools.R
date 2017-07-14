@@ -43,9 +43,10 @@
 #' @importFrom graphics axis image plot segments
 #' @importFrom stats cor quantile sd
 #' @importFrom utils read.table
-#' @importFrom RSQLite dbGetQuery dbDisconnect dbListTables
 #' @importFrom BiocGenerics plotPCA
 #' @import methods
+#' @import DBI
+#' @import RSQLite
 #' @docType package
 #' @name affycoretools
 #' @author

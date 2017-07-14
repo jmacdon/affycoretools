@@ -688,6 +688,9 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 ##' @param weights Array weights, generally from \code{arrayWeights} in the limma package. These will affect the size
 ##' of the plotting symbols, to reflect the relative importance of each sample.
 ##' @param insert.after Which column should the image be inserted after? Defaults to 3.
+##' @param altnam Normally the output file directories are generated from the colnames of the contrast matrix.
+##' This argument can be used to over-ride the default, particularly in the case that one is computing an F-test using a
+##' set of columns from the contrast matrix.
 ##' @param \dots Allows arbitrary arguments to be passed down to lower level functions.
 ##' @return A list, two items. The first item is the input data.frame with the glyphs included, ready to be used with
 ##' ReportingTools to create an HTML table. The second item is a pdf of the most differentially expressed comparison. This is
@@ -696,7 +699,7 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
 ##' @export makeImages
 makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot = FALSE, repdir = "./reports", extraname = NULL, weights = NULL,
-                       insert.after = 3, ...){
+                       insert.after = 3, altnam = NULL, ...){
     ## check that this is going to work
     eclass <- class(eset)[1]
     addtrailingslash <- function(path){
@@ -716,10 +719,13 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
     if(!all(row.names(df) %in% rn))
         stop(paste0("The row.names of your input data.frame do not match up with the data in your", eclass, ".",
                     " You need to fix that before proceeding!\n"), call. = FALSE)
-    figure.directory <- paste0(repdir, gsub(" ", "_", colnames(contrast)[colind]))
+    if(is.null(altnam))
+        figure.directory <- paste0(repdir, gsub(" ", "_", colnames(contrast)[colind]))
+    else
+        figure.directory <- paste0(repdir, gsub(" ", "_", altnam))
     if(!is.null(extraname)) figure.directory <- paste0(figure.directory, extraname)
     dir.create(figure.directory, recursive = TRUE)
-    ind <- apply(design[,contrast[,colind] != 0, drop = FALSE], 1, sum) > 0
+    ind <- apply(design[,apply(contrast[,colind, drop = FALSE], 1, function(x) any(x != 0)), drop = FALSE], 1, sum) > 0
     grp.factor <- factor(grp.factor[ind])
     eset <- eset[,ind]
     colnames(df)[colnames(df) == "SYMBOL"] <- "Symbol"
