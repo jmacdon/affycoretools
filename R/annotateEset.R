@@ -165,7 +165,7 @@ setMethod("dfToAnnoDF", "DataFrame",
     return(adf)
 })
 
-## If we use 'list' or 'CnaracterList' to annotate, we may get multiple values returned for a given ID
+## If we use 'list' or 'CharacterList' to annotate, we may get multiple values returned for a given ID
 ## in which case, we need to collapse to a single vector (separated by <BR>) so it will all fit into a single
 ## cell in the resulting table.
 listToVector <- function(object, ...){

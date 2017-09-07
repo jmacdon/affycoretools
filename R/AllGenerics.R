@@ -9,11 +9,13 @@ setGeneric("makeVenn", function(object, ...) standardGeneric("makeVenn"))
 ##' results is tedious, and can be surprisingly difficult to get right. By annotating
 ##' the data automatically, we remove the tedium and add an extra layer of security
 ##' since the resulting ExpressionSet will be tested for validity automatically (e.g., annotation
-##' data match up correctly with the expression data). Current choices for the annoation
+##' data match up correctly with the expression data). Current choices for the annotation
 ##' data are a ChipDb object (e.g., hugene10sttranscriptcluster.db) or an AffyGenePDInfo
 ##' object (e.g., pd.hugene.1.0.st.v1). In the latter case, we use the parsed Affymetrix
 ##' annotation csv file to get data. This is only intended for those situations where the
-##' ChipDb package is not available.
+##' ChipDb package is not available, and in particular is only available for those packages
+##' that contain the parsed annotation csv files (generally, Gene ST arrays, Exon ST arrays and
+##' Clariom/HTA/MTA/RTA arrays).
 ##' @param object An ExpressionSet to which we want to add annotation.
 ##' @param x Either a ChipDb package (e.g., hugene10sttranscriptcluster.db),
 ##' or a pdInfoPackage object (e.g., pd.hugene.1.0.st.v1).
