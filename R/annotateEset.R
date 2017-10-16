@@ -4,7 +4,7 @@
 ##' mappings are handled. The default is 'first', which takes just the first result. Other valid
 ##' values are 'list' and 'CharacterList', which return all mapped results.
 ##' @return An ExpressionSet that has annotation data added to the featureData slot.
-##' @author Jim MacDonald
+##' @author James W. MacDonald <jmacdon@u.washington>
 ##' @describeIn annotateEset Annotate an ExpressionSet using a ChipDb package for annotation data.
 ##' @export
 setMethod("annotateEset", c("ExpressionSet","ChipDb"),
