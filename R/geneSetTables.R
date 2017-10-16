@@ -368,7 +368,7 @@ setMethod("outputRomer", c("ExpressionSet","MArrayLM"),
     publish(hwrite(explanation, br = TRUE), indx)
     publish(d.f, indx)
     finish(indx)
-}
+})
 
 ##' @describeIn outputRomer Output romer results using RNA-Seq data processed using edgeR
 setMethod("outputRomer", c("DGEList","DGEGLM"),
@@ -378,12 +378,12 @@ setMethod("outputRomer", c("DGEList","DGEGLM"),
     ## Convert to an ExpressionSet and MArrayLM and run through base method
     object <- ExpressionSet(cpm(object, log = TRUE), featureData = AnnotatedDataFrame(object$genes))
     if(is.null(fit$var.prior)){
-        fitlst <- lapply(1:ncol(contrast)) fuction(x) topTags(glmLRT(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table
+        fitlst <- lapply(1:ncol(contrast)) function(x) topTags(glmLRT(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table
         fitnew <- list(coefficient = do.call(cbind(lapply(fitlst, function(x) x$logFC))),
                        p.value = do.call(cbind(lapply(fitlst, function(x) x$PValue))),
                        LR = do.call(cbind(lapply(fitlst, function(x) x$LR))))
     } else {
-        fitlst <- lapply(1:ncol(contrast)) fuction(x) topTags(glmQLFTest(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table
+        fitlst <- lapply(1:ncol(contrast)) function(x) topTags(glmQLFTest(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table
         fitnew <- list(coefficient = do.call(cbind(lapply(fitlst, function(x) x$logFC))),
                        p.value = do.call(cbind(lapply(fitlst, function(x) x$PValue))),
                        F = do.call(cbind(lapply(fitlst, function(x) x$F))))
