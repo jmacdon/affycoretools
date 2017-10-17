@@ -68,8 +68,6 @@ setGeneric(".getMainProbes", function(object, x, ...) standardGeneric(".getMainP
 ##' point to individual files in subdirectories within the genesets subdirectory
 ##' (named after the colnames of the contrast matrix).
 ##' @param object An ExpressionSet, DGEList, or EList object
-##' @param x An MArrayLM or DGEGLM object
-##' @param ... Allow users to pass arguments to specific methods. See below for choices.
 ##' @return If save is TRUE, return a list that can be re-processed using \code{outputRomer}.
 ##' this is useful in cases where you might need to re-run multiple times.
 ##' @author James W. MacDonald <jmacdon@u.washington.edu>

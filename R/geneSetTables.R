@@ -14,7 +14,7 @@
 ##' can be passed down to this function via the \code{dots} argument, allowing
 ##' the end user to have more control over the finished product.
 ##' 
-##' @param eset An \code{\link{ExpressionSet}} containing normalized, summarized
+##' @param object An \code{\link{ExpressionSet}} containing normalized, summarized
 ##' gene expression data.
 ##' @param ind Numeric vector indicating which rows of the
 ##' \code{\link{ExpressionSet}} to use.
@@ -40,17 +40,17 @@
 ##' @return Nothing is returned. Called only for the side effect of creating
 ##' heatmaps in 'png' format.
 ##' @author James W. MacDonald <jmacdon@@u.washington.edu>
-gsHeatmap <- function(eset, ind, filename, columns = NULL, colnames = NULL, col = NULL,
+gsHeatmap <- function(object, ind, filename, columns = NULL, colnames = NULL, col = NULL,
                       annot = NULL, scale.row = FALSE, key = TRUE, bline = NULL){
     if(!is.null(bline) && scale.row)
         stop(paste("The scale.row and bline arguments are mutually exclusive - you can either\n",
                    "scale each row of the heatmap, or you can convert to fold changes, but not both.\n\n"),
              call. = FALSE)
-    if(is.null(columns)) columns <- 1:dim(eset)[2]
-    if(is(eset, "ExpressionSet"))
-        mat <- exprs(eset)[ind,columns, drop = FALSE]
+    if(is.null(columns)) columns <- 1:dim(object)[2]
+    if(is(object, "ExpressionSet"))
+        mat <- exprs(object)[ind,columns, drop = FALSE]
     else
-        mat <- eset[ind,columns, drop = FALSE]
+        mat <- object[ind,columns, drop = FALSE]
     if(nrow(mat) < 2) return(NULL)
     if(!is.null(colnames)) colnames(mat) <- colnames
     if(!is.null(annot)){
@@ -134,7 +134,7 @@ dataAndHeatmapPage <- function(object, fit, ind, columns = NULL, fname, heatmap,
     if(is.null(columns)) columns <- 1:dim(object)[2]
     if(is.null(fitind)) fitind <- 1:ncol(fit$coefficients)
     
-    otherdata <- switch(grep("t|LR|F", names(fit), value = TRUE),
+    otherdata <- switch(grep("^t$|^LR$|^F$", names(fit), value = TRUE),
                         t = data.frame(t.statistic = fit$t[ind,fitind],
                                        p.value = fit$p.value[ind,fitind],
                                        fold = fit$coefficients[ind,fitind]),
@@ -226,15 +226,15 @@ geneSetPage <- function(rslts, genesets, object, fit, file, cutoff = 0.05, dir =
                         fitind = NULL, bline = NULL, affy = TRUE,  ...){
     ## first go through results and select genesets with significant results
     ind <- apply(rslts[,c("Up","Down","Mixed")], 1, function(x) any(x < cutoff))
-    rslts <- rslts[ind,]
+    rslts <- rslts[ind,,drop = FALSE]
     genesets <- genesets[ind]
     ind2 <- sapply(genesets, length) > 1
-    rslts <- rslts[ind2,]
+    rslts <- rslts[ind2,,drop = FALSE]
     colnames(rslts) <- paste(colnames(rslts), c("", rep(" (p-value)", 3)))
     genesets <- genesets[ind2]
     fun <- function(x, ...){
         fn <- if(subdir == ".") paste(dir, x, sep = "/") else paste(dir, subdir, x, sep = "/")
-        out <- dataAndHeatmapPage(eset = eset, fit = fit, ind = genesets[[x]], columns = columns,
+        out <- dataAndHeatmapPage(object = object, fit = fit, ind = genesets[[x]], columns = columns,
                                    fname = fn, heatmap = paste(x, "png", sep = "."),
                                    title = paste(x, "geneset,", if(subdir != ".") paste(subdir, "contrast")),
                                    fitind = fitind, affy = affy, ...)
@@ -296,15 +296,28 @@ setMethod("outputRomer", c("ExpressionSet","MArrayLM"),
           function(object, fit, rsltlst, genesetlst, design = NULL, contrast = NULL, changenames = TRUE,
                    dir = "genesets", explanation = NULL, baseline.hmap = TRUE, 
                    file = "indexRomer.html", affy = TRUE,  ...){
-    ## Ensure we are using a cell means design
-    if(any(apply(design, 1, sum) > 1)) stop(paste("The design matrix needs to be for a cell-means model (e.g., one '1' per row)",
-                                                  "for this function to work correctly. If you have an intercept or batch variables",
-                                                  "please construct a simplified design matrix that just specifies the individual sample",
-                                                  "types.\n"), call. = FALSE)
+   ## Check design and contrast
+    if(!is.null(design) && is.null(contrast)) stop("If you supply a design matrix, you also need a contrast matrix.", call. = FALSE)
+    if(is.null(design) && !is.null(contrast)) stop("If you supply a contrast matrix, you also need a design  matrix.", call. = FALSE)
+    if(is.null(design) && is.null(contrast)) warning(paste("runRomer will work without a design and contrast matrix, but",
+                                                           "we recommend you specify both to ensure that the correct model is used."),
+                                                     call. = FALSE)
+    if(any(apply(design, 2, function(x) all(as.logical(x))))) warning(paste("The runRomer function uses a combination",
+                                                                            "of the design and contrast matrices to infer",
+                                                                            "which data to plot in the resulting heatmaps.",
+                                                                            "This is easier to infer when using a cell-means",
+                                                                            "model (e.g., no intercept term in the design),",
+                                                                            "please check the heatmaps for correctness, and",
+                                                                            "consider converting to a cell-means model if",
+                                                                            "the heatmaps are missing some data."), call. = FALSE)
     
     if(!is.null(design) && !is.null(contrast)){
         ## here I am assuming that if design and contrast are used, it's because this is
         ## being run by runRomer, so I don't have to check that things line up. Otherwise caveat emptor
+        ## remove any design columns that are all zeros in contrast; alternatively, we could say remove all batch effects
+        keep <- apply(contrast, 1, function(x) any(as.logical(x)))
+        design <- design[,keep,drop = FALSE]
+        contrast <- contrast[keep,,drop = FALSE]
         cols <- lapply(1:ncol(contrast), function(x) which(apply(design[,contrast[,x] != 0, drop = FALSE], 1, function(y) any(y != 0))))
         
         if(changenames)
@@ -329,7 +342,7 @@ setMethod("outputRomer", c("ExpressionSet","MArrayLM"),
                 dir.create(dir)
             if(!file.exists(paste(dir, topnam[[i]], sep = "/")))
                 dir.create(paste(dir, topnam[[i]], sep = "/"))
-            geneSetPage(rslts = rsltlst[[i]][[j]], genesets = genesetlst[[j]], eset = eset,
+            geneSetPage(rslts = rsltlst[[i]][[j]], genesets = genesetlst[[j]], object = object,
                         fit = fit, file = paste(paste(topnam[i], nextnam[j], sep = "_"), "html", sep = "."),
                         dir = dir, subdir = topnam[[i]], fitind = i,
                         columns = cols[[i]], colnames = nams[[i]],
@@ -378,17 +391,20 @@ setMethod("outputRomer", c("DGEList","DGEGLM"),
     ## Convert to an ExpressionSet and MArrayLM and run through base method
     object <- ExpressionSet(cpm(object, log = TRUE), featureData = AnnotatedDataFrame(object$genes))
     if(is.null(fit$var.prior)){
-        fitlst <- lapply(1:ncol(contrast)) function(x) topTags(glmLRT(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table
-        fitnew <- list(coefficient = do.call(cbind(lapply(fitlst, function(x) x$logFC))),
-                       p.value = do.call(cbind(lapply(fitlst, function(x) x$PValue))),
-                       LR = do.call(cbind(lapply(fitlst, function(x) x$LR))))
+        fitlst <- lapply(1:ncol(contrast), function(x) topTags(glmLRT(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table)
+        fitnew <- list(coefficients = do.call(cbind, lapply(fitlst, function(x) x$logFC)),
+                       p.value = do.call(cbind, lapply(fitlst, function(x) x$PValue)),
+                       LR = do.call(cbind, lapply(fitlst, function(x) x$LR)),
+                       genes = fit$genes)
     } else {
-        fitlst <- lapply(1:ncol(contrast)) function(x) topTags(glmQLFTest(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table
-        fitnew <- list(coefficient = do.call(cbind(lapply(fitlst, function(x) x$logFC))),
-                       p.value = do.call(cbind(lapply(fitlst, function(x) x$PValue))),
-                       F = do.call(cbind(lapply(fitlst, function(x) x$F))))
+        fitlst <- lapply(1:ncol(contrast), function(x) topTags(glmQLFTest(fit, contrast = contrast[,x]), Inf, sort.by = "none")$table)
+        fitnew <- list(coefficients = do.call(cbind, lapply(fitlst, function(x) x$logFC)),
+                       p.value = do.call(cbind, lapply(fitlst, function(x) x$PValue)),
+                       F = do.call(cbind, lapply(fitlst, function(x) x$F)),
+                       genes = fit$genes)
     }
-    outputRomer(object, new("MArrayLM", fitnew), ...)
+    fit <- new("MArrayLM", fitnew)
+    outputRomer(object, fit, rsltlst, genesetlst, design, contrast, changenames, dir, explanation, baseline.hmap, file, affy = FALSE, ...)
 })
 
 ##` @describeIn outputRomer Output romer results using RNA-Seq data processed using voom.
@@ -398,7 +414,7 @@ setMethod("outputRomer", c("EList","MArrayLM"),
                    file = "indexRomer.html", ...){
     ## Convert to an ExpressionSet and run through base method
     object <- ExpressionSet(object$E, featureData = AnnotatedDataFrame(object$genes))
-    outputRomer(object, fit,...)
+    outputRomer(object, fit, rsltlst, genesetlst, design, contrast, changenames, dir, explanation, baseline.hmap, file, affy = FALSE, ...)
 })
 
 
@@ -410,14 +426,16 @@ setMethod("outputRomer", c("EList","MArrayLM"),
 ##' and the list items themselves are gene symbols, matching the expected capitalization for
 ##' the species being used (e.g., for human, they are ALL CAPS. For most other species only the
 ##' First Letter Is Capitalized).
-##' @param annot Character. The name of the array annotation package.
-##' @param eset An \code{\link{ExpressionSet}} containing normalized expression
-##' data.
-##' @param design A design matrix describing the model fit to the data.
+##' @param annot Character. The name of the array annotation package. If NULL, the
+##' annotation data will be extracted from the fData slot (for ExpressionSets) or the
+##' genes list (for DGEList or EList objects).
+##' @param design A design matrix describing the model fit to the data. Ideally this should be
+##' a cell-means model (e.g., no intercept term), as the design and contrast matrices are used
+##' to infer which data to include in the output heatmaps. There is no guarantee that this will work
+##' correctly with a treatment-contrasts parameterization (e.g., a model with an intercept).
 ##' @param contrast A contrast matrix describing the contrasts that were
 ##' computed from the data. This contrast should have colnames, which will be
 ##' used to create parts of the resulting directory structure.
-##' @param fit An \code{MArrayLM} object, containing the fitted model data.
 ##' @param wts Optional weights vector - if array weights were used to fit the
 ##' model, they should be supplied here as well.
 ##' @param save Boolean. If true, after running the \code{\link{romer}} step,
@@ -432,7 +450,7 @@ setMethod("outputRomer", c("EList","MArrayLM"),
 ##' the fold change between the A and B samples.
 ##' @param affy Boolean; are these Affymetrix arrays? If \code{TRUE}, the output tables
 ##' will contain links to the netaffx site.
-##' @param \dots Used to pass arguments to lower-level functions. See
+##' @param ... Used to pass arguments to lower-level functions. See
 ##' \code{outputRomer} \code{geneSetPage}, \code{dataAndHeatmapPage} and
 ##' \code{gsHeatmap} for available arguments.
 ##' @return Nothing is returned. This function is called only for the
@@ -444,11 +462,20 @@ setMethod("outputRomer", c("EList","MArrayLM"),
 setMethod("runRomer", c("ExpressionSet"),
           function(object, fit, setloc, annot = NULL,  design = NULL, contrast = NULL,  wts = NULL, save = TRUE,
                      baseline.hmap = TRUE, affy = TRUE, ...){
-    ## Ensure we are using a cell means design
-    if(any(apply(design, 1, sum) > 1)) stop(paste("The design matrix needs to be for a cell-means model (e.g., one '1' per row)",
-                                                  "for this function to work correctly. If you have an intercept or batch variables",
-                                                  "please construct a simplified design matrix that just specifies the individual sample",
-                                                  "types.\n"), call. = FALSE)
+    ## Check design and contrast
+    if(!is.null(design) && is.null(contrast)) stop("If you supply a design matrix, you also need a contrast matrix.", call. = FALSE)
+    if(is.null(design) && !is.null(contrast)) stop("If you supply a contrast matrix, you also need a design  matrix.", call. = FALSE)
+    if(is.null(design) && is.null(contrast)) warning(paste("runRomer will work without a design and contrast matrix, but",
+                                                           "we recommend you specify both to ensure that the correct model is used."),
+                                                     call. = FALSE)
+    if(any(apply(design, 2, function(x) all(as.logical(x))))) warning(paste("The runRomer function uses a combination",
+                                                                            "of the design and contrast matrices to infer",
+                                                                            "which data to plot in the resulting heatmaps.",
+                                                                            "This is easier to infer when using a cell-means",
+                                                                            "model (e.g., no intercept term in the design),",
+                                                                            "please check the heatmaps for correctness, and",
+                                                                            "consider converting to a cell-means model if",
+                                                                            "the heatmaps are missing some data."), call. = FALSE)
    
     broad <- switch(class(setloc),
                     character = get(load(paste(setloc, dir(setloc, "Rdata$"), sep = "/"))),
@@ -465,10 +492,10 @@ setMethod("runRomer", c("ExpressionSet"),
         symb <- symb[-dontuse]
         object <- object[-dontuse,]
         fit <- fit[-dontuse,]
-        } else {
+    } else {
             stop("Please either specify an annotation package, or supply gene symbols in the fData slot of your ExpressionSet.", call. = FALSE)
-        }
     }
+    
         
     setlst <- lapply(broad, function(x) ids2indices(x, as.character(symb)))
     names(setlst) <- names(broad)
@@ -488,28 +515,45 @@ setMethod("runRomer", c("ExpressionSet"),
 setMethod("runRomer", c("DGEList"),
           function(object, fit, setloc, design = NULL, contrast = NULL,
                    save = TRUE, baseline.hmap = TRUE, ...){
-    if (any(apply(design, 1, sum) > 1))
-        stop(paste("The design matrix needs to be for a cell-means model (e.g., one '1' per row)", 
-            "for this function to work correctly. If you have an intercept or batch variables", 
-            "please construct a simplified design matrix that just specifies the individual sample", 
-            "types.\n"), call. = FALSE)
+    ## Check design and contrast
+    if(!is.null(design) && is.null(contrast)) stop("If you supply a design matrix, you also need a contrast matrix.", call. = FALSE)
+    if(is.null(design) && !is.null(contrast)) stop("If you supply a contrast matrix, you also need a design  matrix.", call. = FALSE)
+    if(is.null(design) && is.null(contrast)) warning(paste("runRomer will work without a design and contrast matrix, but",
+                                                           "we recommend you specify both to ensure that the correct model is used."),
+                                                     call. = FALSE)
+    if(any(apply(design, 2, function(x) all(as.logical(x))))) warning(paste("The runRomer function uses a combination",
+                                                                            "of the design and contrast matrices to infer",
+                                                                            "which data to plot in the resulting heatmaps.",
+                                                                            "This is easier to infer when using a cell-means",
+                                                                            "model (e.g., no intercept term in the design),",
+                                                                            "please check the heatmaps for correctness, and",
+                                                                            "consider converting to a cell-means model if",
+                                                                            "the heatmaps are missing some data."), call. = FALSE)
+    
     broad <- switch(class(setloc),
                     character = get(load(paste(setloc, dir(setloc, "Rdata$"), sep = "/"))),
                     list = setloc,
                     stop("The setloc argument should be either a file location or a named list.", call. = FALSE))    
     symbind <- grep("SYMBOL", colnames(object$genes), ignore.case = TRUE)
-    if(length(symbind != 1))
-        stop("Please include gene symbols in the annotation for your DGEList!", call. = FALSE)
+
+    if(length(symbind) == 1){
+            symb <- object$genes[,symbind]
+            ind <- 1:nrow(object)
+            ind  <- ind[is.na(symb)|duplicated(symb)]
+            object <- object[-ind,]
+            fit <- fit[-ind, ]
+    } else {
+        stop("Please include gene symbols in the annotation for your DGEList!", call. = FALSE) 
+    }
     
-    symb <- object$genes[,symbind]
-    ind <- 1:nrow(object)
-    ind  <- ind[is.na(symb)|duplicated(symb)]
-    object <- object[-ind,]
-    fit <- fit[-ind, ]
     setlst <- lapply(broad, function(x) ids2indices(x, as.character(object$genes[,symbind])))
     names(setlst) <- names(broad)
-    romerlst <- lapply(seq_len(ncol(contrast)), function(x) lapply(setlst, 
-                       romer, y = object, design = design, contrast = contrast[, x], ...))
+    if(!is.integer(object$counts))
+        romerlst <- lapply(seq_len(ncol(contrast)), function(x)
+            lapply(setlst, function(z) suppressWarnings(romer(y = object, index = z, design = design, contrast = contrast[, x], ...))))
+    else
+        romerlst <- lapply(seq_len(ncol(contrast)), function(x)
+            lapply(setlst, romer, y = object, design = design, contrast = contrast[, x], ...))
     names(romerlst) <- colnames(contrast)
     if (save) 
         save(list = "romerlst", file = "romer.Rdata")

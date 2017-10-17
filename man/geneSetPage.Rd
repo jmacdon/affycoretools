@@ -5,7 +5,7 @@
 \title{A function to create an HTML page for each gene set, as well as the HTML
 pages for each significant gene set.}
 \usage{
-geneSetPage(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = ".",
+geneSetPage(rslts, genesets, object, fit, file, cutoff = 0.05, dir = ".",
   subdir = ".", columns = NULL, colnames = NULL, col = NULL,
   caption = NULL, fitind = NULL, bline = NULL, affy = TRUE, ...)
 }
@@ -14,10 +14,10 @@ geneSetPage(rslts, genesets, eset, fit, file, cutoff = 0.05, dir = ".",
 
 \item{genesets}{Character. A vector of gene symbols for one gene set.}
 
-\item{eset}{An \code{\link{ExpressionSet}} containing normalized, summarized
+\item{object}{An ExpressionSet, DGEList or EList containing normalized, summarized
 gene expression data.}
 
-\item{fit}{An \code{MArrayLM} object, containing the fitted data.}
+\item{fit}{An MArrayLM or DGEGLM object, containing the fitted data.}
 
 \item{file}{Filename for the resulting HTML page.}
 

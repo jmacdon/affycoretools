@@ -5,20 +5,20 @@
 \title{A function to create an annotated HTML table for all genes in a significant
 gene set as well as a heatmap of these data.}
 \usage{
-dataAndHeatmapPage(eset, fit, ind, columns = NULL, fname, heatmap, title,
+dataAndHeatmapPage(object, fit, ind, columns = NULL, fname, heatmap, title,
   key = TRUE, fitind = NULL, affy = TRUE, ...)
 }
 \arguments{
-\item{eset}{An \code{\link{ExpressionSet}} containing normalized, summarized
+\item{object}{An ExpressionSet, containing normalized, summarized
 gene expression data.}
 
-\item{fit}{An \code{MArrayLM} object.}
+\item{fit}{An MArrayLM object containing the fitted data.}
 
 \item{ind}{Numeric vector indicating which rows of the
-\code{\link{ExpressionSet}} to use.}
+data object to use.}
 
 \item{columns}{Numeric vector indicating which columns of the
-\code{\link{ExpressionSet}} to use. If \code{NULL}, all columns will be
+data object to use. If \code{NULL}, all columns will be
 used.}
 
 \item{fname}{The filename of the resulting output, without the 'html' file
@@ -53,5 +53,5 @@ set is then placed below this table, along with a key that indicates the
 range of the expression values.
 }
 \author{
-James W. MacDonald
+James W. MacDonald <jmacdon@u.washington.edu>
 }
