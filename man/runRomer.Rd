@@ -41,7 +41,10 @@ First Letter Is Capitalized).}
 annotation data will be extracted from the fData slot (for ExpressionSets) or the
 genes list (for DGEList or EList objects).}
 
-\item{design}{A design matrix describing the model fit to the data.}
+\item{design}{A design matrix describing the model fit to the data. Ideally this should be
+a cell-means model (e.g., no intercept term), as the design and contrast matrices are used
+to infer which data to include in the output heatmaps. There is no guarantee that this will work
+correctly with a treatment-contrasts parameterization (e.g., a model with an intercept).}
 
 \item{contrast}{A contrast matrix describing the contrasts that were
 computed from the data. This contrast should have colnames, which will be

@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.50.0
+----------------------------
+
+Significant user-visible changes
+
+Converted runRomer and outputRomer to S4, in the process re-factoring
+they now accept either an ExpressionSet and MArrayLM object (for
+Affymetrix microarray analyses), a DGEList and DGEGLM object (for
+RNA-Seq analysis using edgeR) or an EList and MArrayLM object (for
+either Agilent one-color microarray analysis or limma-voom RNA-Seq
+analysis).
+
+
 affycoretools v1.43.1
 =====================
 

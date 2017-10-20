@@ -133,8 +133,11 @@ dataAndHeatmapPage <- function(object, fit, ind, columns = NULL, fname, heatmap,
     prbs <- featureNames(object)[ind]
     if(is.null(columns)) columns <- 1:dim(object)[2]
     if(is.null(fitind)) fitind <- 1:ncol(fit$coefficients)
-    
-    otherdata <- switch(grep("^t$|^LR$|^F$", names(fit), value = TRUE),
+    toget <- c("t","F","LR")
+    toget <- toget[toget %in% names(fit)][1]
+    if(length(toget) != 1) stop(paste("Your fitted model", fit, "should contain either t-statistics, F-statistics or",
+                                      "likelihood ratio statistics."), call. = FALSE)
+    otherdata <- switch(toget,
                         t = data.frame(t.statistic = fit$t[ind,fitind],
                                        p.value = fit$p.value[ind,fitind],
                                        fold = fit$coefficients[ind,fitind]),
@@ -226,6 +229,7 @@ geneSetPage <- function(rslts, genesets, object, fit, file, cutoff = 0.05, dir =
                         fitind = NULL, bline = NULL, affy = TRUE,  ...){
     ## first go through results and select genesets with significant results
     ind <- apply(rslts[,c("Up","Down","Mixed")], 1, function(x) any(x < cutoff))
+    if(!any(ind)) return(FALSE)
     rslts <- rslts[ind,,drop = FALSE]
     genesets <- genesets[ind]
     ind2 <- sapply(genesets, length) > 1
@@ -251,7 +255,7 @@ geneSetPage <- function(rslts, genesets, object, fit, file, cutoff = 0.05, dir =
     tab <- HTMLReport(sub("\\.html$", "", file), caption, dir)
     publish(d.f, tab)
     finish(tab)
-    tab
+    return(TRUE)
 }
 
 
@@ -336,18 +340,21 @@ setMethod("outputRomer", c("ExpressionSet","MArrayLM"),
     ## mapper <- c("C1-positional","C2-Curated","C3-Motif","C4-Computational","C5-GeneOntology","C6-Oncogenic")
     ## names(mapper) <- paste("c", 1:6, sep = "")
     ## nextnam2 <- mapper[nextnam]
+    ## counter to keep track of genesets with no sig results
+    outind <- vector(length = length(topnam)*length(nextnam))
+    ilen <- length(topnam)
     for(i in seq(along = topnam)){
         for(j in seq(along = nextnam)){
             if(!file.exists(dir))
                 dir.create(dir)
             if(!file.exists(paste(dir, topnam[[i]], sep = "/")))
                 dir.create(paste(dir, topnam[[i]], sep = "/"))
-            geneSetPage(rslts = rsltlst[[i]][[j]], genesets = genesetlst[[j]], object = object,
-                        fit = fit, file = paste(paste(topnam[i], nextnam[j], sep = "_"), "html", sep = "."),
-                        dir = dir, subdir = topnam[[i]], fitind = i,
-                        columns = cols[[i]], colnames = nams[[i]],
-                        caption = paste("Results for", topnam[i], "contrast, using", nextnam[j], "geneset"),
-                        bline = bline[[i]], affy = affy,...)
+            outind[i+ilen*(j-1)] <- geneSetPage(rslts = rsltlst[[i]][[j]], genesets = genesetlst[[j]], object = object,
+                                                fit = fit, file = paste(paste(topnam[i], nextnam[j], sep = "_"), "html", sep = "."),
+                                                dir = dir, subdir = topnam[[i]], fitind = i,
+                                                columns = cols[[i]], colnames = nams[[i]],
+                                                caption = paste("Results for", topnam[i], "contrast, using", nextnam[j], "geneset"),
+                                                bline = bline[[i]], affy = affy,...)
         }
     }
 
@@ -356,7 +363,8 @@ setMethod("outputRomer", c("ExpressionSet","MArrayLM"),
                        ".html", sep = "")
     contrastlnks <- paste("<a href=\"", contlinks, "\">", rep(topnam, each = length(nextnam)),
                           "</a>", sep = "")
-    indx <- HTMLReport(sub("\\.html", "", file), "Gene Set Enrichment Analysis based on Broad Gene Sets", reportDirectory = dir)
+    contrastlnks[!outind] <- "None significant"
+    indx <- HTMLReport(sub("\\.html", "", file), "Gene Set Enrichment Analysis based on Broad Gene Sets", reportDirectory = ".")
     d.f <- data.frame(Genesets = rep(nextnam, length(topnam)),
                       Contrasts = contrastlnks)
     if(is.null(explanation))
@@ -407,7 +415,7 @@ setMethod("outputRomer", c("DGEList","DGEGLM"),
     outputRomer(object, fit, rsltlst, genesetlst, design, contrast, changenames, dir, explanation, baseline.hmap, file, affy = FALSE, ...)
 })
 
-##` @describeIn outputRomer Output romer results using RNA-Seq data processed using voom.
+##' @describeIn outputRomer Output romer results using RNA-Seq data processed using voom.
 setMethod("outputRomer", c("EList","MArrayLM"),
           function(object, fit, rsltlst, genesetlst, design = NULL, contrast = NULL, changenames = TRUE,
                    dir = "genesets", explanation = NULL, baseline.hmap = TRUE, 
@@ -476,27 +484,27 @@ setMethod("runRomer", c("ExpressionSet"),
                                                                             "please check the heatmaps for correctness, and",
                                                                             "consider converting to a cell-means model if",
                                                                             "the heatmaps are missing some data."), call. = FALSE)
-   
-    broad <- switch(class(setloc),
-                    character = get(load(paste(setloc, dir(setloc, "Rdata$"), sep = "/"))),
-                    list = setloc,
-                    stop("The setloc argument should be either a file location or a named list.", call. = FALSE))
     if(!is.null(annot)){
         require(annot, character.only = TRUE, quietly = TRUE)
         object <- annotateEset(object, annot)
     }
-    symbind <- grep("symbol", names(fData(object)), ignore.case = TRUE)
-    if(length(symbind) == 1){
-        symb <- fData(object)[,symbind]
-        dontuse <- is.na(symb) | duplicated(symb)
-        symb <- symb[-dontuse]
-        object <- object[-dontuse,]
-        fit <- fit[-dontuse,]
-    } else {
-            stop("Please either specify an annotation package, or supply gene symbols in the fData slot of your ExpressionSet.", call. = FALSE)
-    }
     
-        
+    ## check object and fit compatibility
+    if(!all(featureNames(object) %in% row.names(fit))) stop(paste0("The IDs in ", object, " do not match the IDs in ", fit, ". Please ensure that",
+                                                                         " these two data sources are consistent!"), call. = FALSE)
+    if(nrow(fit$genes) == 0 && nrow(featureData(object)) > 0) fit$genes <- featureData(object)[row.names(fit),]
+    if(nrow(fit$genes) == 0 && nrow(featureData(object)) == 0) stop(paste("Please provide annotation for your fit object,", fit), call. = FALSE)
+    if(!isTRUE(all.equal(featureNames(object), row.names(fit))))
+        fit <- fit[featureNames(object),]
+    broad <- switch(class(setloc),
+                    character = get(load(paste(setloc, dir(setloc, "Rdata$"), sep = "/"))),
+                    list = setloc,
+                    stop("The setloc argument should be either a file location or a named list.", call. = FALSE))
+    
+    symbind <- grep("symbol", names(fit$genes), ignore.case = TRUE)
+    if(!length(symbind) == 1)
+            stop(paste0("Please provide gene symbols in the annotation for your fitted model object ", fit, "."), call. = FALSE)
+    symb <- fit$genes[,symbind]
     setlst <- lapply(broad, function(x) ids2indices(x, as.character(symb)))
     names(setlst) <- names(broad)
     romerlst <- lapply(seq_len(ncol(contrast)), function(x)
@@ -529,23 +537,25 @@ setMethod("runRomer", c("DGEList"),
                                                                             "please check the heatmaps for correctness, and",
                                                                             "consider converting to a cell-means model if",
                                                                             "the heatmaps are missing some data."), call. = FALSE)
-    
+
+    ## check object and fit compatibility
+    if(!all(row.names(object) %in% row.names(fit))) stop(paste0("The IDs in ", object, " do not match the IDs in ", fit, ". Please ensure that",
+                                                                         " these two data sources are consistent!"), call. = FALSE)
+    if(nrow(fit$genes) == 0 && nrow(object$genes) > 0) fit$genes <- object$genes[row.names(fit),]
+    if(nrow(fit$genes) == 0 && nrow(object$genes) == 0) stop(paste("Please provide annotation for your fit object,", fit), call. = FALSE)
+    if(!isTRUE(all.equal(row.names(object), row.names(fit))))
+        fit <- fit[row.names(object),]
+   
+   
     broad <- switch(class(setloc),
                     character = get(load(paste(setloc, dir(setloc, "Rdata$"), sep = "/"))),
                     list = setloc,
                     stop("The setloc argument should be either a file location or a named list.", call. = FALSE))    
-    symbind <- grep("SYMBOL", colnames(object$genes), ignore.case = TRUE)
-
-    if(length(symbind) == 1){
-            symb <- object$genes[,symbind]
-            ind <- 1:nrow(object)
-            ind  <- ind[is.na(symb)|duplicated(symb)]
-            object <- object[-ind,]
-            fit <- fit[-ind, ]
-    } else {
-        stop("Please include gene symbols in the annotation for your DGEList!", call. = FALSE) 
-    }
-    
+    symbind <- grep("SYMBOL", colnames(fit$genes), ignore.case = TRUE)
+    if(!length(symbind) == 1)
+        stop(paste0("Please provide gene symbols in the annotation for your fitted model object ", fit, "."), call. = FALSE)
+    symb <- fit$genes[,symbind]
+        
     setlst <- lapply(broad, function(x) ids2indices(x, as.character(object$genes[,symbind])))
     names(setlst) <- names(broad)
     if(!is.integer(object$counts))
@@ -568,7 +578,8 @@ setMethod("runRomer", c("DGEList"),
 setMethod("runRomer", c("EList"),
           function(object, fit, setloc, design = NULL, contrast = NULL,
                    save = TRUE, baseline.hmap = TRUE, ...){
-     callNextMethod()
+    object <- ExpressionSet(object$E, featureData = AnnotatedDataFrame(object$genes))
+    runRomer(object = object, fit = fit, setloc = setloc, design = design, contrast = contrast, save = save, baseline.hmap = baseline.hmap, ...) 
 })
 
 

@@ -21,13 +21,13 @@
 #' @importMethodsFrom Biobase annotation exprs featureNames sampleNames write.exprs pData featureData<- AnnotatedDataFrame
 #' @importFrom S4Vectors DataFrame
 #' @importFrom affy AffyRNAdeg mas5 plotAffyRNAdeg plotDensity ReadAffy rma
-#' @importFrom Biobase addVigs2WinMenu assayDataElement
+#' @importFrom Biobase addVigs2WinMenu assayDataElement featureData ExpressionSet
 #' @importFrom graphics layout legend par text
 #' @importFrom grDevices dev.off rainbow recordPlot replayPlot
 #' @importFrom stats median p.adjust prcomp
 #' @importFrom utils write.table
 #' @importFrom limma topTable vennCounts decideTests romer ids2indices vennDiagram
-#' @importFrom edgeR cpm glmLRT glmQLFTest glmTreat
+#' @importFrom edgeR cpm glmLRT glmQLFTest glmTreat topTags
 #' @importFrom GOstats probeSetSummary
 #' @importFrom gcrma gcrma
 #' @importFrom splines ns

@@ -4,12 +4,12 @@
 \alias{gsHeatmap}
 \title{A function to create a simple heatmap and key.}
 \usage{
-gsHeatmap(eset, ind, filename, columns = NULL, colnames = NULL,
+gsHeatmap(object, ind, filename, columns = NULL, colnames = NULL,
   col = NULL, annot = NULL, scale.row = FALSE, key = TRUE,
   bline = NULL)
 }
 \arguments{
-\item{eset}{An \code{\link{ExpressionSet}} containing normalized, summarized
+\item{object}{An \code{\link{ExpressionSet}} containing normalized, summarized
 gene expression data.}
 
 \item{ind}{Numeric vector indicating which rows of the

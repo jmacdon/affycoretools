@@ -5,6 +5,7 @@
 \alias{outputRomer}
 \alias{outputRomer,ExpressionSet,MArrayLM-method}
 \alias{outputRomer,DGEList,DGEGLM-method}
+\alias{outputRomer,EList,MArrayLM-method}
 \title{A function to create HTML output from the results of running romer on a set
 of contrasts.}
 \usage{
@@ -16,6 +17,10 @@ outputRomer(object, fit, ...)
   affy = TRUE, ...)
 
 \S4method{outputRomer}{DGEList,DGEGLM}(object, fit, rsltlst, genesetlst,
+  design = NULL, contrast = NULL, changenames = TRUE, dir = "genesets",
+  explanation = NULL, baseline.hmap = TRUE, file = "indexRomer.html", ...)
+
+\S4method{outputRomer}{EList,MArrayLM}(object, fit, rsltlst, genesetlst,
   design = NULL, contrast = NULL, changenames = TRUE, dir = "genesets",
   explanation = NULL, baseline.hmap = TRUE, file = "indexRomer.html", ...)
 }
@@ -98,6 +103,8 @@ Second, see the code for runRomer, specifically the line that creates the
 \item \code{object = ExpressionSet,fit = MArrayLM}: Output romer results using microarray data
 
 \item \code{object = DGEList,fit = DGEGLM}: Output romer results using RNA-Seq data processed using edgeR
+
+\item \code{object = EList,fit = MArrayLM}: Output romer results using RNA-Seq data processed using voom.
 }}
 
 \author{
