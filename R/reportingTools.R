@@ -210,7 +210,8 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
                   "Genes common to all comparisons")
     if(ncontrasts == 4)
         return(venn4Way(fit = fit, contrast = contrast, p.value = p.value,
-                        lfc = lfc, adj.meth = adj.meth, baseUrl = baseUrl, reportDirectory = reportDirectory))
+                        lfc = lfc, adj.meth = adj.meth, baseUrl = baseUrl, reportDirectory = reportDirectory,
+                        affy = affy, probecol = probecol, ...))
         
     
     coefind <- switch(ncol(dtmat)-1,
@@ -255,7 +256,7 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
                       "from the MArrayLM object instead"))
         annotlst <- lapply(indices, function(x) if(sum(x) > 0) data.frame(ID = rn[x]))
     } else {
-        annotlst <- lapply(indices, function(x) if(sum(x) > 0) fit$genes[x,])
+        annotlst <- lapply(indices, function(x) if(sum(x) > 0) fit$genes[x,,drop = FALSE])
     }
                        
     csvlst <- mapply(data.frame, annotlst, csvlst, SIMPLIFY = FALSE)
@@ -441,9 +442,11 @@ setMethod("makeVenn", "DGEGLM",
                   glmTreat = lapply(seq_len(ncol(contrast)), function(x) glmTreat(object, contrast = contrast[,x], lfc = lfc)))
     object <- new("MArrayLM", list(p.value = do.call(cbind, lapply(lst, function(x) x$table$PValue)),
                                    coefficients = do.call(cbind, lapply(lst, function(x) x$table$logFC)),
+                                   t = do.call(cbind, lapply(lst, function(x) {col <- grep("LR|F", names(x$table))
+                                                          return(x$table[,col])})),
                                    genes = object$genes))
     colnames(object$p.value) <- colnames(object$coefficients) <- colnames(contrast)
-    makeVenn(object, contrast, design, lfc = lfc, ...)
+    makeVenn(object, contrast, design, lfc = lfc, affy = FALSE, ...)
 })
    
 
@@ -607,25 +610,39 @@ addLines <- function(comps, col = c("#66FF33","#FF9933", "#000000","#9900CC")){
 ##' @param adj.meth The method used to adjust for multiple comparisons.
 ##' @param baseUrl The base directory for the tables generated. Defaults to ".", meaning the current directory. 
 ##' @param reportDirectory The directory in which to put the results. Defaults to a "venns" subdirectory.
+##' @param affy Boolean. Set to \code{TRUE} if using Affymetrix microarrays.
+##' @param probecol The column containing either the Affymetrix probeset IDs (if the affy argument is set to \code{TRUE}) or
+##' the name of a column in the output tables that contains uinque identifiers (Entrez Gene IDs, gene symbols, etc).
 ##' @param ... Allows arbitrary arguments to be passed to lower level functions
 ##' @return Returns a list. The first item is a (list of) HTMLReportRef objects that can be used by ReportingTools to create HTML links.
 ##' The second item is the output from the \code{venn} function in gtools, and the third item is the name of the contrasts used to generate
 ##' the Venn diagram.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
-venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", reportDirectory = "./venns", ...){
+venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", reportDirectory = "./venns", affy = TRUE,
+                     probecol = "PROBEID", ...){
     ##require("gplots", character.only = TRUE) || stop("The gplots package is required for 4-way Venns.\n", call. = FALSE) 
     nam <- paste0(gsub(" ", ".", colnames(contrast)), ".")
     ## do some munging to get the right columns
-    allcols <- c("PROBEID","ID","SYMBOL","GENENAME","logFC","t",switch(adj.meth, none = "P.Value", "adj.P.Value"))
-    shortcols <- c("logFC","t",switch(adj.meth, none = "P.Value", "adj.P.Value"))
+    allcols <- c("PROBEID","ID","SYMBOL","GENENAME","logFC","t",switch(adj.meth, none = "P.Value", "adj.P.Val"))
+    shortcols <- c("logFC","t",switch(adj.meth, none = "P.Value", "adj.P.Val"))
     outlst <- lapply(1:ncol(contrast), function(x) tableFilt(fit, x, pfilt = p.value, fldfilt = lfc, adjust = adj.meth))
     allcols <- match(allcols[allcols %in% names(outlst[[1]])], names(outlst[[1]]))
     shortcols <- match(shortcols[shortcols %in% names(outlst[[1]])], names(outlst[[1]]))
     theplot <- venn(lapply(outlst, function(x) x[,1]), show.plot = FALSE)
-    for(i in seq_len(length(nam))) names(outlst[[i]]) <- paste0(rep(c("", nam[i]), c(4,3)), names(outlst[[i]]))
+    for(i in seq_len(length(nam))) names(outlst[[i]][allcols]) <- paste0(rep(c("", nam[i]),
+                                                                             c(length(setdiff(allcols, shortcols)),length(shortcols))),
+                                                                             names(outlst[[i]][allcols]))
     vcind <- c(1,4,9,16)
-    vennlst2 <- do.call("rbind", lapply(1:4, function(x) data.frame(PROBEID = outlst[[x]]$PROBEID, grp = vcind[x])))
-    vennlst2 <- sapply(tapply(1:nrow(vennlst2), vennlst2$PROBEID, function(x) vennlst2[x,2]), sum)
+    colind <- grep(probecol, names(outlst[[1]]))
+    colind <- if(length(colind) > 0) {
+                  colind
+              } else {
+                  allcols[1]
+                  warning(paste("Using the", names(outlst[[1]])[allcols[1]], "column to uniquely identify genes."), call. = FALSE)
+              }
+    vennlst2 <- do.call("rbind", lapply((1:4)[sapply(outlst, nrow) > 0], function(x) data.frame(PROBEID = outlst[[x]][,colind], grp = vcind[x])))
+    vennlst2[,1] <- factor(vennlst2[,1])
+    vennlst2 <- sapply(split(vennlst2[,2], vennlst2[,1]), sum)
     vennlst3 <- lapply(c(1,4,5,9,10,13,14,16,17,20,21,25,26,29,30), function(x) names(vennlst2[vennlst2 == x]))
     indmat <- rbind(diag(4),cbind(1, diag(3)), cbind(0,1,diag(2)), c(0,0,1,1))
     z <- matrix(1, 4, 4)
@@ -636,19 +653,19 @@ venn4Way <- function(fit, contrast,  p.value, lfc, adj.meth, baseUrl = ".", repo
     fn <- LETTERS[1:4]
     out <- lapply(seq_len(length(theind)), function(x) {
         if(sum(indmat[x,]) == 1) {
-            return(outlst[[which(indmat[x,])]][outlst[[which(indmat[x,])]]$PROBEID %in% vennlst3[[theind[x]]],allcols])
+            return(outlst[[which(indmat[x,])]][outlst[[which(indmat[x,])]][,colind] %in% vennlst3[[theind[x]]],allcols])
         }else{
             littleind <- which(indmat[x,])
-            tmp1 <- outlst[[littleind[1]]][match(vennlst3[[theind[x]]], outlst[[littleind[1]]]$PROBEID),allcols]
+            tmp1 <- outlst[[littleind[1]]][match(vennlst3[[theind[x]]], outlst[[littleind[1]]][,colind]),allcols]
             tmp2 <- do.call("cbind", lapply(littleind[-1], function(y)
-                                            outlst[[y]][match(vennlst3[[theind[x]]], outlst[[y]]$PROBEID),shortcols]))
+                                            outlst[[y]][match(vennlst3[[theind[x]]], outlst[[y]][,colind]),shortcols]))
             return(cbind(tmp1, tmp2))
         }
     })
     ind <- which(sapply(out, nrow) > 0)
     nam <- sapply(seq_len(length(out)), function(x) paste0(paste(fn[indmat[x,]], collapse = "_"), "_venn"))
     vennout <- lapply(seq_len(length(out)), function(x) HTMLReport(nam[x], nam[x], baseUrl = baseUrl, reportDirectory = reportDirectory))
-    lapply(ind, function(x) publish(out[[x]], vennout[[x]], .modifyDF = list(affyLinks)))
+    lapply(ind, function(x) publish(out[[x]], vennout[[x]], if(affy) .modifyDF = list(affyLinks)))
     lapply(vennout[ind], finish)
     lapply(ind, function(x) write.table(out[[x]], paste0(reportDirectory, "/", nam[x], ".txt"), sep = "\t",
                                         quote = FALSE, row.names = FALSE, na = ""))
@@ -951,10 +968,10 @@ makeGoTable <- function(fit.table, go.summary, probe.summary, cont.name, base.di
 tableFilt <- function(fit, coef = 1,  number = 30, fldfilt = NULL, pfilt = NULL,
                       adjust = "fdr"){
   if(is.null(fldfilt) && is.null(pfilt)){
-    tab <- topTable(fit, coef = coef, number = number, adjust.method = adjust)
+    tab <- topTable(fit, coef = coef, number = number, adjust.method = adjust, sort.by = "p")
   }else{
     tab <- topTable(fit, coef = coef, number = dim(fit$coefficients)[1],
-                    adjust.method = adjust)
+                    adjust.method = adjust, sort.by = "p")
   }
 ## Filter on p-value
   if(!is.null(pfilt))

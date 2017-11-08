@@ -5,7 +5,7 @@
 \title{4-way Venn Diagrams}
 \usage{
 venn4Way(fit, contrast, p.value, lfc, adj.meth, baseUrl = ".",
-  reportDirectory = "./venns", ...)
+  reportDirectory = "./venns", affy = TRUE, probecol = "PROBEID", ...)
 }
 \arguments{
 \item{fit}{An \code{MArrayLM} object, created by the limma package.}
@@ -21,6 +21,11 @@ venn4Way(fit, contrast, p.value, lfc, adj.meth, baseUrl = ".",
 \item{baseUrl}{The base directory for the tables generated. Defaults to ".", meaning the current directory.}
 
 \item{reportDirectory}{The directory in which to put the results. Defaults to a "venns" subdirectory.}
+
+\item{affy}{Boolean. Set to \code{TRUE} if using Affymetrix microarrays.}
+
+\item{probecol}{The column containing either the Affymetrix probeset IDs (if the affy argument is set to \code{TRUE}) or
+the name of a column in the output tables that contains uinque identifiers (Entrez Gene IDs, gene symbols, etc).}
 
 \item{...}{Allows arbitrary arguments to be passed to lower level functions}
 }
