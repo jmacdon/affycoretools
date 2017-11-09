@@ -147,9 +147,7 @@ dataAndHeatmapPage <- function(object, fit, ind, columns = NULL, fname, heatmap,
                         F =  data.frame(F.statistic = fit$F[ind,fitind],
                                        p.value = fit$p.value[ind,fitind],
                                        fold = fit$coefficients[ind,fitind]))
-    ind2 <- order(otherdata$p.value)
-    otherdata <- otherdata[ind2,]
-    prbs <- prbs[ind2]
+    
     ## Here we just rely on any annotations that exist in the MArrayLM object
     rn <- row.names(fit$coef)
     if(is.null(rn)) rn <- seq_len(nrow(fit$coef))
@@ -162,6 +160,8 @@ dataAndHeatmapPage <- function(object, fit, ind, columns = NULL, fname, heatmap,
         annot <- fit$genes[ind,]
     }
     d.f <- cbind(annot, otherdata)
+    ind2 <- order(d.f$p.value)
+    d.f <- d.f[ind2,]
     d.f <- fixHeaderAndGo(d.f, affy = affy, ...)
     tab <- HTMLReport(fname, title)
     publish(d.f$df, tab, if(length(d.f$mdf) > 0) .modifyDF = d.f$mdf)
@@ -171,7 +171,7 @@ dataAndHeatmapPage <- function(object, fit, ind, columns = NULL, fname, heatmap,
                          width = 300, height = 150, page = page)
     hwriteImage(heatmap, page)
     closePage(page)
-    return(list(ind = ind[ind2], annot = annot))
+    return(list(ind = ind[ind2], annot = annot[ind2,]))
 }
 
 
