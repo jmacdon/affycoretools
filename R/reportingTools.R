@@ -190,13 +190,9 @@ vennSelect2 <- function(fit, contrast, design,  groups = NULL, cols = NULL, p.va
     }
     
     dtmat <- decideTests(fit, adjust.method = adj.meth, p.value = p.value, lfc = lfc)
-    if(all(apply(dtmat, 2, sum) == 0)) stop(paste("There are no significant genes at a p.value <",
-                p.value, "and a fold change >", lfc, "with",
-                switch(adj.meth, none = "no multiplicity adjustment!", paste("a", adj.meth, "multiplicity adjustment!"))),
-                call. = FALSE)
+    if(all(apply(dtmat, 2, sum) == 0)) return(list(vennout = NULL, venncounts = vennCounts2(dtmat, method = method)))
+
     colind <- getCols(design, contrast)
-    
-    
     ncontrasts <- ncol(dtmat)
     if(ncontrasts < 2 || ncontrasts > 4)
         stop("This function only works for 2-4 comparisons at a time.\n",
@@ -516,8 +512,12 @@ setMethod("makeVenn", "DGEGLM",
 vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
                      baseUrl = ".", reportDirectory = NULL, ...){
     if(is.null(reportDirectory)){
-        tmp <- strsplit(path(vennlst[[1]]$vennout[[1]]), "/")[[1]]
-        reportDirectory <- paste(tmp[1:2], collapse = "/")
+        notnull <- sapply(vennlst, function(x) !is.null(x$vennout))
+        if(!all(notnull)){
+            use.this <- which(notnull)[1]
+            tmp <- strsplit(path(vennlst[[use.this]]$vennout[[1]]), "/")[[1]]
+            reportDirectory <- paste(tmp[1:2], collapse = "/")
+            }
     }
     hpage <- openPage(paste0(pagename, ".html"), dirname = reportDirectory)
     hwrite(paste("The Venn diagrams all contain clickable links. Click on the counts",
@@ -552,7 +552,8 @@ drawVenn <- function(lst, page, dir, num, cex = 1, shift.title = FALSE, ...){
     hwrite(hmakeTag("img", border = 0, width = 800, height = 800,
                     src = nam2, alt = nam2, usemap = mapname), page)
     hwriteImage(paste("Venn Diagram", num), page)
-    vennLinks(lst, page, mapname, dir)
+    if(!is.null(lst[[1]]))
+        vennLinks(lst, page, mapname, dir)
     
 }
 

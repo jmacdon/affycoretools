@@ -84,7 +84,10 @@ setMethod("annotateEset", c("ExpressionSet","AffyExpressionPDInfo"),
                         stop("Type must be either 'core' or 'probeset'", call. = FALSE))
     load(system.file(paste0("/extdata/", typeToGet), package = annotation(x)))
     annot <- pData(get(sub("\\.rda", "", typeToGet)))
-    if(nrow(annot)/nrow(object) < 0.95)
+    annotest <- switch(type,
+                       probeset = sum(annot$probesetid %in% featureNames(object))/nrow(annot),
+                       core = sum(annot$transcriptclusterid %in% featureNames(object))/nrow(annot))
+    if(annotest < 0.95)
         stop(paste("There appears to be a mismatch between the ExpressionSet and",
                    "the annotation data.\nPlease ensure that the summarization level",
                    "for the ExpressionSet and the 'type' argument are the same.\n",
