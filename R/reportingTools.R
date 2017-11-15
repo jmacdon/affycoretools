@@ -513,11 +513,13 @@ vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = F
                      baseUrl = ".", reportDirectory = NULL, ...){
     if(is.null(reportDirectory)){
         notnull <- sapply(vennlst, function(x) !is.null(x$vennout))
-        if(!all(notnull)){
+        if(!all(notnull))
             use.this <- which(notnull)[1]
-            tmp <- strsplit(path(vennlst[[use.this]]$vennout[[1]]), "/")[[1]]
-            reportDirectory <- paste(tmp[1:2], collapse = "/")
-            }
+        else
+            use.this <- 1
+        
+        tmp <- strsplit(path(vennlst[[use.this]]$vennout[[1]]), "/")[[1]]
+        reportDirectory <- paste(tmp[1:2], collapse = "/")
     }
     hpage <- openPage(paste0(pagename, ".html"), dirname = reportDirectory)
     hwrite(paste("The Venn diagrams all contain clickable links. Click on the counts",
