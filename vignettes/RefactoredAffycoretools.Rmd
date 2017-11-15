@@ -127,8 +127,8 @@ finish(htab)
 ```
 
 
-And now we have a [HTML table](afile.html) in
-our working directory, that contains the data for our top 10
+If you run the code yourself, you will have an HTML file 'afile.html'
+in the working directory, that contains the data for our top 10
 genes. This table is not particularly interesting, and the
 \Biocpkg{ReportingTools} package already has functionality to just do
 something like 
@@ -141,7 +141,7 @@ finish(htab)
 
 ```
 
-and it will automatically generate an [annotated table](afile2.html),
+and it will automatically generate another HTML file, 'afile2.html',
 with some extra plots that show the different groups, and we didn't
 even have to use \Rfunction{topTable} directly. However, the default
 plots in the HTML table are a combination of dotplot and boxplot,
@@ -160,13 +160,13 @@ finish(htab)
 
 ```
 
-Note that there are [two differences](afile3.html) in the way we did things. First,
+Note that there are two differences in the way we did things. First,
 we create a \Robject{data.frame}, and then decorate it with the plots
 using the \Rfunction{makeImages} function. This will by default create
 dotplots (or you can specify boxplots). For the plots to fit in an
 HTML table, there are no axis labels. However, each plot is also a
 link, and if you click on it, a larger plot with axis labels will be
-presented. 
+presented. If you are running the code yourself, see 'afile3.html'.
 
 All the little files that get created can get pretty messy, so the
 default is to put everything into a 'reports' subdirectory, so your
@@ -230,13 +230,13 @@ finish(idx)
 
 ```
 
-Now there will be an [index](index.html) file in the current
+If you run the code, now there will be an 'index.html' file in the current
 directory that has individual links to each of the three comparisons
 we made. This is nice, as you only have to point a client or PI to a
 single link that they can use to explore all the results.
 
 As mentioned above, an alternative thing to do would be to generate a
-table, with links to each individual table.
+table, with links to each individual table. 
 
 We are often asked to create a Venn diagram showing overlap between
 groups. This is pretty simple to do, but it would be nicer to have an
@@ -278,7 +278,8 @@ finish(idx)
 
 ```
 
-Which we can access [here](index.html).
+The link to the Venn diagram will have now been added to your
+'index.html' file.
 
 There is similar functionality for presenting the results of a GO
 hypergeometric analysis (\Rfunction{makeGoTable}), and GSEA analysis,
