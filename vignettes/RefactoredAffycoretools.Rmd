@@ -1,0 +1,298 @@
+---
+title: Creating annotated output with \Biocpkg{affycoretools} and ReportingTools
+author: James W. MacDonald
+output:
+  BiocStyle::html_document
+vignette: >
+ %\VignetteIndexEntry{Creating annotated output with \Biocpkg{affycoretools} and ReportingTools}
+ %\VignetteEngine{knitr::rmarkdown}
+ %\VignetteEncoding{UTF-8}
+---
+
+
+# Overview
+
+The \Biocpkg{affycoretools} package is intended to help people easily create
+useful output from various analyses. While affycoretools was
+originally intended for those using Affymetrix microarrays, this is no
+longer the case. While some functions remain Affy-centric, most are
+now much more general, and can be used for any microarray or RNA-Seq
+experiment.
+
+```{r, echo = FALSE, results = "asis"}
+
+BiocStyle::markdown()
+options(bitmapType = "cairo")
+
+
+
+```
+
+# Introduction
+
+This package has evolved from my work as a service core
+biostatistician. I routinely analyze very similar experiments, and
+wanted to create a way to minimize all the cutting and pasting of code
+that I found myself doing. In addition, I wanted to come up with a
+good way to make an analysis reproducible, in the sense that I (or
+somebody else) could easily re-create the results.
+
+In the past this package relied on the \Biocpkg{annaffy} package, and
+was intended to be used in concert with a 'Sweave' document that
+contained both the code that was used to analyze the data, as well as
+explanatory text that would end up in a pdf (or HTML page) that could
+be given to a client. In the intervening period, people have developed
+other, better packages such as \CRANpkg{knitr} and
+\Biocpkg{ReportingTools} that make it much easier to create the sort
+of output I like to present to my clients.
+
+# Using affycoretools
+
+For this section we will be using the \Robject{sample.ExpressionSet}
+data set that comes with the \Biocpkg{Biobase} package. Remember that
+you can always run this code at home by doing this:
+
+```{r, eval = FALSE}
+
+library(knitr)
+purl(system.file("doc/RefactoredAffycoretools.Rmd", package="affycoretools"))
+
+
+```
+
+And then you will have a file called RefactoredAffycoretools.R in your
+working directory that you can either \Rfunction{source} or open with
+\software{RStudio} or \software{Emacs/ESS}, and run by chunk or line
+by line.
+
+We first load and rename the data:
+
+```{r start}
+
+suppressMessages(library(affycoretools))
+data(sample.ExpressionSet)
+eset <- sample.ExpressionSet
+eset
+
+```
+```{r, include = FALSE}
+
+featureNames(eset) <- gsub("/", "_", featureNames(eset))
+
+```
+
+This \Rclass{ExpressionSet} object is a truncated data set, based on
+an Affymetrix HG-U95av2 array. There are 26 samples and 500
+probesets. We will use the \Rclass{phenoData} to fit a linear model
+using \Biocpkg{limma}. \bioccomment{We will not cover any aspects of fitting a
+linear model here; the limma User's Guide covers this topic in
+depth. In addition, this analysis isn't meant to be correct in any
+sense; we are just doing this to get some data to annotate and
+output.}
+
+Note that the limma package will retain annotation data that is in the
+\Rclass{ExpressionSet}, so we add those data in using \Rcode{annotateEset}
+
+```{r model}
+
+suppressMessages(library(hgu95av2.db))
+eset <- annotateEset(eset, hgu95av2.db)
+suppressMessages(library(limma))
+pd <- pData(phenoData(eset))
+design <- model.matrix(~0+type+sex, pd)
+colnames(design) <- gsub("type|sex", "", colnames(design))
+contrast <- matrix(c(1,-1,0))
+colnames(contrast) <- "Case vs control"
+fit <- lmFit(eset, design)
+fit2 <- contrasts.fit(fit, contrast)
+fit2 <- eBayes(fit)
+topTable(fit2, 1)[,1:4]
+
+
+```
+
+After adding the annotation data to the \Robject{ExpressionSet} object, the
+\Rfunction{topTable} output now contains the appropriate annotation
+data for each probeset. At this point we can output an HTML table that
+contains these data.
+
+```{r output}
+
+suppressMessages(library(ReportingTools))
+htab <- HTMLReport("afile", "My cool results")
+publish(topTable(fit2, 1), htab)
+finish(htab)
+
+
+```
+
+
+And now we have a [HTML table](afile.html) in
+our working directory, that contains the data for our top 10
+genes. This table is not particularly interesting, and the
+\Biocpkg{ReportingTools} package already has functionality to just do
+something like 
+
+```{r rtools}
+
+htab <- HTMLReport("afile2", "My cool results, ReportingTools style")
+publish(fit2, htab, eset, factor = pd$type, coef = 1, n = 10)
+finish(htab)
+
+```
+
+and it will automatically generate an [annotated table](afile2.html),
+with some extra plots that show the different groups, and we didn't
+even have to use \Rfunction{topTable} directly. However, the default
+plots in the HTML table are a combination of dotplot and boxplot,
+which I find weird. Since \Biocpkg{ReportingTools} is easily
+extensible, we can make changes that are more pleasing.
+
+```{r output2}
+
+d.f <- topTable(fit2, 2)
+out <- makeImages(df = d.f, eset = eset, grp.factor = pd$type, design = design,
+                  contrast = contrast, colind = 1, repdir = ".")
+htab <- HTMLReport("afile3", "My cool results, affycoretools style")
+publish(out$df, htab, .mofifyDF = list(entrezLinks, affyLinks))
+finish(htab)
+
+
+```
+
+Note that there are [two differences](afile3.html) in the way we did things. First,
+we create a \Robject{data.frame}, and then decorate it with the plots
+using the \Rfunction{makeImages} function. This will by default create
+dotplots (or you can specify boxplots). For the plots to fit in an
+HTML table, there are no axis labels. However, each plot is also a
+link, and if you click on it, a larger plot with axis labels will be
+presented. 
+
+All the little files that get created can get pretty messy, so the
+default is to put everything into a 'reports' subdirectory, so your
+working directory stays clean. For this example we over-ride the
+defaults so we do not have to go searching in subdirectories for our
+tables.
+
+For HTML output the better idea is to generate a table using e.g., the
+xtable package, with links to the tables that we have generated.
+
+An alternative parameterization that probably makes more sense is to
+fit coefficients for each sex/treatment combination.
+
+```{r param2}
+
+grps <- factor(apply(pd[,1:2], 1, paste, collapse = "_"))
+design <- model.matrix(~0+grps)
+colnames(design) <- gsub("grps", "", colnames(design))
+contrast <- matrix(c(1,-1,0,0,
+                     0,0,1,-1,
+                     1,-1,-1,1),
+                   ncol = 3)
+colnames(contrast) <- c("Female_Case vs Female_Control",
+                        "Male_Case vs Male_Control",
+                        "Interaction")
+fit <- lmFit(eset, design)
+fit2 <- contrasts.fit(fit, contrast)
+fit2 <- eBayes(fit2)
+
+
+
+```
+
+With this parameterization we can look at intra-sex differences, as
+well as the interaction (looking for sex-specific changes). This now
+means that we have a total of three HTML tables to output, which makes
+things a bit more complex to present. Luckily, this is pretty simple
+to accomplish. For this step we will now use the default 'reports'
+subdirectory to keep everything straight. In addition, we will trim
+down the output a bit.
+
+```{r output3}
+
+## get a list containing the output for each comparison
+out <- lapply(1:3, function(x) topTable(fit2, x))
+## process the output to add images
+htab <- lapply(1:3, function(x){
+    tmp <- HTMLReport(gsub("_", " ", colnames(contrast)[x]), colnames(contrast)[x], "./reports")
+    tmp2 <- makeImages(out[[x]], eset, grps, design, contrast, x)
+    publish(tmp2$df, tmp, .modifyDF = list(affyLinks, entrezLinks))
+    finish(tmp)
+    return(tmp)
+})
+
+## Now make an index.html file to contain links to the various comps
+idx <- HTMLReport("index", "Links to our stuff")
+publish(hwriter::hwrite("Univariate comparisons", br = TRUE, header = 2), idx)
+publish(Link(htab), idx)
+finish(idx)
+
+
+```
+
+Now there will be an [index](index.html) file in the current
+directory that has individual links to each of the three comparisons
+we made. This is nice, as you only have to point a client or PI to a
+single link that they can use to explore all the results.
+
+As mentioned above, an alternative thing to do would be to generate a
+table, with links to each individual table.
+
+We are often asked to create a Venn diagram showing overlap between
+groups. This is pretty simple to do, but it would be nicer to have an
+HTML version with clickable links, so your PI or end user can see what
+genes are in each cell of the Venn diagram. As an example, we can
+generate a Venn diagram comparing overlapping genes between the male
+and female comparisons.
+
+```{r makevenn}
+
+collist <- list(1:2)
+venn <- makeVenn(fit2, contrast, design, collist = collist, adj.meth = "none")
+vennlnk <- vennPage(venn, "venn_diagram", "Venn diagram")
+
+
+```
+
+The \Rfunction{makeVenn} function also returns a \Robject{vennCounts}
+object that we can use in our \CRANpkg{knitr} document to generate a
+Venn diagram there as well:
+
+```{r venn, fig.cap="Venn diagram", dev="png"}
+
+vennDiagram(venn[[1]]$venncounts, cex = 0.9)
+
+```
+
+
+And we can add a link to our index page quite easily.
+
+```{r addvenn}
+
+idx <- HTMLReport("index","Links to our stuff")
+publish(hwriter::hwrite("Univariate comparisons", br = TRUE, header = 2), idx)
+publish(Link(htab), idx)
+publish(hwriter::hwrite("Venn diagrams", br = TRUE, header = 2), idx)
+publish(Link("Venn1", vennlnk), idx)
+finish(idx)
+
+```
+
+Which we can access [here](index.html).
+
+There is similar functionality for presenting the results of a GO
+hypergeometric analysis (\Rfunction{makeGoTable}), and GSEA analysis,
+based on the \Rfunction{romer} function in \Biocpkg{limma}
+(\Rfunction{runRomer} and \Rfunction{outputRomer}).
+
+# Session information
+The version of R and packages loaded when creating this vignette were:
+
+```{r, echo = FALSE}
+
+sessionInfo()
+
+
+```
+
+
