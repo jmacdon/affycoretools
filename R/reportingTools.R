@@ -763,67 +763,6 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
     return(list(df = df, top.pdf = pdf.image[1]))
 }
 
-## this I just stole from ReportingTools because I don't like their stupid dotplots on top of boxplots
-
-## makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot, ylab.type = "Expression Value", 
-##     scales = list(), par.settings = list(), xlab = NULL, weights = NULL, ...) {
-##     scales <- c(scales, list(x = list(rot = 45)))
-##     eclass <- class(expression.dat)[1]
-##     expression.dat <- switch(eclass,
-##                              ExpressionSet = exprs(expression.dat),
-##                              matrix = expression.dat,
-##                              data.frame = as.matrix(expression.dat),
-##                              DGEList = cpm(expression.dat, log = TRUE),
-##                              stop(paste0("The 'expression.dat' argument is of class", eclass, ". This function can only use",
-##                             "an ExpressionSet, matrix, data.frame or DGEList object"), call. = FALSE))
-        
-##     if (any(!rownames(df) %in% rownames(expression.dat))) {
-##         stop(paste("Can't find expression data for some features\n"))
-##     }
-##     for (probe in rownames(df)) {
-##         if ("Symbol" %in% colnames(df)) {
-##             ylab <- paste(df[probe, "Symbol"], ylab.type)
-##         }
-##         else {
-##             ylab <- paste(probe, ylab.type)
-##         }
-##         if(boxplot) {
-##             bigplot <- bwplot(expression.dat[probe, ] ~ factor, 
-##                               groups = factor, ylab = ylab, 
-##                               scales = scales, par.settings = par.settings, xlab = xlab)
-##         } else {
-##             if(is.null(weights)) {
-##                 bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
-##                                    groups = factor, ylab = ylab, 
-##                                    scales = scales, par.settings = par.settings, xlab = xlab)
-##             } else {
-##                 bigplot <- dotplot(expression.dat[probe, ] ~ factor, 
-##                                    ylab = ylab, scales = scales, 
-##                                    par.settings = par.settings, xlab = xlab,
-##                                    col = trellis.par.get()$superpose.symbol$col[-4], col.var = factor,
-##                                    cex = weights,
-##                                    panel = function(x, y, cex, col, col.var, subscripts, ...) {
-##                                        panel.dotplot(x, y, col = col[col.var[subscripts]],
-##                                                      cex = cex[subscripts], ...)})
-##             }
-##         }
-##         miniplot <- remove.axis.and.padding(bigplot)
-##         minipng.filename <- paste("mini", probe, "png", sep = ".")
-##         minipng.file <- file.path(figure.directory, minipng.filename)
-##         png(minipng.file, height = 40, width = 200)
-##         grid.newpage()
-##         pushViewport(viewport(angle = 270, height = unit(220, 
-##             "points"), width = unit(44, "points"), name = "VP"))
-##         print(miniplot, newpage = FALSE)
-##         upViewport()
-##         dev.off()
-##         pdf.filename <- paste("boxplot", probe, "pdf", sep = ".")
-##         pdf.file <- file.path(figure.directory, pdf.filename)
-##         pdf(pdf.file, height = 4.5, width = 4.5)
-##         print(bigplot)
-##         dev.off()
-##     }
-## }
 
 ## convert makeGenePlots to ggplot
 makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot, ylab.type = "Expression Value", 
