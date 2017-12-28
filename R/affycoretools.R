@@ -38,7 +38,7 @@
 #' @importFrom oligoClasses db
 #' @importFrom ReportingTools HTMLReport CSVFile publish finish reporting.theme filename path
 #' @importFrom hwriter hwrite hwriteImage hmakeTag closePage openPage
-#' @importFrom ggplot2 ggplot geom_point facet_wrap aes
+#' @importFrom ggplot2 ggplot geom_point facet_wrap aes labs theme element_text %+replace% theme_bw element_blank geom_boxplot
 #' @importFrom grDevices pdf png
 #' @importFrom graphics axis image plot segments
 #' @importFrom stats cor quantile sd

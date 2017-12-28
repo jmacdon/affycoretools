@@ -786,7 +786,10 @@ makeGenePlots <- function (df, expression.dat, factor, figure.directory, boxplot
         else {
             ylab <- paste(probe, ylab.type)
         }
-        plotIt <- data.frame(exprs = expression.dat[probe,], factor = factor, if(!is.null(weights)) weights = weights)
+        if(is.null(weights))
+            plotIt <- data.frame(exprs = expression.dat[probe,], factor = factor)
+        else
+            plotIt <- data.frame(exprs = expression.dat[probe,], factor = factor, weights = weights)
         bigplot <- ggplot(plotIt, aes(factor, exprs)) + labs(x = "", y = ylab) +
             theme(axis.text.x = element_text(angle = 45, hjust = 1))
         
