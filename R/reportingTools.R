@@ -748,6 +748,7 @@ makeImages <- function(df, eset, grp.factor, design, contrast, colind, boxplot =
     ind <- apply(design[,apply(contrast[,colind, drop = FALSE], 1, function(x) any(x != 0)), drop = FALSE], 1, sum) > 0
     grp.factor <- factor(grp.factor[ind])
     eset <- eset[,ind]
+    if(!is.null(weights)) weights <- weights[ind]
     colnames(df)[colnames(df) == "SYMBOL"] <- "Symbol"
     makeGenePlots(df = df, expression.dat = eset, factor = grp.factor, figure.directory = figure.directory,
                   boxplot = boxplot, weights = weights, ...)
