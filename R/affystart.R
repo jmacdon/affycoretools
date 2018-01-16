@@ -811,7 +811,7 @@ queryMaker <- function(con, level, type){
         
    } else {
         types <- switch(level,
-                        core = dbGetQuery(con, paste("select distinct core_mps.transcript_cluster_id, type from featureSet inner join core_mps",
+                        core = dbGetQuery(con, paste("select distinct meta_fsetid, type from featureSet inner join core_mps",
                                                      "using(fsetid);")),
                         probeset = dbGetQuery(con, paste("select fsetid, type from featureSet;")),
                         stop("Only core and probeset summarization levels are available for this type of array.", call. = FALSE))
