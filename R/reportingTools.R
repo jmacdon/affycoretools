@@ -534,7 +534,53 @@ vennPage <- function(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = F
     paste0(reportDirectory, "/", pagename, ".html")
 }
 
-drawVenn <- function(lst, page, dir, num, cex = 1, shift.title = FALSE, ...){
+##' A function to generate Venn diagrams for use within Rmarkdown documents, particularly for
+##' those using the Bioconductor BiocStyle package for formatting.
+##'
+##' This function is intended for those who use Rmarkdown documents to present results
+##' and who would like to include Venn diagrams showing the overlap between two to four
+##' contrasts. The Venn diagrams that are generated include links for each cell of the
+##' diagram that will open HTML pages that contain results for the genes that are found
+##' within the cell of the Venn diagram.
+##'
+##' Please note that this function is tailored specifically for use within Rmarkdown documents,
+##' particularly those that use the Bioconductor BiocStyle package. The function call should be present in a
+##' code block using the argument results = "asis", because we are directly generating HTML rather
+##' than placing a figure.
+##' @title Generate Venn diagrams with links for Rmarkdown documents
+##' @param vennlst The output from \code{makeVenn}.
+##' @param caplst A list of captions to accompany each Venn diagram. 
+##' @param cex.venn Adjustment parameter for the numbers in the Venn diagram. The default is usually OK.
+##' @param shift.title Boolean. Should the titles for the Venn diagram be shifted to accommodate long contrast names?
+##' @param reportDirectory Directory containing the Venn diagram. This is usually set by \code{makeVenn} and for most
+##' people, the default \code{NULL} argument should be used.
+##' @param ... Allows users to pass arbitrary arguments to lower level functions.
+##' @return This function returns the required HTML text to generate the Venn diagram
+##' @author James W.  MacDonald \email{jmacdon@@u.washington.edu}
+##' @keywords manip
+##' @seealso \code{vennPage} particularly for the example.
+##' @export vennInLine
+vennInLine <- function(vennlst, caplst, cex.venn = 1, shift.title = FALSE, reportDirectory = NULL, ...){
+    if(is.null(reportDirectory)){
+        notnull <- sapply(vennlst, function(x) !is.null(x$vennout))
+        if(!all(notnull))
+            use.this <- which(notnull)[1]
+        else
+            use.this <- 1
+        
+        tmp <- strsplit(path(vennlst[[use.this]]$vennout[[1]]), "/")[[1]]
+        reportDirectory <- paste(tmp[1:2], collapse = "/")
+    }
+    lapply(seq(along = vennlst), function(x)
+        drawVenn(vennlst[[x]], page = "", dir = reportDirectory, num = x,
+                 shift.title = shift.title, inline = TRUE, caption = caplst[[x]], ...))
+    
+    return(invisible())
+}                                                  
+    
+
+    
+drawVenn <- function(lst, page, dir, num, cex = 1, shift.title = FALSE, inline = FALSE, ...){
     nam <- paste0(dir, "/venn", num, ".png")
     nam2 <- paste0("venn", num, ".png")
     mapname <- paste0("#venn", num)
@@ -550,19 +596,21 @@ drawVenn <- function(lst, page, dir, num, cex = 1, shift.title = FALSE, ...){
                       class(lst$venncounts)), call. = FALSE)
     }
     dev.off()
-    
-    hwrite(hmakeTag("img", border = 0, width = 800, height = 800,
-                    src = nam2, alt = nam2, usemap = mapname), page)
-    hwriteImage(paste("Venn Diagram", num), page)
-    if(!is.null(lst[[1]]))
-        vennLinks(lst, page, mapname, dir)
-    
+    if(!inline){
+        hwrite(hmakeTag("img", border = 0, width = 800, height = 800,
+                        src = nam2, alt = nam2, usemap = mapname), page)
+        hwriteImage(paste("Venn Diagram", num), page)
+        if(!is.null(lst[[1]]))
+            vennLinks(lst, page, mapname, dir)
+    } else {
+        inLineVennLinks(nam, mapname, lst, tabindex = TRUE, ...)
+    }
 }
 
 vennLinks <- function(lst, page, mapname, reportDirectory){
     if(is.null(page)) page <- ""
     fun <- function(x,y) paste0('<area shape="circle" coords=',
-                                    x, ' href=', y, '></area>')
+                                    x, ' href=', y, '>')
     if(is(lst$venncounts, "VennCounts")){
         if(ncol(lst$venncounts) == 3){
             loclst <- list("250,400,30","550,400,30","400,400,30")
@@ -581,6 +629,34 @@ vennLinks <- function(lst, page, mapname, reportDirectory){
     strng <- c(paste0('<map name="', sub("#", "", mapname), '">'),
                strng, "</map>")
     cat(strng, file = page, sep = "\n")
+}
+
+## Used to generate the <area> links for an inline Venn diagram
+inLineVennLinks <- function(png, mapname, links, caption = NULL, tabindex = TRUE, ...){
+    if(substr(mapname, 1, 1) != "#") mapname <- paste0("#", mapname)
+    fun <- function(x, y) paste0("<area shape=\"circle\" coords=", 
+                                 x, " href=", y, ">")
+    cat("<div class=\"figure\">\n")
+    cat(hwrite(hmakeTag("img", border = 0, width = 800,
+                                      height = 800, src = png, alt = png,
+                        usemap = mapname)), "\n")
+    loclst <- list(one = NULL, two = list("180,250,30","350,250,30","265,250,30"),
+                     three = list("157,197,30","350,202,30","250,354,30",
+                                  "250,209,30","200,283,30","316,281,30",
+                                  "250,259,30"),
+                     four = list("100,215,30", "200,125,30","330,135,30","435,205,30","155,175,30",
+                       "160,330,30","265,400,30","270,170,30","385,330,30","390,175,30",
+                       "200,220,30","315,365,30","215,365,30","340,225,30","265,300,30"))
+    loclst <- loclst[[ncol(links$venncounts)-1]]
+    urlst <- sapply(links$vennout, path)
+    if(tabindex) for(i in seq(along = urlst)) urlst[[i]] <- paste0(urlst[[i]], " tabindex=\"", i, "\"")
+    strng <- do.call("c", mapply(fun, loclst, urlst, SIMPLIFY = FALSE))
+    strng <- c(paste0("<map name=\"", sub("#", "", mapname), 
+        "\">"), strng, "</map>")
+    cat(strng, sep = "\n")
+    if(!is.null(caption))
+        cat(paste0("<p class=\"caption\">\n(#fig:", sub("#", "", mapname), ") ",
+                   caption, "\n</p>\n</div>"), "\n")
 }
 
 

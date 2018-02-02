@@ -1,3 +1,16 @@
+CHANGES IN VERSION 1.52.0
+---------------------------
+
+Significant user-visible changes
+
+Changed plotting for makeImages to use ggplot2 rather than lattice
+
+Added a new function, vennInLine, intended to allow for placement of
+Venn diagrams in Rmarkdown-derived HTML documents, particularly those
+that use the BiocStyle package for formatting. The Venn diagrams
+contain clickable links that will open HTML tables containing results
+for the genes that are found within that cell of the diagram.
+
 CHANGES IN VERSION 1.50.0
 ----------------------------
 

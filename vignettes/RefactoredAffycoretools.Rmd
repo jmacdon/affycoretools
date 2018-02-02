@@ -2,7 +2,8 @@
 title: Creating annotated output with \Biocpkg{affycoretools} and ReportingTools
 author: James W. MacDonald
 output:
-  BiocStyle::html_document
+   BiocStyle::html_document:
+       toc_float: true
 vignette: >
  %\VignetteIndexEntry{Creating annotated output with \Biocpkg{affycoretools} and ReportingTools}
  %\VignetteEngine{knitr::rmarkdown}
@@ -42,9 +43,17 @@ was intended to be used in concert with a 'Sweave' document that
 contained both the code that was used to analyze the data, as well as
 explanatory text that would end up in a pdf (or HTML page) that could
 be given to a client. In the intervening period, people have developed
-other, better packages such as \CRANpkg{knitr} and
+other, better packages such as \CRANpkg{knitr} and \CRANpkg{rmarkdown}
 \Biocpkg{ReportingTools} that make it much easier to create the sort
 of output I like to present to my clients.
+
+This document was generated using an Rmarkdown document (it's the file
+called RefactoredAffycoretools.Rmd that you can find in your R library
+directory in the affycoretools/doc folder). Part of using Rmarkdown is
+generating .Rmd files that contain R code, and for each code block
+there are some arguments that define how the results for that code
+block are returned. A good resource for the code options
+is [here](https://yihui.name/knitr/options/). 
 
 # Using affycoretools
 
@@ -221,22 +230,23 @@ htab <- lapply(1:3, function(x){
     return(tmp)
 })
 
-## Now make an index.html file to contain links to the various comps
-idx <- HTMLReport("index", "Links to our stuff")
-publish(hwriter::hwrite("Univariate comparisons", br = TRUE, header = 2), idx)
-publish(Link(htab), idx)
-finish(idx)
-
 
 ```
+A reasonable thing to do would be to add a table to this document that
+lists all the different comparisons we made, with a count of the genes
+and links to the HTML tables we have generated. To do this we use the
+xtable package (you could also use \Rfunction{kable} as well), and add
+results = "asis" to the R code chunk in our Rmarkdown document.
 
-If you run the code, now there will be an 'index.html' file in the current
-directory that has individual links to each of the three comparisons
-we made. This is nice, as you only have to point a client or PI to a
-single link that they can use to explore all the results.
+```{r table, results = "asis"}
 
-As mentioned above, an alternative thing to do would be to generate a
-table, with links to each individual table. 
+
+d.f <- data.frame(Comparison =  sapply(htab, function(x) XML::saveXML(Link(x))),
+                  "Number significant" = sapply(out, nrow), check.names = FALSE)
+kable(d.f, caption = "Number of significant genes.",
+      format = "html", row.names = FALSE)
+
+```
 
 We are often asked to create a Venn diagram showing overlap between
 groups. This is pretty simple to do, but it would be nicer to have an
@@ -245,41 +255,21 @@ genes are in each cell of the Venn diagram. As an example, we can
 generate a Venn diagram comparing overlapping genes between the male
 and female comparisons.
 
-```{r makevenn}
+```{r makevenn, results = "asis"}
 
 collist <- list(1:2)
 venn <- makeVenn(fit2, contrast, design, collist = collist, adj.meth = "none")
-vennlnk <- vennPage(venn, "venn_diagram", "Venn diagram")
+## generate a list of captions for each Venn.
+## we only have one, so it's a list of length 1.
+## we are using the BiocStyle package to control formatting,
+## so the first sentence will be bolded and in blue.
+cap <- list(paste("A Venn diagram. Note that the first sentence is bolded",
+                  "and blue, whereas the rest is normal type and black. Usually",
+                  "one would use a more useful caption than this one."))
+vennInLine(venn, cap)
 
 
 ```
-
-The \Rfunction{makeVenn} function also returns a \Robject{vennCounts}
-object that we can use in our \CRANpkg{knitr} document to generate a
-Venn diagram there as well:
-
-```{r venn, fig.cap="Venn diagram", dev="png"}
-
-vennDiagram(venn[[1]]$venncounts, cex = 0.9)
-
-```
-
-
-And we can add a link to our index page quite easily.
-
-```{r addvenn}
-
-idx <- HTMLReport("index","Links to our stuff")
-publish(hwriter::hwrite("Univariate comparisons", br = TRUE, header = 2), idx)
-publish(Link(htab), idx)
-publish(hwriter::hwrite("Venn diagrams", br = TRUE, header = 2), idx)
-publish(Link("Venn1", vennlnk), idx)
-finish(idx)
-
-```
-
-The link to the Venn diagram will have now been added to your
-'index.html' file.
 
 There is similar functionality for presenting the results of a GO
 hypergeometric analysis (\Rfunction{makeGoTable}), and GSEA analysis,
