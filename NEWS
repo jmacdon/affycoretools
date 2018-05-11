@@ -3,33 +3,33 @@ CHANGES IN VERSION 1.52.0
 
 Significant user-visible changes
 
-Changed plotting for makeImages to use ggplot2 rather than lattice
+     +Changed plotting for makeImages to use ggplot2 rather than lattice
 
-Added a new function, vennInLine, intended to allow for placement of
-Venn diagrams in Rmarkdown-derived HTML documents, particularly those
-that use the BiocStyle package for formatting. The Venn diagrams
-contain clickable links that will open HTML tables containing results
-for the genes that are found within that cell of the diagram.
+     +Added a new function, vennInLine, intended to allow for placement of
+     Venn diagrams in Rmarkdown-derived HTML documents, particularly those
+     that use the BiocStyle package for formatting. The Venn diagrams
+     contain clickable links that will open HTML tables containing results
+     for the genes that are found within that cell of the diagram.
 
 CHANGES IN VERSION 1.50.0
 ----------------------------
 
 Significant user-visible changes
 
-Converted runRomer and outputRomer to S4, in the process re-factoring
-they now accept either an ExpressionSet and MArrayLM object (for
-Affymetrix microarray analyses), a DGEList and DGEGLM object (for
-RNA-Seq analysis using edgeR) or an EList and MArrayLM object (for
-either Agilent one-color microarray analysis or limma-voom RNA-Seq
-analysis).
+     +Converted runRomer and outputRomer to S4, in the process re-factoring
+     they now accept either an ExpressionSet and MArrayLM object (for
+     Affymetrix microarray analyses), a DGEList and DGEGLM object (for
+     RNA-Seq analysis using edgeR) or an EList and MArrayLM object (for
+     either Agilent one-color microarray analysis or limma-voom RNA-Seq
+     analysis).
 
 
-affycoretools v1.43.1
-=====================
+CHANGES IN VERSION  1.43.1
+--------------------------
 
-Changes:
+Significant user-visible changes
 
-Added new functionality to automatically annotate ExpressionSets,
-using either ChipDb (e.g., hugene10sttranscriptcluster.db) packages,
-pdInfo (e.g., pd.hugene.1.0.v1) packages, or user-supplied
-data.frames. 
+     +Added new functionality to automatically annotate ExpressionSets,
+     using either ChipDb (e.g., hugene10sttranscriptcluster.db) packages,
+     pdInfo (e.g., pd.hugene.1.0.v1) packages, or user-supplied
+     data.frames. 
