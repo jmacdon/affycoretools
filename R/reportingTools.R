@@ -77,9 +77,11 @@ nuccoreLinks <- function(df, ...){
         stop(paste("There can only be one column labeled 'GI', 'REFSEQ', or 'ACCNUM'",
                    "to add links to the nuccore database."), call. = FALSE)
     }
+    naind <- is.na(df[,col])
     df[,col] <- hwrite(as.character(df[,col]),
                        link = paste0("http://www.ncbi.nlm.nih.gov/nuccore/",
                                      as.character(df[,col])), table = FALSE)
+    df[naind,col] <- ""
     return(df)
 }
 
