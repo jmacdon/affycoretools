@@ -34,8 +34,9 @@ options(show.error.messages = FALSE)
 a <- try(do.call("library", list(annotation(eset))))
 options(show.error.messages = TRUE)
 if(inherits(a, "try-error")){
-source("http://www.bioconductor.org/biocLite.R")
-biocLite(annotation(eset))
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install(annotation(eset))
 do.call("library", list(annotation(eset)))
 }
 ## output all expression values
