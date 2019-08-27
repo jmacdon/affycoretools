@@ -8,10 +8,10 @@
 \title{A Function to Make a PCA Plot from an ExpressionSet or matrix}
 \usage{
 \S4method{plotPCA}{matrix}(object, groups = NULL, groupnames = NULL,
-  addtext = NULL, x.coord = NULL, y.coord = NULL, screeplot = FALSE,
-  squarepca = FALSE, pch = NULL, col = NULL, pcs = c(1, 2),
-  legend = TRUE, main = "Principal Components Plot", plot3d = FALSE,
-  outside = FALSE, ...)
+  addtext = NULL, x.coord = NULL, y.coord = NULL,
+  screeplot = FALSE, squarepca = FALSE, pch = NULL, col = NULL,
+  pcs = c(1, 2), legend = TRUE, main = "Principal Components Plot",
+  plot3d = FALSE, outside = FALSE, ...)
 
 \S4method{plotPCA}{ExpressionSet}(object, ...)
 }

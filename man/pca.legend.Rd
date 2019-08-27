@@ -4,8 +4,8 @@
 \alias{pca.legend}
 \title{A Function to Automagically Place a Legend in a PCA Plot}
 \usage{
-pca.legend(pca, groups, groupnames, pch.df, x.coord = NULL, y.coord = NULL,
-  saveup = FALSE)
+pca.legend(pca, groups, groupnames, pch.df, x.coord = NULL,
+  y.coord = NULL, saveup = FALSE)
 }
 \arguments{
 \item{pca}{A 'pca' object}

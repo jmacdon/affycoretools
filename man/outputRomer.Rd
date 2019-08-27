@@ -11,18 +11,20 @@ of contrasts.}
 \usage{
 outputRomer(object, fit, ...)
 
-\S4method{outputRomer}{ExpressionSet,MArrayLM}(object, fit, rsltlst, genesetlst,
-  design = NULL, contrast = NULL, changenames = TRUE, dir = "genesets",
-  explanation = NULL, baseline.hmap = TRUE, file = "indexRomer.html",
-  affy = TRUE, ...)
+\S4method{outputRomer}{ExpressionSet,MArrayLM}(object, fit, rsltlst,
+  genesetlst, design = NULL, contrast = NULL, changenames = TRUE,
+  dir = "genesets", explanation = NULL, baseline.hmap = TRUE,
+  file = "indexRomer.html", affy = TRUE, ...)
 
 \S4method{outputRomer}{DGEList,DGEGLM}(object, fit, rsltlst, genesetlst,
-  design = NULL, contrast = NULL, changenames = TRUE, dir = "genesets",
-  explanation = NULL, baseline.hmap = TRUE, file = "indexRomer.html", ...)
+  design = NULL, contrast = NULL, changenames = TRUE,
+  dir = "genesets", explanation = NULL, baseline.hmap = TRUE,
+  file = "indexRomer.html", ...)
 
 \S4method{outputRomer}{EList,MArrayLM}(object, fit, rsltlst, genesetlst,
-  design = NULL, contrast = NULL, changenames = TRUE, dir = "genesets",
-  explanation = NULL, baseline.hmap = TRUE, file = "indexRomer.html", ...)
+  design = NULL, contrast = NULL, changenames = TRUE,
+  dir = "genesets", explanation = NULL, baseline.hmap = TRUE,
+  file = "indexRomer.html", ...)
 }
 \arguments{
 \item{object}{An ExpressionSet, DGEList or EList object containing normalized, summarized

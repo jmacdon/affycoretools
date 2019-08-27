@@ -13,7 +13,8 @@ makeVenn(object, ...)
 \S4method{makeVenn}{MArrayLM}(object, contrast, design, groups = NULL,
   collist = NULL, p.value = 0.05, lfc = 0, method = "both",
   adj.meth = "BH", titleadd = NULL, fileadd = NULL, baseUrl = ".",
-  reportDirectory = "./venns", affy = TRUE, probecol = "PROBEID", ...)
+  reportDirectory = "./venns", affy = TRUE, probecol = "PROBEID",
+  ...)
 
 \S4method{makeVenn}{DGEGLM}(object, contrast, design,
   comp.method = c("glmLRT", "glmQLFTest", "glmTreat"), lfc = 0, ...)

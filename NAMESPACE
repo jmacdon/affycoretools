@@ -3,6 +3,7 @@
 export(affyLinks)
 export(affystart)
 export(annotateEset)
+export(doGlimma)
 export(ensemblLinks)
 export(entrezLinks)
 export(getMainProbes)

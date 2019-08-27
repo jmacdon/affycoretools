@@ -5,8 +5,8 @@
 \title{High-level function for making Venn diagrams with clickable links to HTML
 pages with the underlying genes.}
 \usage{
-vennPage(vennlst, pagename, pagetitle, cex.venn = 1, shift.title = FALSE,
-  baseUrl = ".", reportDirectory = NULL, ...)
+vennPage(vennlst, pagename, pagetitle, cex.venn = 1,
+  shift.title = FALSE, baseUrl = ".", reportDirectory = NULL, ...)
 }
 \arguments{
 \item{vennlst}{The output from \code{makeVenn}.}

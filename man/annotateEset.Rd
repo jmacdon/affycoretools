@@ -21,8 +21,8 @@ annotateEset(object, x, ...)
 \S4method{annotateEset}{ExpressionSet,AffyGenePDInfo}(object, x,
   type = "core", ...)
 
-\S4method{annotateEset}{ExpressionSet,AffyHTAPDInfo}(object, x, type = "core",
-  ...)
+\S4method{annotateEset}{ExpressionSet,AffyHTAPDInfo}(object, x,
+  type = "core", ...)
 
 \S4method{annotateEset}{ExpressionSet,AffyExonPDInfo}(object, x,
   type = "core", ...)
@@ -32,8 +32,8 @@ annotateEset(object, x, ...)
 
 \S4method{annotateEset}{ExpressionSet,character}(object, x, ...)
 
-\S4method{annotateEset}{ExpressionSet,data.frame}(object, x, probecol = NULL,
-  annocols = NULL, ...)
+\S4method{annotateEset}{ExpressionSet,data.frame}(object, x,
+  probecol = NULL, annocols = NULL, ...)
 }
 \arguments{
 \item{object}{An ExpressionSet to which we want to add annotation.}

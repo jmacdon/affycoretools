@@ -5,8 +5,8 @@
 \title{A function to create an annotated HTML table for all genes in a significant
 gene set as well as a heatmap of these data.}
 \usage{
-dataAndHeatmapPage(object, fit, ind, columns = NULL, fname, heatmap, title,
-  key = TRUE, fitind = NULL, affy = TRUE, ...)
+dataAndHeatmapPage(object, fit, ind, columns = NULL, fname, heatmap,
+  title, key = TRUE, fitind = NULL, affy = TRUE, ...)
 }
 \arguments{
 \item{object}{An ExpressionSet, containing normalized, summarized
