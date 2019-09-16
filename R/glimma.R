@@ -61,13 +61,13 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,
-                     html = html[i], launch = FALSE, main = colnames(cont)[i],...)
+                     html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj, ...)
         } else if(is(tablst, "MArrayLM")) {
             symb <- getSymb(tablst)
             status <- decideTests(tablst, p.value = sigfilt, adjust.method = padj, coefficients = i)
             glMDPlot(tablst, counts = counts[,ind], groups = factor(grpvec[ind]), status = status, coef = i,
                      transform = FALSE, folder = folder, side.main = symb,
-                     html = html[i], launch = FALSE, main = colnames(cont)[i],...)
+                     html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj, ...)
         } else {
             stop("Please provide either a DGELRT, DGExact or MArrayLM object!", call. = FALSE)
         }
