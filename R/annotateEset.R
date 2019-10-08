@@ -87,12 +87,22 @@ setMethod("annotateEset", c("ExpressionSet","AffyExpressionPDInfo"),
     annotest <- switch(type,
                        probeset = sum(annot$probesetid %in% featureNames(object))/nrow(annot),
                        core = sum(annot$transcriptclusterid %in% featureNames(object))/nrow(annot))
-    if(annotest < 0.95)
-        stop(paste("There appears to be a mismatch between the ExpressionSet and",
+    if(annotest < 0.95){
+        invanno <- switch(type,
+                       probeset = sum(featureNames(object) %in% annot$probesetid)/nrow(object),
+                       core = sum(featureNames(object) %in% annot$transcriptclusterid)/nrow(object))
+        warning(paste("There appears to be a mismatch between the ExpressionSet and",
                    "the annotation data.\nPlease ensure that the summarization level",
                    "for the ExpressionSet and the 'type' argument are the same.\n",
-                   "See ?annotateEset for more information on the type argument.\n"),
-             call. = FALSE)
+                   "See ?annotateEset for more information on the type argument.\n\n",
+                   "There are", switch(type, probeset = length(annot$probesetid),
+                                       core = length(annot$transcriptclusterid)),
+                   "probesets in the annotation data and", nrow(object), "probesets in",
+                   "the ExpressionSet;\nthe overlap between the annotation and ExpressionSet",
+                   "is", paste0(floor(annotest * 100), "%"), "\nand the overlap between the ExpressionSet",
+                   "and annotation is", paste0(floor(invanno * 100), "%."), "\nProceed with caution.\n"),
+                call. = FALSE)
+    }
     anno <- switch(type,
                    core = as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " // "), "[", 1:3))),
                    probeset = as.data.frame(do.call(rbind, lapply(strsplit(annot$geneassignment, " /// "), function(x) unlist(strsplit(x[1], " // "))))))
