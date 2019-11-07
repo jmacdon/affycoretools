@@ -48,7 +48,7 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
                      DGEList = datobj$counts,
                      ExpressionSet = exprs(datobj),
                      EList = datobj$E,
-                     matrix = x,
+                     matrix = dataobj,
                      stop(paste("Please use either a DGEList, ExpressionSet, matrix",
                                 "or EList object for the datobj argument."), call. = FALSE))
     for(i in seq_len(ncol(contrast))){
