@@ -51,11 +51,11 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
                      matrix = datobj,
                      stop(paste("Please use either a DGEList, ExpressionSet, matrix",
                                 "or EList object for the datobj argument."), call. = FALSE))
-    for(i in seq_len(ncol(contrast))){
+    for(i in seq_len(ncol(cont))){
         folder <- if(is.null(extraname)) "glimma-plots" else paste0("glimma-plots/", extraname)
         if(!file.exists(folder)) dir.create(folder, recursive = TRUE)
-        html <- gsub(" ", "_", colnames(contrast))
-        ind <- as.logical(design %*% contrast[,i])
+        html <- gsub(" ", "_", colnames(cont))
+        ind <- as.logical(dsgn %*% cont[,i])
         if(is(tablst[[i]], "DGELRT") | is(tablst[[i]],"DGEExact")){
             symb <- getSymb(tablst[[i]])
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
