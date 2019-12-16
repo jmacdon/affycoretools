@@ -8,7 +8,7 @@
 ##' the output to be placed in glimma-plots/<extraname>, to eliminate over-writing of existing
 ##' files.
 ##' @title A function to generate MA-plots from Glimma, for all contrasts.
-##' @param tablst An MArrayLM, or list of DGEExact or DGELRT objects
+##' @param tablst An MArrayLM, DGEExact or DGELRT object
 ##' @param datobj A DGEList, ExpressionSet, EList or matrix
 ##' @param dsgn A design matrix
 ##' @param cont A contrast matrix
@@ -17,7 +17,6 @@
 ##' @param sigfilt Significance cutoff for selecting genes
 ##' @param extraname Used to add a sub-directory to the glimma-plots directory, mainly used to
 ##' disambiguate contrasts with the same name (see below).
-##' @param symbol Column name for the 'genes' list item for the datobj argument, used for labeling plots.
 ##' @param ... Allows end users to pass other arguments to the Glimma glMDPlot function
 ##' @return A character vector of the files generated, useful for using as links to the output.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
@@ -39,7 +38,7 @@
 ##'    }
 ##' @export doGlimma
 doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 0.05,
-                     extraname = NULL, symbol = NULL, ...){
+                     extraname = NULL,...){
     getSymb <- function(x){
         symb <- grep("symbol", colnames(x$genes), ignore.case = TRUE, value = TRUE)
         if(length(symb) == 1) return(symb) else return(NULL)
@@ -58,13 +57,13 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
         html <- gsub(" ", "_", colnames(cont))
         ind <- as.logical(dsgn %*% cont[,i])
         if(is(tablst[[i]], "DGELRT") | is(tablst[[i]],"DGEExact")){
-            if(is.null(symb)) symb <- getSymb(tablst[[i]])
+            symb <- getSymb(tablst[[i]])
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,
                      html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj, ...)
         } else if(is(tablst, "MArrayLM")) {
-            if(is.null(symb)) symb <- getSymb(tablst)
+            symb <- getSymb(tablst)
             status <- decideTests(tablst, p.value = sigfilt, adjust.method = padj, coefficients = i)
             glMDPlot(tablst, counts = counts[,ind], groups = factor(grpvec[ind]), status = status, coef = i,
                      transform = FALSE, folder = folder, side.main = symb,
