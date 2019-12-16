@@ -8,7 +8,7 @@
 ##' the output to be placed in glimma-plots/<extraname>, to eliminate over-writing of existing
 ##' files.
 ##' @title A function to generate MA-plots from Glimma, for all contrasts.
-##' @param tablst An MArrayLM, DGEExact or DGELRT object
+##' @param tablst An MArrayLM object or list of DGEExact or DGELRT objects
 ##' @param datobj A DGEList, ExpressionSet, EList or matrix
 ##' @param dsgn A design matrix
 ##' @param cont A contrast matrix
@@ -17,6 +17,11 @@
 ##' @param sigfilt Significance cutoff for selecting genes
 ##' @param extraname Used to add a sub-directory to the glimma-plots directory, mainly used to
 ##' disambiguate contrasts with the same name (see below).
+##' @param ID Character, default is NULL. The column name of the genes list item (from the MArrayLM,
+##' DGEExact or DGELRT objects) that will be used for labeling the individual gene expression plot
+##' at the top right of the resulting plot. The default of NULL will search for a column labeled
+##' SYMBOL to use. If the ID value doesn't match any column, and there is no SYMBOL column, then
+##' the default for glMDPlot will be used.
 ##' @param ... Allows end users to pass other arguments to the Glimma glMDPlot function
 ##' @return A character vector of the files generated, useful for using as links to the output.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
@@ -38,9 +43,13 @@
 ##'    }
 ##' @export doGlimma
 doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 0.05,
-                     extraname = NULL,...){
-    getSymb <- function(x){
-        symb <- grep("symbol", colnames(x$genes), ignore.case = TRUE, value = TRUE)
+                     extraname = NULL, ID = NULL, ...){
+    getSymb <- function(x, ID){
+        if(!is.null(ID)) {
+            symb <- grep(ID, colnames(x$genes), ignore.case = TRUE, value = TRUE)
+        } else {
+            symb <- grep("symbol", colnames(x$genes), ignore.case = TRUE, value = TRUE)
+        }
         if(length(symb) == 1) return(symb) else return(NULL)
     }
 
@@ -57,7 +66,7 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
         html <- gsub(" ", "_", colnames(cont))
         ind <- as.logical(dsgn %*% cont[,i])
         if(is(tablst[[i]], "DGELRT") | is(tablst[[i]],"DGEExact")){
-            symb <- getSymb(tablst[[i]])
+            if(is.null(symb <- getSymb(tablst[
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,
