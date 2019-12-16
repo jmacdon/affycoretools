@@ -66,13 +66,13 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
         html <- gsub(" ", "_", colnames(cont))
         ind <- as.logical(dsgn %*% cont[,i])
         if(is(tablst[[i]], "DGELRT") | is(tablst[[i]],"DGEExact")){
-            if(is.null(symb <- getSymb(tablst[
+            symb <- getSymb(tablst[[i]], ID)
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,
                      html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj, ...)
         } else if(is(tablst, "MArrayLM")) {
-            symb <- getSymb(tablst)
+            symb <- getSymb(tablst, ID)
             status <- decideTests(tablst, p.value = sigfilt, adjust.method = padj, coefficients = i)
             glMDPlot(tablst, counts = counts[,ind], groups = factor(grpvec[ind]), status = status, coef = i,
                      transform = FALSE, folder = folder, side.main = symb,
