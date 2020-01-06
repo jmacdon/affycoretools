@@ -4,9 +4,16 @@
 \alias{makeGoTable}
 \title{Create HTML tables for Gene Ontology (GO) analyses}
 \usage{
-makeGoTable(fit.table, go.summary, probe.summary, cont.name,
-  base.dir = "GO_results", extraname = NULL, probecol = "PROBEID",
-  affy = TRUE)
+makeGoTable(
+  fit.table,
+  go.summary,
+  probe.summary,
+  cont.name,
+  base.dir = "GO_results",
+  extraname = NULL,
+  probecol = "PROBEID",
+  affy = TRUE
+)
 }
 \arguments{
 \item{fit.table}{The output from \link[limma]{topTable}}

@@ -4,8 +4,12 @@
 \alias{writeFit}
 \title{Function to output annotated fit data from limma}
 \usage{
-writeFit(fit, annotation = NULL, eset, touse = c("symbol", "genename",
-  "accnum", "entrezid", "unigene"))
+writeFit(
+  fit,
+  annotation = NULL,
+  eset,
+  touse = c("symbol", "genename", "accnum", "entrezid", "unigene")
+)
 }
 \arguments{
 \item{fit}{A \code{lmFit} object, created by the limma package.}

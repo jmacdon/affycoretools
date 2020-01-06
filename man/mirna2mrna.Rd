@@ -4,8 +4,17 @@
 \alias{mirna2mrna}
 \title{A function to map miRNA to mRNA.}
 \usage{
-mirna2mrna(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = TRUE,
-  miRNAcol = NULL, mRNAcol = NULL, transType = "ensembl")
+mirna2mrna(
+  miRNAids,
+  miRNAannot,
+  mRNAids,
+  orgPkg,
+  chipPkg,
+  sanger = TRUE,
+  miRNAcol = NULL,
+  mRNAcol = NULL,
+  transType = "ensembl"
+)
 }
 \arguments{
 \item{miRNAids}{A character vector of miRNA IDs. Currently only supports

@@ -4,11 +4,21 @@
 \alias{doGlimma}
 \title{A function to generate MA-plots from Glimma, for all contrasts.}
 \usage{
-doGlimma(tablst, datobj, dsgn, cont, grpvec, padj = "BH",
-  sigfilt = 0.05, extraname = NULL, ...)
+doGlimma(
+  tablst,
+  datobj,
+  dsgn,
+  cont,
+  grpvec,
+  padj = "BH",
+  sigfilt = 0.05,
+  extraname = NULL,
+  ID = NULL,
+  ...
+)
 }
 \arguments{
-\item{tablst}{An MArrayLM, DGEExact or DGELRT object}
+\item{tablst}{An MArrayLM object or list of DGEExact or DGELRT objects}
 
 \item{datobj}{A DGEList, ExpressionSet, EList or matrix}
 
@@ -24,6 +34,12 @@ doGlimma(tablst, datobj, dsgn, cont, grpvec, padj = "BH",
 
 \item{extraname}{Used to add a sub-directory to the glimma-plots directory, mainly used to
 disambiguate contrasts with the same name (see below).}
+
+\item{ID}{Character, default is NULL. The column name of the genes list item (from the MArrayLM,
+DGEExact or DGELRT objects) that will be used for labeling the individual gene expression plot
+at the top right of the resulting plot. The default of NULL will search for a column labeled
+SYMBOL to use. If the ID value doesn't match any column, and there is no SYMBOL column, then
+the default for glMDPlot will be used.}
 
 \item{...}{Allows end users to pass other arguments to the Glimma glMDPlot function}
 }

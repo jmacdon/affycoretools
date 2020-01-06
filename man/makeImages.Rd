@@ -4,9 +4,21 @@
 \alias{makeImages}
 \title{Add dotplot images}
 \usage{
-makeImages(df, eset, grp.factor, design, contrast, colind,
-  boxplot = FALSE, repdir = "./reports", extraname = NULL,
-  weights = NULL, insert.after = 3, altnam = NULL, ...)
+makeImages(
+  df,
+  eset,
+  grp.factor,
+  design,
+  contrast,
+  colind,
+  boxplot = FALSE,
+  repdir = "./reports",
+  extraname = NULL,
+  weights = NULL,
+  insert.after = 3,
+  altnam = NULL,
+  ...
+)
 }
 \arguments{
 \item{df}{A data.frame from calling \code{topTable}. Note that the row.names for this data.frame must

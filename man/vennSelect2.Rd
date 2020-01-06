@@ -4,11 +4,24 @@
 \alias{vennSelect2}
 \title{Select and Output Genelists Based on Venn Diagrams}
 \usage{
-vennSelect2(fit, contrast, design, groups = NULL, cols = NULL,
-  p.value = 0.05, lfc = 0, method = "same", adj.meth = "BH",
-  titleadd = NULL, fileadd = NULL, baseUrl = ".",
-  reportDirectory = "./venns", affy = TRUE, probecol = "PROBEID",
-  ...)
+vennSelect2(
+  fit,
+  contrast,
+  design,
+  groups = NULL,
+  cols = NULL,
+  p.value = 0.05,
+  lfc = 0,
+  method = "same",
+  adj.meth = "BH",
+  titleadd = NULL,
+  fileadd = NULL,
+  baseUrl = ".",
+  reportDirectory = "./venns",
+  affy = TRUE,
+  probecol = "PROBEID",
+  ...
+)
 }
 \arguments{
 \item{fit}{An \code{\link[limma:marraylm]{MArrayLM}} object, from a call to

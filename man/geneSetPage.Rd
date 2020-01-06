@@ -5,10 +5,24 @@
 \title{A function to create an HTML page for each gene set, as well as the HTML
 pages for each significant gene set.}
 \usage{
-geneSetPage(rslts, genesets, object, fit, file, cutoff = 0.05,
-  dir = ".", subdir = ".", columns = NULL, colnames = NULL,
-  col = NULL, caption = NULL, fitind = NULL, bline = NULL,
-  affy = TRUE, ...)
+geneSetPage(
+  rslts,
+  genesets,
+  object,
+  fit,
+  file,
+  cutoff = 0.05,
+  dir = ".",
+  subdir = ".",
+  columns = NULL,
+  colnames = NULL,
+  col = NULL,
+  caption = NULL,
+  fitind = NULL,
+  bline = NULL,
+  affy = TRUE,
+  ...
+)
 }
 \arguments{
 \item{rslts}{The results from running \code{\link{romer}} on one gene set.}

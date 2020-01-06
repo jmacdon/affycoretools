@@ -5,9 +5,19 @@
 \title{A function to create a heatmap-like object or matrix of correlations between
 miRNA and mRNA data.}
 \usage{
-makeHmap(mRNAdat, miRNAdat, mRNAlst, mRNAvec = NULL, miRNAvec = NULL,
-  chipPkg, header, plot = TRUE, out = TRUE, lhei = c(0.05, 0.95),
-  margins = c(5, 8))
+makeHmap(
+  mRNAdat,
+  miRNAdat,
+  mRNAlst,
+  mRNAvec = NULL,
+  miRNAvec = NULL,
+  chipPkg,
+  header,
+  plot = TRUE,
+  out = TRUE,
+  lhei = c(0.05, 0.95),
+  margins = c(5, 8)
+)
 }
 \arguments{
 \item{mRNAdat}{An \code{ExpressionSet}, \code{data.frame} or \code{matrix}

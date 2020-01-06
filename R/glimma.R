@@ -66,7 +66,7 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
         html <- gsub(" ", "_", colnames(cont))
         ind <- as.logical(dsgn %*% cont[,i])
         if(is(tablst[[i]], "DGELRT") | is(tablst[[i]],"DGEExact")){
-            if(is.null(symb <- getSymb(tablst[[i]], ID)
+            symb <- getSymb(tablst[[i]], ID)
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,

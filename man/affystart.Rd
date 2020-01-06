@@ -4,11 +4,21 @@
 \alias{affystart}
 \title{Pre-processing for Affymetrix Data}
 \usage{
-affystart(..., filenames = NULL, groups = NULL, groupnames = NULL,
-  plot = TRUE, pca = TRUE, squarepca = FALSE, plottype = "pdf",
-  express = c("rma", "mas5", "gcrma"), addname = NULL,
-  output = "txt", annotate = FALSE, ann.vec = c("SYMBOL", "GENENAME",
-  "ENTREZID", "UNIGENE", "REFSEQ"))
+affystart(
+  ...,
+  filenames = NULL,
+  groups = NULL,
+  groupnames = NULL,
+  plot = TRUE,
+  pca = TRUE,
+  squarepca = FALSE,
+  plottype = "pdf",
+  express = c("rma", "mas5", "gcrma"),
+  addname = NULL,
+  output = "txt",
+  annotate = FALSE,
+  ann.vec = c("SYMBOL", "GENENAME", "ENTREZID", "UNIGENE", "REFSEQ")
+)
 }
 \arguments{
 \item{\dots}{Requires that all variables be named.}
