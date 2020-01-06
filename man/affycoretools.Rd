@@ -3,7 +3,6 @@
 \docType{package}
 \name{affycoretools}
 \alias{affycoretools}
-\alias{affycoretools-package}
 \title{Make repetitive analyses of microarray and RNA-Seq data simpler with affycoretools.}
 \description{
 The affycoretools package is primarily intended to make analyses of Affymetrix GeneChip

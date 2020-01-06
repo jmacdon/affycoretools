@@ -4,9 +4,18 @@
 \alias{venn4Way}
 \title{4-way Venn Diagrams}
 \usage{
-venn4Way(fit, contrast, p.value, lfc, adj.meth, baseUrl = ".",
-  reportDirectory = "./venns", affy = TRUE, probecol = "PROBEID",
-  ...)
+venn4Way(
+  fit,
+  contrast,
+  p.value,
+  lfc,
+  adj.meth,
+  baseUrl = ".",
+  reportDirectory = "./venns",
+  affy = TRUE,
+  probecol = "PROBEID",
+  ...
+)
 }
 \arguments{
 \item{fit}{An \code{MArrayLM} object, created by the limma package.}

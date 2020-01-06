@@ -44,6 +44,7 @@
 #' @importFrom stats cor quantile sd
 #' @importFrom utils read.table
 #' @importFrom BiocGenerics plotPCA
+#' @importFrom Glimma glMDPlot
 #' @import methods
 #' @import DBI
 #' @import RSQLite

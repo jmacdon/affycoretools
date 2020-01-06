@@ -4,9 +4,16 @@
 \alias{makeGoGeneTable}
 \title{Make Gene table from GO analysis results}
 \usage{
-makeGoGeneTable(fit.table, probe.sum.table, go.id, cont.name,
-  base.dir = NULL, extraname = NULL, probecol = "PROBEID",
-  affy = TRUE)
+makeGoGeneTable(
+  fit.table,
+  probe.sum.table,
+  go.id,
+  cont.name,
+  base.dir = NULL,
+  extraname = NULL,
+  probecol = "PROBEID",
+  affy = TRUE
+)
 }
 \arguments{
 \item{fit.table}{The output from \link[limma]{topTable}}

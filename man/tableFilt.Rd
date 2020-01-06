@@ -4,8 +4,14 @@
 \alias{tableFilt}
 \title{Filter a topTable object}
 \usage{
-tableFilt(fit, coef = 1, number = 30, fldfilt = NULL, pfilt = NULL,
-  adjust = "fdr")
+tableFilt(
+  fit,
+  coef = 1,
+  number = 30,
+  fldfilt = NULL,
+  pfilt = NULL,
+  adjust = "fdr"
+)
 }
 \arguments{
 \item{fit}{An \code{MArrayLM} object, resulting from a call to \code{eBayes}}

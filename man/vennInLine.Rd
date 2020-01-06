@@ -4,8 +4,14 @@
 \alias{vennInLine}
 \title{Generate Venn diagrams with links for Rmarkdown documents}
 \usage{
-vennInLine(vennlst, caplst, cex.venn = 1, shift.title = FALSE,
-  reportDirectory = NULL, ...)
+vennInLine(
+  vennlst,
+  caplst,
+  cex.venn = 1,
+  shift.title = FALSE,
+  reportDirectory = NULL,
+  ...
+)
 }
 \arguments{
 \item{vennlst}{The output from \code{makeVenn}.}
