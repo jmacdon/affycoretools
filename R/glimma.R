@@ -53,7 +53,7 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
         if(length(symb) == 1) return(symb) else return(NULL)
     }
 
-    counts <- switch(class(datobj),
+    counts <- switch(class(datobj)[1],
                      DGEList = datobj$counts,
                      ExpressionSet = exprs(datobj),
                      EList = datobj$E,
