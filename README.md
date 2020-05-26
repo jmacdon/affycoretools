@@ -1,6 +1,8 @@
 affycoretools
 =============
 
+[![Build Status](https://travis-ci.com/jmacdon/affycoretools.svg?branch=master)](https://travis-ci.com/jmacdon/affycoretools)
+
 Make repetitive analyses of microarray and RNA-Seq data simpler with affycoretools.
 
   The affycoretools package is primarily intended to make
