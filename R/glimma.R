@@ -22,6 +22,9 @@
 ##' at the top right of the resulting plot. The default of NULL will search for a column labeled
 ##' SYMBOL to use. If the ID value doesn't match any column, and there is no SYMBOL column, then
 ##' the default for glMDPlot will be used.
+##' @param sample.cols A vector of numbers or hex strings, the same length as the grpvec. This
+##' will cause the samples in the upper right plot to have different colors. Useful primarily to
+##' check for batch differences. The default is the default from glMDPlot.
 ##' @param ... Allows end users to pass other arguments to the Glimma glMDPlot function
 ##' @return A character vector of the files generated, useful for using as links to the output.
 ##' @author James W. MacDonald \email{jmacdon@@u.washington.edu}
@@ -43,7 +46,7 @@
 ##'    }
 ##' @export doGlimma
 doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 0.05,
-                     extraname = NULL, ID = NULL, ...){
+                     extraname = NULL, ID = NULL, sample.cols = rep("#1f77b4", ncol(datobj)), ...){
     getSymb <- function(x, ID){
         if(!is.null(ID)) {
             symb <- grep(ID, colnames(x$genes), ignore.case = TRUE, value = TRUE)
@@ -70,13 +73,15 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
             status <- decideTests(tablst[[i]], p.value = sigfilt, adjust.method = padj)
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,
-                     html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj, ...)
+                     html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj,
+                     sample.cols = sample.cols[ind,], ...)
         } else if(is(tablst, "MArrayLM")) {
             symb <- getSymb(tablst, ID)
             status <- decideTests(tablst, p.value = sigfilt, adjust.method = padj, coefficients = i)
             glMDPlot(tablst, counts = counts[,ind], groups = factor(grpvec[ind]), status = status, coef = i,
                      transform = FALSE, folder = folder, side.main = symb,
-                     html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj, ...)
+                     html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj,
+                     sample.cols = sample.cols[ind], ...)
         } else {
             stop("Please provide either a DGELRT, DGExact or MArrayLM object!", call. = FALSE)
         }
