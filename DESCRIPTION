@@ -2,7 +2,7 @@ Package: affycoretools
 Date: 2008-12-15
 Title: Functions useful for those doing repetitive analyses
     with Affymetrix GeneChips
-Version: 1.63.1
+Version: 1.63.2
 Author: James W. MacDonald
 Description: Various wrapper functions that have been written to
     streamline the more common analyses that a core Biostatistician
