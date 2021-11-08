@@ -113,8 +113,9 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
     orgDBloc <- system.file("extdata", sub("db","sqlite", orgPkg),
                             package = orgPkg)
     attachSQL <- paste("attach '", orgDBloc, "' as orgDB;", sep = "")
-    con <- dbconn(get(paste(sub("\\.db", "", chipPkg), "ENTREZID", sep = "")))
-    dbGetQuery(con, attachSQL)
+    #con <- dbconn(get(paste(sub("\\.db", "", chipPkg), "ENTREZID", sep = "")))
+    con <- dbconn(get(chipPkg))
+    dbExecute(con, attachSQL)
 
     makeSql <- function(ids, transType){
         sql <- switch(transType,
@@ -132,7 +133,7 @@ mirna2mrna <- function(miRNAids, miRNAannot, mRNAids, orgPkg, chipPkg, sanger = 
     mrnaprbs <- lapply(prblst, function(x) dbGetQuery(con, makeSql(x, transType))[,1])
     intprbs <- lapply(mrnaprbs, function(x) mRNAids[mRNAids %in% x])
     intprbs <- intprbs[sapply(intprbs, length) > 0]
-    dbGetQuery(con, "detach orgDB;")
+    dbExecute(con, "detach orgDB;")
     intprbs
 }
 

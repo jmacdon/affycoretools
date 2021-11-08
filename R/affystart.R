@@ -393,6 +393,7 @@ setMethod("plotPCA", "matrix",
     if(is.factor(groupnames)) groupnames <- as.character(groupnames)
     pca <- prcomp(t(object))
     len <- dim(object)[2]
+    pctvar <- pca$sdev^2/sum(pca$sdev^2)
     
     if(screeplot){
         plot(pca, main = "Screeplot")
@@ -414,8 +415,8 @@ setMethod("plotPCA", "matrix",
             }else ylim <- NULL
             plotstuff <- pcaPCH(len, groups, pch, col)
             plot(pca$x[,pcs], pch = plotstuff$pch, col = plotstuff$col, bg = plotstuff$col,
-                 ylab= paste("PC", pcs[2], sep=""),
-                 xlab=paste("PC", pcs[1], sep=""),
+                 ylab= paste0("PC", pcs[2], " (", round(pctvar[pcs[2]] * 100, 1), "% variation explained)"),
+                 xlab=paste0("PC", pcs[1], " (", round(pctvar[pcs[1]] * 100, 1), "% variation explained)"),
                  main = main, ylim = ylim, ...)
 
             if(!is.null(addtext)){
@@ -439,6 +440,7 @@ setMethod("plotPCA", "matrix",
             }
         }
     }
+    invisible(pca)
 })
 
 
