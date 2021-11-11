@@ -71,7 +71,7 @@ setMethod("annotateEset", c("ExpressionSet","AffyExpressionPDInfo"),
           function(object, x, type = "core", ...){
     if(type != "core") warning("Setting type to 'core', as that is the only summarization available.", call. = FALSE)
     if(!file.exists(system.file(paste0("/extdata/netaffxTranscript.rda"), package = annotation(x))))
-        stop(paste("There is no annotation object provided with the", deparse(substitute(x)), "package."), call. = FALSE)
+        stop(paste("There is no annotation object provided with the", annotation(x), "package."), call. = FALSE)
     .dataFromNetaffx(object, x, type = "core",...)
 })
 
