@@ -14,6 +14,7 @@ doGlimma(
   sigfilt = 0.05,
   extraname = NULL,
   ID = NULL,
+  sample.cols = rep("#1f77b4", ncol(datobj)),
   ...
 )
 }
@@ -40,6 +41,10 @@ DGEExact or DGELRT objects) that will be used for labeling the individual gene e
 at the top right of the resulting plot. The default of NULL will search for a column labeled
 SYMBOL to use. If the ID value doesn't match any column, and there is no SYMBOL column, then
 the default for glMDPlot will be used.}
+
+\item{sample.cols}{A vector of numbers or hex strings, the same length as the grpvec. This
+will cause the samples in the upper right plot to have different colors. Useful primarily to
+check for batch differences. The default is the default from glMDPlot.}
 
 \item{...}{Allows end users to pass other arguments to the Glimma glMDPlot function}
 }
