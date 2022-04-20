@@ -1,9 +1,15 @@
 language: r
-sudo: false
-os:
- - linux
-cache:
- packages: true
-
 r:
- - bioc-devel
+  - bioc-release
+  - bioc-devel
+before_install:
+  -sudo apt-get update
+cache:
+  packages: true
+  directories:
+    -docs
+warnings_are_errors: false
+notifications:
+  email:
+    on_success: jmacdon@uw.edu
+    on_failure: jmacdon@uw.edu
