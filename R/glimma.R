@@ -81,7 +81,7 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
             glMDPlot(tablst[[i]], counts = counts[,ind], groups = factor(grpvec[ind]), status = status,
                      transform = TRUE, folder = folder, side.main = symb,
                      html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj,
-                     sample.cols = sample.cols[ind,], ...)
+                     sample.cols = sample.cols[ind], ...)
         } else {
             stop("Please provide either a DGELRT, DGExact or MArrayLM object!", call. = FALSE)
         }
