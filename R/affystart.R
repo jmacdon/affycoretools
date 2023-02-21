@@ -435,7 +435,7 @@ setMethod("plotPCA", "matrix",
                     par(opar)
                 }else{
                     pca.legend(pca, groups, groupnames, plotstuff, x.coord = x.coord,
-                               y.coord = y.coord, ...)
+                               y.coord = y.coord)
                 }
             }
         }
