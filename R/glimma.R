@@ -70,8 +70,10 @@ doGlimma <- function(tablst, datobj, dsgn, cont, grpvec, padj = "BH", sigfilt = 
         ind <- as.logical(dsgn %*% cont[,i])
         if(is(tablst, "MArrayLM")) {
             symb <- getSymb(tablst, ID)
-            status <- decideTests(tablst, p.value = sigfilt, adjust.method = padj, coefficients = i)
-            glMDPlot(tablst, counts = counts[,ind], groups = factor(grpvec[ind]), status = status, coef = i,
+            status <- decideTests(tablst, p.value = sigfilt, adjust.method = padj)
+            ## check for partial NA
+            naind <- is.na(status[,i])
+            glMDPlot(tablst[!naind,], counts = counts[!naind,ind], groups = factor(grpvec[ind]), status = status[!naind,], coef = i,
                      transform = FALSE, folder = folder, side.main = symb,
                      html = html[i], launch = FALSE, main = colnames(cont)[i], p.adj.method = padj,
                      sample.cols = sample.cols[ind], ...)
